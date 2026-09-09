@@ -12,7 +12,7 @@ export function About({api, version, onClose}) {
             .catch(value => { if (!controller.signal.aborted) setError(value.message); });
         return () => controller.abort();
     }, [api]);
-    return <Dialog title="About" large status="info" icon="far fa-heart" onClose={onClose}>
+    return <Dialog title="About" large status="info" icon="heart" onClose={onClose}>
         <h2 class="text-center"><a href="https://github.com/syncshell/syncshell-webui" target="_blank" rel="noreferrer">Syncshell</a></h2>
         <p class="text-center">Modern / Omarchy Web UI, based on Syncthing.</p>
         <p class="text-center">Syncthing {version.version || ''} {version.codename || ''}</p>

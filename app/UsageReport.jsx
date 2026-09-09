@@ -19,7 +19,7 @@ export function UsageReport({api, session, state, consent = false, onClose}) {
         catch (value) { setError(value.message); }
         finally { setBusy(false); }
     }
-    return <Dialog title={consent ? 'Allow Anonymous Usage Reporting?' : 'Anonymous Usage Reporting'} large status="info" icon="fas fa-chart-bar" onClose={onClose} onCancel={() => { if (!consent && !busy) onClose(); }} footer={consent ? <>
+    return <Dialog title={consent ? 'Allow Anonymous Usage Reporting?' : 'Anonymous Usage Reporting'} large status="info" icon="chart" onClose={onClose} onCancel={() => { if (!consent && !busy) onClose(); }} footer={consent ? <>
         <button class="btn btn-success" disabled={busy} onClick={() => decide(true)}>{t('Yes')}</button><button class="btn btn-danger" disabled={busy} onClick={() => decide(false)}>{t('No')}</button>
     </> : <button class="btn btn-default" onClick={onClose}>{t('Close')}</button>}>
         {consent && state.config.options.urAccepted > 0 ? <p>{t('Anonymous usage report format has changed. Would you like to move to the new format?')}</p> : <><p>{t('The encrypted usage report is sent daily. It is used to track common platforms, folder sizes, and app versions. If the reported data set is changed you will be prompted with this dialog again.')}</p><p>{t('The aggregated statistics are publicly available at the URL below.')} <a href="https://data.syncthing.net/" target="_blank" rel="noreferrer">data.syncthing.net</a></p></>}

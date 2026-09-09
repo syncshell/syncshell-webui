@@ -52,9 +52,9 @@ export const deviceLabels = {unknown: 'Unknown', disconnected: 'Disconnected',
     'disconnected-inactive': 'Disconnected (Inactive)', insync: 'Up to Date', paused: 'Paused',
     syncing: 'Syncing', 'unused-disconnected': 'Disconnected (Unused)',
     'unused-insync': 'Connected (Unused)', 'unused-paused': 'Paused (Unused)'};
-export const deviceIcons = {disconnected: 'fa-power-off', 'disconnected-inactive': 'fa-power-off',
-    insync: 'fa-check', paused: 'fa-pause', syncing: 'fa-sync', unknown: 'fa-question-circle',
-    'unused-disconnected': 'fa-unlink', 'unused-insync': 'fa-unlink', 'unused-paused': 'fa-unlink'};
+export const deviceIcons = {disconnected: 'power', 'disconnected-inactive': 'power',
+    insync: 'check', paused: 'pause', syncing: 'refresh', unknown: 'help',
+    'unused-disconnected': 'unlink', 'unused-insync': 'unlink', 'unused-paused': 'unlink'};
 export function deviceColor(device, state) {
     const conn = state.connections[device.deviceID];
     return !conn ? 'info' : device.paused ? 'default' : !conn.connected ? 'info' :

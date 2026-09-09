@@ -14,6 +14,7 @@ import {Counts} from './Counts.jsx';
 import {Field} from './Field.jsx';
 import {Versioning} from './Versioning.jsx';
 import {ItemsDialog} from './ItemsDialog.jsx';
+import {Icon} from './Icon.jsx';
 
 export function Folder({folder, info, stats, progress, api, rescan, state, session, onAction}) {
     const {t} = useContext(LocaleContext);
@@ -42,12 +43,12 @@ export function Folder({folder, info, stats, progress, api, rescan, state, sessi
                 {['scanning', 'syncing'].includes(status) && percent !== undefined &&
                     <span class="panel-progress" style={{width: percent + '%'}} />}
                 <span class="panel-title">
-                    <span class="panel-icon hidden-xs"><span class={`fas fa-fw fa-${({sendonly: 'upload', receiveonly: 'download', receiveencrypted: 'lock'})[folder.type] || 'folder'}`} aria-hidden="true" /></span>
+                    <span class="panel-icon hidden-xs"><Icon name={({sendonly: 'upload', receiveonly: 'download', receiveencrypted: 'lock'})[folder.type] || 'folder'} class="icon-fixed" /></span>
                     <span class={`panel-status pull-right text-${folderClass(status)}`}>
                         <span class="hidden-xs">{t(label)}</span>
                         {status === 'scanning' && percent !== undefined && ` (${percent}%)`}
                         {status === 'syncing' && ` (${percent}%, ${unitPrefixed(info.needBytes, true)}B)`}
-                        <span class={`visible-xs fa fa-fw ${folderStatusIcon(status)}`} aria-label={t(label)} />
+                        <Icon name={folderStatusIcon(status)} class="visible-xs icon-fixed" label={t(label)} />
                     </span>
                     <span class="panel-title-text" title={folder.label || folder.id}>{folder.label || folder.id}</span>
                 </span>
@@ -57,16 +58,16 @@ export function Folder({folder, info, stats, progress, api, rescan, state, sessi
                     <summary>{t('Current activity')}</summary>
                     <table class="table table-condensed table-auto"><tbody>
                         {!folder.paused && info?.state && <tr class="folder-state-summary">
-                            <th><Tooltip icon={`fa fa-fw fa-circle text-${folderStateClass(status)}`}
+                            <th><Tooltip icon="dot" iconClass={`text-${folderStateClass(status)}`}
                                 label="Global/local State" prefix={label} text={fieldHelp['Global/local State'].help} />&nbsp;<span>{t('Global/local State')}</span>
-                                {info.ignorePatterns && <a href="#ignores" title={t('Reduced by ignore patterns')} onClick={event => { event.preventDefault(); onAction({type: 'edit-folder', folder, tab: 'ignores'}); }}><span class="fas fa-info-circle" /></a>}
+                                {info.ignorePatterns && <a href="#ignores" title={t('Reduced by ignore patterns')} onClick={event => { event.preventDefault(); onAction({type: 'edit-folder', folder, tab: 'ignores'}); }}><Icon name="info" /></a>}
                             </th>
                             <td class="text-right"><Counts info={info} /></td>
                         </tr>}
                         {summaries.map(prefix => <Field key={prefix} label={prefix === 'global' ? 'Global State' : 'Local State'} rowClass="folder-state-detail">
                             <Counts info={info} prefix={prefix} />
                         </Field>)}
-                        {info?.needTotalItems > 0 && <Field label="Out of Sync Items" icon="fas fa-fw fa-cloud-download-alt" help="Items this device still needs to synchronize with other devices. The size counts whole files; reusing existing data can reduce the amount actually downloaded. Click the value to see the items."><a href="#needed" onClick={showItems('need')}>
+                        {info?.needTotalItems > 0 && <Field label="Out of Sync Items" icon="cloud-download" help="Items this device still needs to synchronize with other devices. The size counts whole files; reusing existing data can reduce the amount actually downloaded. Click the value to see the items."><a href="#needed" onClick={showItems('need')}>
                             {compactNumber(info.needTotalItems)} {t('items')}, ~{unitPrefixed(info.needBytes, true)}B</a></Field>}
                         {!folder.paused && info?.state && folder.ignoreDelete &&
                             <tr><td colSpan="2" class="text-right"><i class="small">{t('Altered by ignoring deletes.')} <a href="https://docs.syncthing.net/advanced/folder-ignoredelete.html" target="_blank" rel="noreferrer">{t('Help')}</a></i></td></tr>}
@@ -92,8 +93,8 @@ export function Folder({folder, info, stats, progress, api, rescan, state, sessi
                     <summary>{t('Configuration')}</summary>
                     <table class="table table-condensed table-auto"><tbody>
                         <Field label="Rescans"><span title={watcherFailed || ''}>
-                            <span class="far fa-clock" />&nbsp;{folder.rescanIntervalS > 0 ? duration(folder.rescanIntervalS, 's') : t('Disabled')}&ensp;
-                            <span class={`fas fa-${folder.fsWatcherEnabled && !watcherFailed ? 'eye' : 'eye-slash'}`} />&nbsp;{t(watcherFailed ? 'Failed to set up, retrying' : folder.fsWatcherEnabled ? 'Enabled' : 'Disabled')}
+                            <Icon name="clock" />&nbsp;{folder.rescanIntervalS > 0 ? duration(folder.rescanIntervalS, 's') : t('Disabled')}&ensp;
+                            <Icon name={folder.fsWatcherEnabled && !watcherFailed ? 'eye' : 'eye-off'} />&nbsp;{t(watcherFailed ? 'Failed to set up, retrying' : folder.fsWatcherEnabled ? 'Enabled' : 'Disabled')}
                         </span></Field>
                         {folder.versioning?.type && <Field label="File Versioning"><Versioning config={folder.versioning} /></Field>}
                         {folder.ignorePerms && <Field label="Ignore Permissions">{t('Yes')}</Field>}
@@ -113,18 +114,18 @@ export function Folder({folder, info, stats, progress, api, rescan, state, sessi
                 <div class="panel-footer folder-actions">
                     {recoveryActions(folder, info, status).map(type => <button key={type} class="btn btn-danger btn-sm" onClick={() => onAction({type, folder})}>{t(managementActions[type].title)}</button>)}
                     <div class={`dropdown folder-sharing pull-left ${sharingOpen ? 'open' : ''}`}>
-                        <button class="btn btn-sm btn-default dropdown-toggle" aria-expanded={sharingOpen} disabled={!folder.devices.some(device => device.deviceID !== state.system.myID)} onClick={() => setSharingOpen(!sharingOpen)}><span class="fas fa-share-alt" /> {t('Shared')} <span class="caret" /></button>
+                        <button class="btn btn-sm btn-default dropdown-toggle" aria-expanded={sharingOpen} disabled={!folder.devices.some(device => device.deviceID !== state.system.myID)} onClick={() => setSharingOpen(!sharingOpen)}><Icon name="share" /> {t('Shared')} <span class="caret" /></button>
                         <ul class="dropdown-menu">{folder.devices.filter(device => device.deviceID !== state.system.myID).map(member => {
                             const device = state.config.devices.find(item => item.deviceID === member.deviceID);
                             return <li key={member.deviceID}><a href="#edit-device" onClick={event => { event.preventDefault(); setSharingOpen(false); if (device) onAction({type: 'edit-device', device}); }}>{device?.name || member.deviceID.slice(0, 7)} <ShareStatus encrypted={folder.type === 'receiveencrypted' || !!member.encryptionPassword} remoteState={state.completion[member.deviceID]?.[folder.id]?.remoteState} /></a></li>;
                         })}</ul>
                     </div>
-                    <button class="btn btn-sm btn-default" onClick={() => session.setPaused('folders', folder.id, !folder.paused).catch(() => {})}><span class={`fas fa-${folder.paused ? 'play' : 'pause'}`} /> {t(folder.paused ? 'Resume' : 'Pause')}</button>
+                    <button class="btn btn-sm btn-default" onClick={() => session.setPaused('folders', folder.id, !folder.paused).catch(() => {})}><Icon name={folder.paused ? 'play' : 'pause'} /> {t(folder.paused ? 'Resume' : 'Pause')}</button>
                     <button class="btn btn-sm btn-default" disabled={scanning || !['idle', 'stopped', 'unshared', 'outofsync', 'faileditems', 'localadditions'].includes(status)} onClick={scan}>
-                        <span class="fas fa-fw fa-refresh" aria-hidden="true" /> {t('Rescan')}
+                        <Icon name="refresh" class="icon-fixed" /> {t('Rescan')}
                     </button>
-                    {folder.versioning?.type && folder.versioning.type !== 'external' && <button class="btn btn-sm btn-default" disabled={folder.paused} onClick={() => onAction({type: 'versions', folder})}><span aria-hidden="true" class="fas fa-undo" /> {t('Versions')}</button>}
-                    <button class="btn btn-sm btn-default" onClick={() => onAction({type: 'edit-folder', folder})}><span class="fas fa-pencil-alt" /> {t('Edit')}</button>
+                    {folder.versioning?.type && folder.versioning.type !== 'external' && <button class="btn btn-sm btn-default" disabled={folder.paused} onClick={() => onAction({type: 'versions', folder})}><Icon name="undo" /> {t('Versions')}</button>}
+                    <button class="btn btn-sm btn-default" onClick={() => onAction({type: 'edit-folder', folder})}><Icon name="pencil" /> {t('Edit')}</button>
                 </div>
             </div>}
         </div>

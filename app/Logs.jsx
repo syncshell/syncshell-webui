@@ -32,7 +32,7 @@ export function Logs({api, onClose}) {
         catch (value) { setError(value.message); }
         finally { setBusy(false); }
     }
-    return <Dialog title="Logs" large icon="fa fa-wrench" onClose={onClose}>
+    return <Dialog title="Logs" large icon="wrench" onClose={onClose}>
         <ul class="nav nav-tabs">{['Log', 'Debugging Facilities'].map(name => <li key={name} class={tab === name ? 'active' : ''}><a href={'#logs-' + name} onClick={event => { event.preventDefault(); setTab(name); }}>{t(name)}</a></li>)}</ul>
         {error && <p class="text-danger" role="alert">{error}</p>}
         {tab === 'Log' ? <><textarea ref={area} class="form-control text-monospace" aria-label={t('Log')} rows="20" readOnly value={content} onScroll={() => { const element = area.current; pausedRef.current = element.scrollHeight > element.scrollTop + element.clientHeight + 1; setPaused(pausedRef.current); }} />

@@ -47,7 +47,7 @@ export function Settings({state, api, session, onClose, advanced = false}) {
     }
     function preview() { setReport(true); }
     return <>
-        <Dialog title={advanced ? 'Advanced Configuration' : 'Settings'} status={advanced ? 'danger' : 'default'} icon="fas fa-cog" large onClose={onClose} onCancel={close} footer={<>
+        <Dialog title={advanced ? 'Advanced Configuration' : 'Settings'} status={advanced ? 'danger' : 'default'} icon="settings" large onClose={onClose} onCancel={close} footer={<>
             <button class="btn btn-primary btn-sm" disabled={busy} onClick={save}>{t('Save')}</button><button class="btn btn-default btn-sm" disabled={busy} onClick={close}>{t('Close')}</button>
         </>}>
             <form ref={form} onSubmit={event => { event.preventDefault(); save(); }}>

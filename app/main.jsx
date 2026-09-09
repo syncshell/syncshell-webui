@@ -18,6 +18,7 @@ import {ActionDialog} from './ActionDialog.jsx';
 import {Conflicts} from './Conflicts.jsx';
 import {LocaleContext} from './locale-context.jsx';
 import '../client/components.css';
+import {Icon} from './Icon.jsx';
 
 const tabs = [['overview', 'Overview'], ['conflicts', 'Resolve sync conflicts'], ['notifications', 'Notifications']];
 const helpLinks = [['Introduction','https://github.com/syncshell/syncshell-webui#readme'], ['Home page','https://github.com/syncshell/syncshell-webui'], ['Documentation','https://docs.syncthing.net/'], ['Support','https://github.com/syncshell/syncshell-webui/issues'], ['Changelog','https://github.com/syncshell/syncshell-webui/releases'], ['Statistics','https://data.syncthing.net/'], ['Bugs','https://github.com/syncshell/syncshell-webui/issues'], ['Source Code','https://github.com/syncshell/syncshell-webui']];
@@ -88,12 +89,12 @@ function App() {
             <span class="navbar-brand syncshell-brand"><span class="syncshell-mark" aria-hidden="true" style={{'--syncshell-mark': `url("${syncshellMark}")`}} /><span class="text-success">Syncshell</span></span>
             {authenticated && <p class="navbar-text hidden-xs">{name}</p>}
             <ul class="nav navbar-nav navbar-right">
-                <li class={`dropdown action-menu ${menu === 'help' ? 'open' : ''}`}><a href="#help" class="dropdown-toggle" aria-expanded={menu === 'help'} onClick={event => { event.preventDefault(); setMenu(menu === 'help' ? '' : 'help'); }}><span class="fa fa-question-circle" /> {t('Help')} <span class="caret" /></a>
+                <li class={`dropdown action-menu ${menu === 'help' ? 'open' : ''}`}><a href="#help" class="dropdown-toggle" aria-expanded={menu === 'help'} onClick={event => { event.preventDefault(); setMenu(menu === 'help' ? '' : 'help'); }}><Icon name="help" /> {t('Help')} <span class="caret" /></a>
                     <ul class="dropdown-menu">{helpLinks.map(([label, url]) => <li key={label}><a href={url} target="_blank" rel="noreferrer">{t(label)}</a></li>)}
                         <li><a href="#about" onClick={event => { event.preventDefault(); openAction({type: 'about'}); }}>{t('About')}</a></li>
                     </ul>
                 </li>
-                {authenticated && <li class={`dropdown action-menu ${menu === 'actions' ? 'open' : ''}`}><a href="#actions" class="dropdown-toggle" aria-expanded={menu === 'actions'} onClick={event => { event.preventDefault(); setMenu(menu === 'actions' ? '' : 'actions'); }}><span class="fas fa-cog" /> {t('Actions')} <span class="caret" /></a>
+                {authenticated && <li class={`dropdown action-menu ${menu === 'actions' ? 'open' : ''}`}><a href="#actions" class="dropdown-toggle" aria-expanded={menu === 'actions'} onClick={event => { event.preventDefault(); setMenu(menu === 'actions' ? '' : 'actions'); }}><Icon name="settings" /> {t('Actions')} <span class="caret" /></a>
                     <ul class="dropdown-menu">
                         <li><a href="#settings" onClick={event => { event.preventDefault(); openAction({type: 'settings'}); }}>{t('Settings')}</a></li>
                         <li><a href="#advanced" onClick={event => { event.preventDefault(); openAction({type: 'advanced'}); }}>{t('Advanced')}</a></li>
@@ -116,7 +117,7 @@ function App() {
                 <div class="dashboard">
                     <ul class="nav nav-tabs dashboard-tabs" role="tablist" onKeyDown={tabKey}>{tabs.map(([id, label]) =>
                         <li key={id} class={id === activeTab ? 'active' : ''} role="presentation"><a id={id + '-tab'} href={'#dashboard-' + id} role="tab" aria-controls={'dashboard-' + id} aria-selected={id === activeTab} tabIndex={id === activeTab ? 0 : -1} onClick={event => { event.preventDefault(); setActiveTab(id); }}>{t(label)}{id === 'conflicts' ? ' (beta)' : ''}
-                            {id === 'notifications' && <span class="notification-indicator"><span class="fas fa-circle text-success" role="img" aria-label={t('Pending notifications')} /><span class="fas fa-circle text-warning" role="img" aria-label={t('Pending warnings')} /><span class="fas fa-circle text-danger" role="img" aria-label={t('Pending errors')} /></span>}
+                            {id === 'notifications' && <span class="notification-indicator"><Icon name="dot" class="text-success" role="img" aria-label={t('Pending notifications')} /><Icon name="dot" class="text-warning" role="img" aria-label={t('Pending warnings')} /><Icon name="dot" class="text-danger" role="img" aria-label={t('Pending errors')} /></span>}
                         </a></li>)}</ul>
                     <div class="tab-content">
                         <div id="dashboard-overview" class={`tab-pane dashboard-primary ${activeTab === 'overview' ? 'active' : ''}`} role="tabpanel" aria-labelledby="overview-tab">
@@ -125,10 +126,10 @@ function App() {
                                     <div class="panel-group">{folders.map(folder => <Folder key={folder.id} api={api} session={session} state={state} folder={folder} progress={state.scanProgress[folder.id]} info={state.model[folder.id]} stats={state.folderStats[folder.id]} rescan={() => session.rescan(folder.id)} onAction={openAction} />)}</div>
                                 </div>)}
                                 <div class="folder-actions">
-                                    {state.config.folders.some(folder => !folder.paused) && <button class="btn btn-sm btn-default" onClick={() => perform(session.setPaused('folders', undefined, true))}><span class="fas fa-pause" /> {t('Pause All')}</button>}
-                                    {state.config.folders.some(folder => folder.paused) && <button class="btn btn-sm btn-default" onClick={() => perform(session.setPaused('folders', undefined, false))}><span class="fas fa-play" /> {t('Resume All')}</button>}
-                                    {state.config.folders.length > 0 && <button class="btn btn-sm btn-default" onClick={() => perform(session.rescan())}><span class="fas fa-refresh" /> {t('Rescan All')}</button>}
-                                    <button class="btn btn-sm btn-default" onClick={() => openAction({type: 'add-folder'})}><span class="fas fa-plus" /> {t('Add Folder')}</button>
+                                    {state.config.folders.some(folder => !folder.paused) && <button class="btn btn-sm btn-default" onClick={() => perform(session.setPaused('folders', undefined, true))}><Icon name="pause" /> {t('Pause All')}</button>}
+                                    {state.config.folders.some(folder => folder.paused) && <button class="btn btn-sm btn-default" onClick={() => perform(session.setPaused('folders', undefined, false))}><Icon name="play" /> {t('Resume All')}</button>}
+                                    {state.config.folders.length > 0 && <button class="btn btn-sm btn-default" onClick={() => perform(session.rescan())}><Icon name="refresh" /> {t('Rescan All')}</button>}
+                                    <button class="btn btn-sm btn-default" onClick={() => openAction({type: 'add-folder'})}><Icon name="plus" /> {t('Add Folder')}</button>
                                 </div>
                             </section>
                             <section class="dashboard-devices" aria-label={t('Devices')}><h3>{t('Devices')}</h3>

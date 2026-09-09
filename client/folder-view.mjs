@@ -8,28 +8,28 @@ export function folderStatusIcon(status) {
         case 'sync-preparing':
         case 'sync-waiting':
         case 'starting':
-            return 'fa-hourglass-half';
+            return 'hourglass';
         case 'cleaning':
-            return 'fa-recycle';
+            return 'recycle';
         case 'faileditems':
         case 'localunencrypted':
         case 'outofsync':
-            return 'fa-exclamation-circle';
+            return 'circle-alert';
         case 'idle':
         case 'localadditions':
-            return 'fa-check';
+            return 'check';
         case 'paused':
-            return 'fa-pause';
+            return 'pause';
         case 'scanning':
-            return 'fa-search';
+            return 'search';
         case 'stopped':
-            return 'fa-stop';
+            return 'stop';
         case 'syncing':
-            return 'fa-sync';
+            return 'refresh';
         case 'unknown':
-            return 'fa-question-circle';
+            return 'help';
         case 'unshared':
-            return 'fa-unlink';
+            return 'unlink';
     }
 }
 

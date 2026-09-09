@@ -9,6 +9,7 @@ import {Tooltip} from './Tooltip.jsx';
 import {IdentityControls} from './IdentityControls.jsx';
 import {SharingEntry} from './SharingEntry.jsx';
 import {deviceName} from '../client/devices.mjs';
+import {Icon} from './Icon.jsx';
 
 export function Editor({action, state, api, session, onClose, onSaved}) {
     const {t} = useContext(LocaleContext);
@@ -122,10 +123,10 @@ export function Editor({action, state, api, session, onClose, onSaved}) {
     }
     const footer = <>
         {!defaults && !isNew && stage === 'edit' && draft.deviceID !== state.system.myID && <button class="btn btn-warning btn-sm pull-left" disabled={busy} onClick={() => setRemoving(true)}>{t('Remove')}</button>}
-        <button class="btn btn-primary btn-sm" disabled={busy || (stage === 'ignores' && !loadedIgnores)} onClick={save}><span class="fas fa-check" />&nbsp;{t('Save')}</button>
-        <button class="btn btn-default btn-sm" disabled={busy} onClick={cancel}><span class="fas fa-times" />&nbsp;{t('Cancel')}</button>
+        <button class="btn btn-primary btn-sm" disabled={busy || (stage === 'ignores' && !loadedIgnores)} onClick={save}><Icon name="check" />&nbsp;{t('Save')}</button>
+        <button class="btn btn-default btn-sm" disabled={busy} onClick={cancel}><Icon name="x" />&nbsp;{t('Cancel')}</button>
     </>;
-    return <><Dialog title={title} large icon="fas fa-cog" footer={footer} onClose={cancel} onCancel={cancel}>
+    return <><Dialog title={title} large icon="settings" footer={footer} onClose={cancel} onCancel={cancel}>
         <form ref={form} onSubmit={event => { event.preventDefault(); save(); }}>
             <ul class="nav nav-tabs">{tabs.map(name => <li key={name} class={tab === name ? 'active' : tabDisabled(name) ? 'disabled' : ''}>
                 <a href={`#editor-${name}`} aria-disabled={tabDisabled(name)} onClick={event => { event.preventDefault(); if (!tabDisabled(name)) setTab(name); }}>{t(name)}</a>
@@ -152,13 +153,13 @@ export function Editor({action, state, api, session, onClose, onSaved}) {
                     {fields.map(field => <div class="form-group" key={field.path}>
                         {field.type === 'checkbox' ? <label><input type="checkbox" checked={field.checked ?? !!getValue(draft, field.path)} disabled={field.disabled} onChange={event => update(field.path, changedValue(field, event.currentTarget))} /> {t(field.label)}</label> : <>
                             <label for={'editor-' + field.path}>{t(field.label)}</label>
-                            {fieldHelp[field.label] && <Tooltip icon="fas fa-info-circle" label={field.label} text={fieldHelp[field.label].help} />}
+                            {fieldHelp[field.label] && <Tooltip icon="info" label={field.label} text={fieldHelp[field.label].help} />}
                             {field.type === 'select' ? <select id={'editor-' + field.path} class="form-control" value={inputValue(draft, field)} disabled={field.disabled} onChange={event => update(field.path, event.currentTarget.value)}>
                                 {field.options.map(([value, label]) => <option key={value} value={value}>{t(label)}</option>)}</select> :
                                 <input id={'editor-' + field.path} class="form-control" type={field.type === 'list' ? 'text' : field.type} value={inputValue(draft, field)} disabled={field.disabled} list={field.path === 'path' ? 'directory-list' : field.path === 'group' ? 'editor-groups' : undefined} readOnly={!isNew && !defaults && ['id', 'path', 'deviceID'].includes(field.path)}
                                     required={!defaults && ['id', 'path', 'deviceID'].includes(field.path)} step={field.path.endsWith('.value') ? '0.01' : undefined} min={field.type === 'number' ? 0 : undefined} onInput={event => update(field.path, changedValue(field, event.currentTarget))} />}
                         </>}
-                        {field.type === 'checkbox' && fieldHelp[field.label] && <Tooltip icon="fas fa-info-circle" label={field.label} text={fieldHelp[field.label].help} />}
+                        {field.type === 'checkbox' && fieldHelp[field.label] && <Tooltip icon="info" label={field.label} text={fieldHelp[field.label].help} />}
                         {field.path === 'path' && overlap && <p class="text-warning">{t(overlap.type === 'subdirectory' ? 'Warning, this path is a subdirectory of an existing folder "{%otherFolder%}".' : 'Warning, this path is a parent directory of an existing folder "{%otherFolder%}".').replace('{%otherFolder%}', overlap.folder.label || overlap.folder.id)}</p>}
                     </div>)}
                     {tab === 'File Versioning' && draft.versioning.type && (draft.versioning.type === 'simple' ? [['keep', 'Keep Versions'], ['cleanoutDays', 'Clean out after']] : draft.versioning.type === 'trashcan' ? [['cleanoutDays', 'Clean out after']] : draft.versioning.type === 'staggered' ? [['maxAge', 'Maximum Age']] : [['command', 'External Versioning Command']]).map(([key, label]) =>

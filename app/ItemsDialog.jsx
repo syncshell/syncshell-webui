@@ -7,6 +7,7 @@ import {needIcons} from '../client/transfer.mjs';
 import {Tooltip} from './Tooltip.jsx';
 import {itemRoutes, itemTitles, pageItems} from '../client/items.mjs';
 import {unitPrefixed} from '../client/format.mjs';
+import {Icon} from './Icon.jsx';
 
 export function ItemsDialog({api, folder, kind, total, revision = 0, progress = {}, progressEnabled = false, onClose}) {
     const {t} = useContext(LocaleContext);
@@ -31,7 +32,7 @@ export function ItemsDialog({api, folder, kind, total, revision = 0, progress = 
         } catch (failure) { setError(failure.message); }
     }
     return <Dialog title={itemTitles[kind]} large status={kind === 'failed' || (kind === 'local' && folder.type === 'receiveencrypted') ? 'warning' : 'info'}
-        icon={kind === 'need' ? 'fas fa-cloud-download-alt' : 'fas fa-exclamation-circle'} onClose={onClose}>
+        icon={kind === 'need' ? 'cloud-download' : 'circle-alert'} onClose={onClose}>
         {kind === 'failed' && <p>{t('The following items could not be synchronized.')} {t('They are retried automatically and will be synced when the error is resolved.')}</p>}
         {kind === 'local' && <p>{t(folder.type === 'receiveencrypted' ? 'The following unexpected items were found.' : 'The following items were changed locally.')}</p>}
         {kind === 'local' && folder.type === 'receiveencrypted' && <p>{t('You should never add or change anything locally in a "{%receiveEncrypted%}" folder.', {receiveEncrypted:t('Receive Encrypted')})}</p>}
@@ -39,10 +40,10 @@ export function ItemsDialog({api, folder, kind, total, revision = 0, progress = 
         {kind === 'need' && progressEnabled && <TransferProgress legend />}
         <table class="table table-striped table-condensed port-items" aria-busy={loading}>{kind === 'local' && <thead><tr><th>{t('Path')}</th><th>{t('Size')}</th></tr></thead>}<tbody>
             {items.map((file, index) => <tr key={`${file.name || file.path}:${index}`}>
-                {kind === 'need' && <td class="small-data"><span aria-hidden="true" class={needIcons[file.action]} /> {t(file.action)}</td>}
+                {kind === 'need' && <td class="small-data"><Icon name={needIcons[file.action]} /> {t(file.action)}</td>}
                 <td class="word-break-all">{kind === 'need' ? <>
                     {file.type === 'queued' && <button class="btn btn-link btn-sm" aria-label={t('Move to top of queue')}
-                        onClick={() => prioritize(file.name)}><span class="fas fa-eject" /></button>}
+                        onClick={() => prioritize(file.name)}><Icon name="arrow-up-to-line" /></button>}
                     <Tooltip label={file.name} text={file.name} triggerText={file.name.split('/').at(-1)} />
                 </> : file.path || file.name}</td>
                 <td>{kind === 'need' && file.type === 'progress' && file.action === 'Sync' && progress[file.name] ? <TransferProgress progress={progress[file.name]} /> : kind === 'failed' ? file.error : kind === 'local' ? (['DIRECTORY', 'FILE_INFO_TYPE_DIRECTORY'].includes(file.type) ? '' : unitPrefixed(file.size, true) + 'B') : file.size > 0 ? unitPrefixed(file.size, true) + 'B' : ''}</td>

@@ -17,7 +17,7 @@ export function ServiceDialog({kind, state, session, onClose}) {
             if (kind !== 'shutdown' && state.config.gui.useTLS !== (location.protocol === 'https:')) location.protocol = state.config.gui.useTLS ? 'https:' : 'http:';
         } catch (value) { setError(value.message); }
     }
-    return <Dialog title={title} status={error ? 'danger' : phase === 'confirm' ? major ? 'danger' : 'warning' : kind === 'shutdown' ? 'success' : 'info'} icon={kind === 'shutdown' && phase === 'waiting' ? 'fas fa-power-off' : 'fas fa-hourglass-half'} onClose={onClose} onCancel={() => { if (phase === 'confirm' || error) onClose(); }} footer={<>
+    return <Dialog title={title} status={error ? 'danger' : phase === 'confirm' ? major ? 'danger' : 'warning' : kind === 'shutdown' ? 'success' : 'info'} icon={kind === 'shutdown' && phase === 'waiting' ? 'power' : 'hourglass'} onClose={onClose} onCancel={() => { if (phase === 'confirm' || error) onClose(); }} footer={<>
         {error ? <button class="btn btn-default" onClick={onClose}>{t('Close')}</button> : phase === 'confirm' && <><button class="btn btn-primary" onClick={apply}>{t('Upgrade')}</button><button class="btn btn-default" onClick={onClose}>{t('Close')}</button></>}
     </>}>
         {error ? <p role="alert">{error}</p> : phase === 'confirm' ? <>{major ? <p>{t('This is a major version upgrade.')} {t('A new major version may not be compatible with previous versions.')} {t('Please consult the release notes before performing a major upgrade.')}</p> : <p>{t('Are you sure you want to upgrade?')}</p>}<p><a href={'https://github.com/syncthing/syncthing/releases/tag/' + encodeURIComponent(state.upgradeInfo?.latest || '')} target="_blank" rel="noreferrer">{t('Release Notes')}</a></p></>

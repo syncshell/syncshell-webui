@@ -5,6 +5,7 @@ import { listConflicts, recheckConflicts, replaceDirectory } from '../client/con
 import { Dialog } from './Dialog.jsx';
 import '../client/conflicts.css';
 import { desktopHelp } from '../client/desktop.mjs';
+import { Icon } from './Icon.jsx';
 
 export function Conflicts({ api, folders, active, ready, hostActions = null, device }) {
     const { t } = useContext(LocaleContext);
@@ -138,10 +139,8 @@ export function Conflicts({ api, folders, active, ready, hostActions = null, dev
                         onClick={() => load(true)}
                     >
                         <span class={scanning === 'all' ? 'text-warning review-rechecking' : ''}>
-                            <span
-                                aria-hidden="true"
-                                class={`fas fa-refresh${scanning === 'all' ? ' fa-spin' : ''}`}
-                            />{' '}
+                            <Icon name="refresh"
+                                class={scanning === 'all' ? 'icon-spin' : ''} />{' '}
                             {t('Recheck all files')}
                         </span>
                     </button>

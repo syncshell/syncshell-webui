@@ -48,8 +48,10 @@ test('divergence exposes compact child rows and a working paged error dialog', a
     await expect(rows).toHaveCount(2);
     await expect(rows.nth(0)).toContainText('109.2k');
     await expect(rows.nth(1)).toContainText('109.0k');
-    await expect(rows.nth(0).getByRole('img', {name: 'Global State', exact: true})).toHaveClass(/fa-globe/);
-    await expect(rows.nth(1).getByRole('img', {name: 'Local State', exact: true})).toHaveClass(/fa-home/);
+    await expect(rows.nth(0).getByRole('img', {name: 'Global State', exact: true})
+        .locator('.lucide-globe')).toBeVisible();
+    await expect(rows.nth(1).getByRole('img', {name: 'Local State', exact: true})
+        .locator('.lucide-house')).toBeVisible();
     await page.getByRole('link', {name: '25 items', exact: true}).click();
     const dialog = page.getByRole('dialog');
     await expect(dialog).toBeVisible();

@@ -14,4 +14,5 @@ export function transferProgress(stats) {
 export function endedTransfers(previous, next) {
     return Object.keys(previous).filter(folder => Object.keys(previous[folder]).some(file => !next[folder]?.[file]));
 }
-export const needIcons = {'Del': 'far fa-trash-alt', 'Del (dir)': 'far fa-trash-alt', 'Sync': 'far fa-arrow-alt-circle-down', 'Update': 'fas fa-asterisk'};
+export const needIcons = {'Del': 'trash', 'Del (dir)': 'trash',
+    'Sync': 'circle-arrow-down', 'Update': 'asterisk'};

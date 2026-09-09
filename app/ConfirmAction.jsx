@@ -13,7 +13,7 @@ export function ConfirmAction({action, api, session, onClose, onDone, devices = 
         catch (value) { setError(value.message); }
         finally { setBusy(false); }
     }
-    return <Dialog title={definition.title} status="warning" icon="fas fa-question-circle" onClose={onClose} onCancel={() => { if (!busy) onClose(); }} footer={<>
+    return <Dialog title={definition.title} status="warning" icon="help" onClose={onClose} onCancel={() => { if (!busy) onClose(); }} footer={<>
         <button class="btn btn-warning" disabled={busy} onClick={apply}>{t(definition.button)}</button><button class="btn btn-default" disabled={busy} onClick={onClose}>{t('Cancel')}</button>
     </>}>
         <p>{t(definition.description).replace('{%label%}', name).replace('{%name%}', name)}</p>

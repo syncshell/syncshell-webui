@@ -3,6 +3,7 @@ import { LocaleContext } from './locale-context.jsx';
 import { parentPath, missingHelp } from '../client/conflicts.mjs';
 import { unitPrefixed, timestamp } from '../client/format.mjs';
 import { Tooltip } from './Tooltip.jsx';
+import {Icon} from './Icon.jsx';
 
 export function ConflictRow({
     group,
@@ -25,7 +26,7 @@ export function ConflictRow({
             return (
                 <span class="text-warning">
                     <Tooltip
-                        icon="fas fa-exclamation-triangle"
+                        icon="triangle-alert"
                         label="Missing current file"
                         text={t(missingHelp)}
                     />{' '}
@@ -40,7 +41,7 @@ export function ConflictRow({
             );
         const contents = (
             <>
-                <span aria-hidden="true" class="fas fa-fw fa-file" />
+                <Icon name="file" class="icon-fixed" />
                 <span class="review-filename">{file.name}</span>
             </>
         );
@@ -132,7 +133,7 @@ export function ConflictRow({
                     title={t(folderAccess.reason || '')}
                     onClick={() => onOpen(group)}
                 >
-                    <span aria-hidden="true" class="fas fa-folder-open" /> {t('Open folder')}
+                    <Icon name="folder-open" /> {t('Open folder')}
                 </button>
                 <button
                     class="btn btn-default"
@@ -141,10 +142,8 @@ export function ConflictRow({
                     onClick={onRecheck}
                 >
                     <span class={scanning === group.id ? 'text-warning review-rechecking' : ''}>
-                        <span
-                            aria-hidden="true"
-                            class={`fas fa-refresh${scanning === group.id ? ' fa-spin' : ''}`}
-                        />{' '}
+                        <Icon name="refresh"
+                            class={scanning === group.id ? 'icon-spin' : ''} />{' '}
                         {t('Recheck files in folder')}
                     </span>
                 </button>

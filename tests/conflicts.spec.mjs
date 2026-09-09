@@ -30,7 +30,7 @@ test('rechecks show activity until completion and clear it after errors', async 
         await button.click();
         await expect.poll(() => typeof finish).toBe('function');
         await expect(button).toHaveAttribute('aria-busy', 'true');
-        await expect(button.locator('.text-warning .fa-spin')).toBeVisible();
+        await expect(button.locator('.text-warning .icon-spin')).toBeVisible();
         await expect(button).toBeDisabled();
         if (fail) {
             expect(request.searchParams.get('folder')).toBe('port-verification');
@@ -40,7 +40,7 @@ test('rechecks show activity until completion and clear it after errors', async 
         await page.screenshot({path: info.outputPath(fail ? 'recheck-folder-active.png' : 'recheck-all-active.png')});
         finish(fail);
         await expect(button).toHaveAttribute('aria-busy', 'false');
-        await expect(button.locator('.fa-spin')).toHaveCount(0);
+        await expect(button.locator('.icon-spin')).toHaveCount(0);
         await expect(button).toBeEnabled();
     }
     await expect(page.getByRole('alert')).toBeVisible();

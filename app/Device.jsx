@@ -11,6 +11,7 @@ import {Field} from './Field.jsx';
 import {Counts} from './Counts.jsx';
 import {Tooltip} from './Tooltip.jsx';
 import {Identicon} from './Identicon.jsx';
+import {Icon} from './Icon.jsx';
 
 export function Device({device, state, session, local = false, metric, toggleUnits, onAction}) {
     const {t} = useContext(LocaleContext);
@@ -42,7 +43,7 @@ export function Device({device, state, session, local = false, metric, toggleUni
                 {!local && <span class={`panel-status pull-right text-${deviceColor(device, state)}`}>
                     <span class="hidden-xs">{t(deviceLabels[status])}</span>
                     {status === 'syncing' && ` (${completion._total}%, ${unitPrefixed(completion._needBytes, true)}B)`}
-                    <span class={`visible-xs fa fa-fw ${deviceIcons[status]}`} aria-label={t(deviceLabels[status])} />
+                    <Icon name={deviceIcons[status]} class="visible-xs icon-fixed" label={t(deviceLabels[status])} />
                     <span class="inline-icon"><span class={`reception reception-theme ${connectionIcons[type] || ''}`} /></span>
                 </span>}
                 <span class="panel-title-text"><span class="device-name" title={deviceName(device)}>{deviceName(device)}</span>
@@ -51,7 +52,7 @@ export function Device({device, state, session, local = false, metric, toggleUni
         </button>
         {open && <div class="panel-collapse" ref={panel}><div class="panel-body less-padding">
             {!local && <table class="table table-condensed visible-xs remote-status"><tbody>
-                <Field label="Device Status" icon={`fa fa-fw ${deviceIcons[status]}`}>{t(deviceLabels[status])}</Field>
+                <Field label="Device Status" icon={deviceIcons[status]}>{t(deviceLabels[status])}</Field>
             </tbody></table>}
             {(local || conn.connected || folders.length > 0 || completion._needItems > 0) &&
                 <details class="device-details" open><summary>{t('Current activity')}</summary>
@@ -60,7 +61,7 @@ export function Device({device, state, session, local = false, metric, toggleUni
                             {completion._total === 100 ? t('Up to Date') : completion._total < 100 ? t('Out of Sync') + ' (' + completion._total + '%)' : ''}</Field>}
                         {(local || conn.connected) && ['in', 'out'].map(direction =>
                             <Field key={direction} label={direction === 'in' ? 'Download Rate' : 'Upload Rate'}
-                                icon={`fas fa-fw fa-cloud-${direction === 'in' ? 'download' : 'upload'}-alt`}
+                                icon={direction === 'in' ? 'download' : 'upload'}
                                 help={direction === 'in' ? (local ? 'Incoming traffic across all connected devices. Click the rate to switch between bytes and bits per second. A configured limit appears below.' : 'Data received by this machine from this remote device. Click the rate to switch between bytes and bits per second.') : (local ? 'Outgoing traffic across all connected devices. Click the rate to switch between bytes and bits per second. A configured limit appears below.' : 'Data sent by this machine to this remote device. Click the rate to switch between bytes and bits per second.')}
                                 totalBytes={conn[direction + 'BytesTotal']}>
                                 <a href="#units" onClick={event => { event.preventDefault(); toggleUnits(); }}>{rate(conn[direction + 'bps'] || 0)}
@@ -72,7 +73,7 @@ export function Device({device, state, session, local = false, metric, toggleUni
                         {local && <Field label="Local State (Total)"><Counts prefix="local" info={{localFiles: totals.files, localDirectories: totals.directories, localBytes: totals.bytes}} /></Field>}
                         {!local && completion._needItems > 0 && <Field label="Out of Sync Items">
                             <a href="#remote-needed" onClick={event => link(event, 'remote-needed')}>
-                                <Tooltip icon="fas fa-fw fa-exchange-alt" label="Out of Sync Items"
+                                <Tooltip icon="arrow-left-right" label="Out of Sync Items"
                                     text={`${completion._needItems.toLocaleString()} ${t('items')}, ~${unitPrefixed(completion._needBytes, true)}B`} />
                                 {compactNumber(completion._needItems)} {t('items')}, ~{unitPrefixed(completion._needBytes, true)}B</a>
                         </Field>}
@@ -92,7 +93,7 @@ export function Device({device, state, session, local = false, metric, toggleUni
                             {!age ? t('Never') : <>{timestamp(state.deviceStats[device.deviceID].lastSeen)}
                                 {age >= 7 && <><br /><i class={age >= 365 ? 'text-danger' : age >= 30 ? 'text-warning' : ''}>{t(age >= 365 ? 'More than a year ago' : age >= 30 ? 'More than a month ago' : 'More than a week ago')}</i></>}</>}
                         </Field> : <>
-                            <Field label="Connection Type" icon="reception reception-4 reception-theme" help="Transport and network used to reach this device. A relay forwards traffic when a direct connection is unavailable.">{t(connectionLabels[type] || 'Disconnected')}</Field>
+                            <Field label="Connection Type" icon="signal" help="Transport and network used to reach this device. A relay forwards traffic when a direct connection is unavailable.">{t(connectionLabels[type] || 'Disconnected')}</Field>
                             <Field label="Number of Connections">1{conn.secondary?.length ? ' + ' + conn.secondary.length : ''}</Field>
                         </>}
                     </>}
@@ -116,15 +117,15 @@ export function Device({device, state, session, local = false, metric, toggleUni
             </details>
         </div>
         {!local && <div class="panel-footer folder-actions remote-actions">
-            <button class="btn btn-sm btn-default" onClick={() => openAction('identification')}><span class="fas fa-qrcode" />&nbsp;{t('Identification')}</button>
+            <button class="btn btn-sm btn-default" onClick={() => openAction('identification')}><Icon name="qrcode" />&nbsp;{t('Identification')}</button>
             {folders.length > 0 && <div class={`dropup folder-sharing remote-folders ${foldersOpen ? 'open' : ''}`}>
-                <button class="btn btn-sm btn-default dropdown-toggle" aria-expanded={foldersOpen} onClick={() => setFoldersOpen(!foldersOpen)}><span class="fas fa-folder" />&nbsp;{t('Folders')} <span class="caret" /></button>
+                <button class="btn btn-sm btn-default dropdown-toggle" aria-expanded={foldersOpen} onClick={() => setFoldersOpen(!foldersOpen)}><Icon name="folder" />&nbsp;{t('Folders')} <span class="caret" /></button>
                 <ul class="dropdown-menu">{folders.map(folder => <li key={folder.id}><a href="#folder-sharing" onClick={event => { event.preventDefault(); setFoldersOpen(false); onAction({type: 'edit-folder', folder, tab: 'sharing'}); }}>{folder.label || folder.id} <ShareStatus encrypted={folder.type === 'receiveencrypted' || !!folder.devices.find(member => member.deviceID === device.deviceID)?.encryptionPassword} remoteState={state.completion[device.deviceID]?.[folder.id]?.remoteState} /></a></li>)}</ul>
             </div>}
             <span class="pull-right">
-                {device.remoteGUIPort > 0 && <a class="btn btn-sm btn-default" href={gui || undefined} aria-disabled={!gui}><span class="fas fa-desktop" />&nbsp;{t('Remote GUI')}</a>}
-                <button class="btn btn-sm btn-default" onClick={() => perform(session.setPaused('devices', device.deviceID, !device.paused))}><span class={`fas fa-${device.paused ? 'play' : 'pause'}`} />&nbsp;{t(device.paused ? 'Resume' : 'Pause')}</button>
-                <button class="btn btn-sm btn-default" onClick={() => openAction('edit-device')}><span class="fas fa-pencil-alt" />&nbsp;{t('Edit')}</button>
+                {device.remoteGUIPort > 0 && <a class="btn btn-sm btn-default" href={gui || undefined} aria-disabled={!gui}><Icon name="monitor" />&nbsp;{t('Remote GUI')}</a>}
+                <button class="btn btn-sm btn-default" onClick={() => perform(session.setPaused('devices', device.deviceID, !device.paused))}><Icon name={device.paused ? 'play' : 'pause'} />&nbsp;{t(device.paused ? 'Resume' : 'Pause')}</button>
+                <button class="btn btn-sm btn-default" onClick={() => openAction('edit-device')}><Icon name="pencil" />&nbsp;{t('Edit')}</button>
             </span>
         </div>}
         </div>}

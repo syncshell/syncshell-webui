@@ -9,8 +9,8 @@ application contract; old framework implementations remain only in Git history.
 
 Original Syncthing authors and license notices remain credited in About.
 `LICENSE.syncthing`, `licenses/` and vendor license files travel with compiled
-releases. Bootstrap and Fork Awesome remain complete customized upstream
-stylesheets; their source assets live under `static/vendor/`.
+releases. Bootstrap remains a complete customized upstream stylesheet. Lucide
+icons are imported as Preact components and selected by the frontend build.
 
 See `README.md` for standalone installation and `RELEASES.md` for the artifact
 and optional plugin integration contract.

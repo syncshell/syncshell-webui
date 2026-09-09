@@ -3,6 +3,7 @@ import {LocaleContext} from './locale-context.jsx';
 import {Dialog} from './Dialog.jsx';
 import {versionGroups, selectVersions, selectedVersions, versionActions} from '../client/versions.mjs';
 import {timestamp, unitPrefixed} from '../client/format.mjs';
+import {Icon} from './Icon.jsx';
 
 export function RestoreVersions({api, folder, onClose}) {
     const {t} = useContext(LocaleContext);
@@ -32,7 +33,7 @@ export function RestoreVersions({api, folder, onClose}) {
         finally { setBusy(false); }
     }
     const massActions = files => versionActions.map(([action, label]) => <button key={action} class="btn btn-default btn-sm" onClick={() => setSelections(previous => selectVersions(previous, files, action))}>{t(label)}</button>);
-    return <Dialog title={t('Restore Versions') + ' - ' + (folder.label || folder.id)} icon="fas fa-undo" large onClose={onClose} onCancel={() => { if (!busy) onClose(); }} footer={confirm ? <>
+    return <Dialog title={t('Restore Versions') + ' - ' + (folder.label || folder.id)} icon="undo" large onClose={onClose} onCancel={() => { if (!busy) onClose(); }} footer={confirm ? <>
         <button class="btn btn-warning btn-sm" disabled={busy} onClick={restore}>{t('Yes')}</button><button class="btn btn-default btn-sm" disabled={busy} onClick={() => setConfirm(false)}>{t('No')}</button>
     </> : <>
         <button class="btn btn-primary btn-sm" disabled={busy || !count} onClick={() => setConfirm(true)}>{t('Restore')} ({count})</button><button class="btn btn-default btn-sm" disabled={busy} onClick={onClose}>{t('Close')}</button>
@@ -46,7 +47,7 @@ export function RestoreVersions({api, folder, onClose}) {
                 <label>{t('Filter by date')} · {t('To')}<input class="form-control" type="datetime-local" step="1" value={end} onInput={event => setEnd(event.currentTarget.value)} /></label>
             </div>
             <div class="folder-actions">{massActions(groups.flatMap(([, files]) => files))}</div>
-            {groups.map(([parent, files]) => <details key={parent} class="port-version-group" open><summary><span aria-hidden="true" class="fas fa-folder" /> {parent || folder.label || folder.id}</summary>
+            {groups.map(([parent, files]) => <details key={parent} class="port-version-group" open><summary><Icon name="folder" /> {parent || folder.label || folder.id}</summary>
                 <div class="folder-actions">{massActions(files)}</div>
                 {files.map((file, index) => <div key={file.path} class={`port-version-row ${index % 2 === 0 ? "section-stripe" : ""}`}><span class="folder-text" title={file.path}>{file.path.slice(file.path.lastIndexOf('/') + 1)}</span>
                     <select class="form-control input-sm" aria-label={file.path} value={selections[file.path] || ''} onChange={event => setSelections({...selections, [file.path]: event.currentTarget.value})}>

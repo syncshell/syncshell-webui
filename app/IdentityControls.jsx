@@ -2,6 +2,7 @@ import {useContext, useState} from 'preact/hooks';
 import {LocaleContext} from './locale-context.jsx';
 import {Dialog} from './Dialog.jsx';
 import {identityMessage} from '../client/identity.mjs';
+import {Icon} from './Icon.jsx';
 export function IdentityControls({device, api}) {
     const {t} = useContext(LocaleContext);
     const [method, setMethod] = useState(''), [validated, setValidated] = useState(null);
@@ -20,12 +21,12 @@ export function IdentityControls({device, api}) {
     async function copy(text) { try { await navigator.clipboard.writeText(text); } catch (value) { setError(value.message); } }
     return <>
         <div class="folder-actions">
-            <button type="button" class="btn btn-default" disabled={!device.deviceID} onClick={() => use('copy')}><span aria-hidden="true" class="fa fa-clone" /> {t(copied ? 'Copied!' : 'Copy')}</button>
-            <button type="button" class="btn btn-default" disabled={!device.deviceID} onClick={() => use('email')}><span aria-hidden="true" class="fa fa-envelope-o" /> {t('Share by Email')}</button>
-            <button type="button" class="btn btn-default" disabled={!device.deviceID} onClick={() => use('sms')}><span aria-hidden="true" class="fa fa-comments-o" /> {t('Share by SMS')}</button>
+            <button type="button" class="btn btn-default" disabled={!device.deviceID} onClick={() => use('copy')}><Icon name="copy" /> {t(copied ? 'Copied!' : 'Copy')}</button>
+            <button type="button" class="btn btn-default" disabled={!device.deviceID} onClick={() => use('email')}><Icon name="mail" /> {t('Share by Email')}</button>
+            <button type="button" class="btn btn-default" disabled={!device.deviceID} onClick={() => use('sms')}><Icon name="message" /> {t('Share by SMS')}</button>
         </div>
         {error && <p class="text-danger" role="alert">{error}</p>}
-        {method && message && <Dialog title={method === 'email' ? 'Share by Email' : 'Share by SMS'} large={method === 'email'} icon={method === 'email' ? 'fa fa-envelope-o' : 'fa fa-comments-o'} onClose={() => setMethod('')} footer={<>
+        {method && message && <Dialog title={method === 'email' ? 'Share by Email' : 'Share by SMS'} large={method === 'email'} icon={method === 'email' ? 'mail' : 'message'} onClose={() => setMethod('')} footer={<>
             <a class="btn btn-primary" href={message.href}>{t('Share')}</a><button class="btn btn-default" onClick={() => setMethod('')}>{t('Cancel')}</button>
         </>}>
             <p>{t('The following text will automatically be inserted into a new message.')} {t(method === 'email' ? 'Your email app should open to let you choose the recipient and send it from your own address.' : 'Your SMS app should open to let you choose the recipient and send it from your own number.')} {t('You can also copy and paste the text into a new message manually.')}</p>
