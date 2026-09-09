@@ -10,10 +10,10 @@ Download the archive and its `.sha256` file from this repository's releases.
 Verify and unpack them in a working directory:
 
 ```sh
-sha256sum --check syncshell-webui-v0.1.1.tar.gz.sha256
-tar -xzf syncshell-webui-v0.1.1.tar.gz
+sha256sum --check syncshell-webui-v0.1.2.tar.gz.sha256
+tar -xzf syncshell-webui-v0.1.2.tar.gz
 syncthing paths
-bash syncshell-webui-v0.1.1/install.sh /absolute/gui-override-directory
+bash syncshell-webui-v0.1.2/install.sh /absolute/gui-override-directory
 ```
 
 Use the **GUI override directory** reported for the Syncthing instance you
