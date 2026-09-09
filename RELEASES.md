@@ -8,8 +8,8 @@ clean checkout:
 ```sh
 npm ci
 npm test
-npm run release -- 0.1.0
-bash scripts/test-release.sh "$PWD/release/syncshell-webui-v0.1.0.tar.gz"
+npm run release -- 0.1.1
+bash scripts/test-release.sh "$PWD/release/syncshell-webui-v0.1.1.tar.gz"
 ```
 
 The release command rebuilds from committed source. The archive records its

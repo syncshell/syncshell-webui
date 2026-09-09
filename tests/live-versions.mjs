@@ -63,6 +63,9 @@ try {
             await dialog.getByRole('button', {name:'No', exact:true}).click();
             await dialog.getByRole('button', {name:'Restore (1)', exact:true}).click();
             const requestPromise = page.waitForRequest(request => request.method() === 'POST' && request.url().includes('/folder/versions'));
+            // Syncthing archives the current file under a second-resolution timestamp.
+            await expect.poll(() => Math.floor(Date.now() / 1000), {timeout:3000})
+                .toBeGreaterThan(Math.floor(Date.parse(time) / 1000));
             await dialog.getByRole('button', {name:'Yes', exact:true}).click();
             const request = await requestPromise;
             expect(request.postDataJSON()).toEqual({[relative]: time});
