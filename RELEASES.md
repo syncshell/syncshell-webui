@@ -47,6 +47,10 @@ The plugin imports it, runs installation, palette refresh and desktop bridge
 checks, and opens `build-webui-X.Y.Z` against `dev`. The full frontend suite
 runs only here; the plugin runs its own integration checks.
 
+The plugin importer is `go -C core run ./cmd/import-webui`, using its existing
+Go module. It validates the archive and atomically exchanges the bundle
+directory on Linux. No second importer implementation is supported.
+
 No workflow merges to `main` or publishes a plugin release. A failed handoff
 leaves the Web release available. Retry the notification job or run the
 plugin update workflow manually with the published version and checksum.

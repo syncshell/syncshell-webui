@@ -1,39 +1,8 @@
 import assert from 'node:assert/strict';
 import {test} from 'node:test';
-import {referenceSource} from './reference.mjs';
-import vm from 'node:vm';
 import {createEvents} from '../client/events.mjs';
 
-function reference(script) {
-    let factory;
-    const calls = [], seen = [], timers = [];
-    let reloads = 0;
-    vm.runInNewContext(referenceSource('syncthing/core/eventService.js'), {
-        angular: {module: () => ({service: (_, args) => { factory = args.at(-1); }}),
-            extend: Object.assign},
-        urlbase: 'rest', location: {reload: () => reloads++}, console
-    });
-    const http = {get(path) {
-        calls.push(path);
-        const item = script.shift();
-        const chain = {success(fn) {
-            if (item?.data !== undefined) fn(structuredClone(item.data));
-            return chain;
-        }, error(fn) {
-            if (item?.status) fn('error', item.status);
-            return chain;
-        }};
-        return chain;
-    }};
-    const service = {};
-    factory.call(service, http, {$broadcast: (type, event) => seen.push(
-        event ? {type, id: event.id} : {type})}, fn => timers.push(fn));
-    service.start();
-    while (timers.length && script.length) timers.shift()();
-    return {calls, seen, reloads};
-}
-
-test('cursor, initial backlog and recovery agree with shipped event service', async () => {
+test('cursor advances after startup and survives a reconnect', async () => {
     const script = [
         {data: [{id: 20, type: 'StateChanged'}]},
         {data: [{id: 21, type: 'FolderSummary'}, {id: 22, type: 'StateChanged'}]},
@@ -41,7 +10,14 @@ test('cursor, initial backlog and recovery agree with shipped event service', as
         {data: [{id: 24, type: 'ConfigSaved'}]},
         {status: 403}
     ];
-    const expected = reference(structuredClone(script));
+    const expected = {
+        calls: ['rest/events?limit=1', 'rest/events?since=20', 'rest/events?since=22',
+            'rest/events?limit=1', 'rest/events?since=24'],
+        seen: [{type: 'UIOnline'}, {type: 'UIOnline'},
+            {type: 'FolderSummary', id: 21}, {type: 'StateChanged', id: 22},
+            {type: 'UIOffline'}, {type: 'UIOnline'}, {type: 'ConfigSaved', id: 24}],
+        reloads: 1
+    };
     const calls = [], seen = [];
     let reloads = 0;
     const api = {async get(path, query) {

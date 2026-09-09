@@ -13,7 +13,7 @@ import {Tooltip} from './Tooltip.jsx';
 import {Identicon} from './Identicon.jsx';
 
 export function Device({device, state, session, local = false, metric, toggleUnits, onAction}) {
-    const {t, language} = useContext(LocaleContext);
+    const {t} = useContext(LocaleContext);
     const [open, setOpen] = useState(local);
     const [foldersOpen, setFoldersOpen] = useState(false);
     const panel = useRef();
@@ -101,7 +101,7 @@ export function Device({device, state, session, local = false, metric, toggleUni
             <details class="device-details"><summary>{t('Device information')}</summary>
                 <table class="table table-condensed table-auto"><tbody>
                     {local ? <>
-                        <Field label="Uptime">{duration(state.system.uptime, 'm', language)}</Field>
+                        <Field label="Uptime">{duration(state.system.uptime, 'm')}</Field>
                         <Field label="Identification" help="The unique ID used to pair this device with other devices. Click the shortened ID to see the full ID and QR code."><a href="#identification" onClick={event => link(event, 'identification')}>{device.deviceID.slice(0, 7)}</a></Field>
                         <Field label="Version" help="Version and platform of the Syncthing service running on this device.">{state.version.version} ({state.version.os} {state.version.arch})</Field>
                     </> : <>

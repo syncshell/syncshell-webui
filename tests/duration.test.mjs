@@ -1,27 +1,17 @@
 import assert from 'node:assert/strict';
 import {test} from 'node:test';
-import {referenceSource} from './reference.mjs';
-import vm from 'node:vm';
 import {duration, timestamp} from '../client/format.mjs';
 
-test('localized durations retain the shipped formatter across units and locales', () => {
-    let factory;
-    let language;
-    const context = vm.createContext({console,
-        angular: {module: () => ({filter: (_, fn) => { factory = fn; }})}});
-    for (const path of ['vendor/HumanizeDuration.js/humanize-duration.js',
-        'syncthing/core/durationFilter.js']) {
-        vm.runInContext(referenceSource(path), context);
-    }
-    const original = factory({use: () => language});
-    for (language of [undefined, 'en', 'de', 'zh-HK']) {
-        for (const seconds of [0, 1, 61, 3600, 90061, 1860050]) {
-            for (const precision of ['d', 'h', 'm', 's']) {
-                assert.equal(duration(seconds, precision, language, context.humanizeDuration),
-                    original(seconds, precision));
-            }
-        }
-    }
+test('durations use compact English units and truncate at the requested precision', () => {
+    for (const [seconds, precision, expected] of [
+        [0, 's', '0s'], [0, 'd', '0d'], [1, 's', '1s'], [59, 'm', '0m'],
+        [60, 's', '1m'], [61, 'm', '1m'], [61, 's', '1m 1s'],
+        [3600, 'm', '1h'], [90061, 'h', '1d 1h'], [86401, 'h', '1d 0h'],
+        [90061, 's', '1d 1h 1m 1s'], [1860050, 's', '21d 12h 40m 50s'],
+        [-61, 's', '1m 1s'], [undefined, 's', '0s']
+    ]) assert.equal(duration(seconds, precision), expected);
+    assert.equal(duration(61), '1m 1s');
+    assert.throws(() => duration(1, 'weeks'), RangeError);
 });
 
 test('timestamps preserve local yyyy-MM-dd HH:mm:ss layout', () => {

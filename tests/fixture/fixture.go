@@ -8,7 +8,6 @@ import (
 	"errors"
 	"fmt"
 	"io"
-	"io/fs"
 	"net/http"
 	"os"
 	"os/exec"
@@ -24,8 +23,9 @@ type testDaemon struct {
 	log                    *os.File
 }
 
-func fixtureConfig(data []byte, address, syncAddress string) ([]byte, error) {
+func fixtureConfig(data []byte, address, syncAddress, theme string) ([]byte, error) {
 	values := map[string]string{
+		"configuration/gui/theme":                     theme,
 		"configuration/gui/address":                   address,
 		"configuration/options/listenAddress":         syncAddress,
 		"configuration/options/globalAnnounceEnabled": "false",
@@ -83,31 +83,7 @@ func fixtureConfig(data []byte, address, syncAddress string) ([]byte, error) {
 }
 
 func copyTree(source, target string) error {
-	return filepath.WalkDir(source, func(p string, entry fs.DirEntry, err error) error {
-		if err != nil {
-			return err
-		}
-		rel, err := filepath.Rel(source, p)
-		if err != nil {
-			return err
-		}
-		dest := filepath.Join(target, rel)
-		if entry.IsDir() {
-			return os.MkdirAll(dest, 0755)
-		}
-		if !entry.Type().IsRegular() {
-			return fmt.Errorf("nonregular fixture source: %s", p)
-		}
-		data, err := os.ReadFile(p)
-		if err != nil {
-			return err
-		}
-		info, err := entry.Info()
-		if err != nil {
-			return err
-		}
-		return os.WriteFile(dest, data, info.Mode().Perm())
-	})
+	return os.CopyFS(target, os.DirFS(source))
 }
 
 func (d *testDaemon) api(ctx context.Context, method, endpoint string, body any, result any) error {
@@ -179,7 +155,11 @@ func startTestDaemon(ctx context.Context, root, assets string, port int) (*testD
 	if err != nil {
 		return nil, err
 	}
-	data, err = fixtureConfig(data, d.address, "tcp://127.0.0.1:"+strconv.Itoa(port+10))
+	theme := "default"
+	if assets != "" {
+		theme = "syncshell-modern"
+	}
+	data, err = fixtureConfig(data, d.address, "tcp://127.0.0.1:"+strconv.Itoa(port+10), theme)
 	if err != nil {
 		return nil, err
 	}
@@ -219,12 +199,6 @@ func startTestDaemon(ctx context.Context, root, assets string, port int) (*testD
 		var status struct{ MyID string }
 		if err := d.api(deadline, "GET", "system/status", nil, &status); err == nil {
 			d.id = status.MyID
-			if assets != "" {
-				if err := d.api(deadline, "PATCH", "config/gui", map[string]string{"theme": "syncshell-modern"}, nil); err != nil {
-					d.stop()
-					return nil, err
-				}
-			}
 			return d, nil
 		}
 		select {

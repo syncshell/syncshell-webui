@@ -16,7 +16,7 @@ import {Versioning} from './Versioning.jsx';
 import {ItemsDialog} from './ItemsDialog.jsx';
 
 export function Folder({folder, info, stats, progress, api, rescan, state, session, onAction}) {
-    const {t, language} = useContext(LocaleContext);
+    const {t} = useContext(LocaleContext);
     const [open, setOpen] = useState(false);
     const [scanning, setScanning] = useState(false);
     const [itemsKind, setItemsKind] = useState('');
@@ -92,7 +92,7 @@ export function Folder({folder, info, stats, progress, api, rescan, state, sessi
                     <summary>{t('Configuration')}</summary>
                     <table class="table table-condensed table-auto"><tbody>
                         <Field label="Rescans"><span title={watcherFailed || ''}>
-                            <span class="far fa-clock" />&nbsp;{folder.rescanIntervalS > 0 ? duration(folder.rescanIntervalS, 's', language) : t('Disabled')}&ensp;
+                            <span class="far fa-clock" />&nbsp;{folder.rescanIntervalS > 0 ? duration(folder.rescanIntervalS, 's') : t('Disabled')}&ensp;
                             <span class={`fas fa-${folder.fsWatcherEnabled && !watcherFailed ? 'eye' : 'eye-slash'}`} />&nbsp;{t(watcherFailed ? 'Failed to set up, retrying' : folder.fsWatcherEnabled ? 'Enabled' : 'Disabled')}
                         </span></Field>
                         {folder.versioning?.type && <Field label="File Versioning"><Versioning config={folder.versioning} /></Field>}

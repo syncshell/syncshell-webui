@@ -1,7 +1,6 @@
 // Copyright (C) 2014 The Syncthing Authors.
 // SPDX-License-Identifier: MPL-2.0
 
-// preserve the cursor and recovery behavior of core/eventService.js
 export function createEvents(api, {onEvent, onOnline = () => {},
     onOffline = () => {}, onAuthExpired = () => location.reload(),
     retryMs = 1000} = {}) {

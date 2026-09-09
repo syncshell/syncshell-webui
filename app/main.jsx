@@ -26,7 +26,7 @@ const desktop = desktopActions();
 function App() {
     const [state, setState] = useState(initialState);
     const [api] = useState(() => createApi());
-    const [locale, setLocale] = useState({language: 'en', t: translator({})});
+    const [locale, setLocale] = useState({t: translator({})});
     const [session] = useState(() => createSession(api, {publish: setState, onAuthExpired: () => location.reload()}));
     const [activeTab, setActiveTab] = useState('overview'), [menu, setMenu] = useState('');
     const [action, setAction] = useState(null), [metric, setMetric] = useState(false);

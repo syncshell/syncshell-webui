@@ -1,19 +1,13 @@
 import assert from 'node:assert/strict';
 import {test} from 'node:test';
-import {referenceSource} from './reference.mjs';
-import vm from 'node:vm';
 import {paginationPages} from '../client/pagination.mjs';
 
-test('page ranges retain first, last and ellipsis behavior from the existing UI', () => {
-    const source = referenceSource('vendor/angular/angular-dirPagination.js');
-    const start = source.indexOf('        function generatePagesArray(');
-    const context = vm.createContext({});
-    vm.runInContext(source.slice(start, source.indexOf('\n    }\n\n    /**', start)), context);
-    for (const total of [0, 1, 10, 25, 90, 91, 1000]) {
-        for (let page = 1; page <= Math.ceil(total / 10); page++) {
-            assert.deepEqual(paginationPages(page, total, 10),
-                Array.from(context.generatePagesArray(page, total, 10, 9)));
-        }
-    }
-    assert.deepEqual(paginationPages(1, 0, 10), []);
+test('pagination keeps the ends and a nine-item window around the active page', () => {
+    for (const [page, total, expected] of [
+        [1, 0, []], [1, 1, [1]], [1, 25, [1, 2, 3]],
+        [5, 90, [1, 2, 3, 4, 5, 6, 7, 8, 9]],
+        [1, 1000, [1, 2, 3, 4, 5, 6, 7, '...', 100]],
+        [50, 1000, [1, '...', 48, 49, 50, 51, 52, '...', 100]],
+        [100, 1000, [1, '...', 94, 95, 96, 97, 98, 99, 100]]
+    ]) assert.deepEqual(paginationPages(page, total, 10), expected);
 });

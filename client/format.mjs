@@ -16,125 +16,31 @@ export function compactNumber(input) {
 }
 
 export function unitPrefixed(input, binary) {
-    if (input === undefined || isNaN(input)) {
-        return '0 ';
-    }
-    var factor = 1000;
-    var i = '';
-    if (binary) {
-        factor = 1024;
-        i = 'i';
-    }
-    if (input > factor * factor * factor * factor * 1000) {
-        // Don't show any decimals for more than 4 digits
-        input /= factor * factor * factor * factor;
-        return input.toLocaleString(undefined, { maximumFractionDigits: 0 }) + ' T' + i;
-    }
-    // Show 3 significant digits (e.g. 123T or 2.54T)
-    if (input > factor * factor * factor * factor) {
-        input /= factor * factor * factor * factor;
-        return input.toLocaleString(undefined, { maximumSignificantDigits: 3 }) + ' T' + i;
-    }
-    if (input > factor * factor * factor) {
-        input /= factor * factor * factor;
-        if (binary && input >= 1000) {
-            return input.toLocaleString(undefined, { maximumFractionDigits: 0 }) + ' G' + i;
-        }
-        return input.toLocaleString(undefined, { maximumSignificantDigits: 3 }) + ' G' + i;
-    }
-    if (input > factor * factor) {
-        input /= factor * factor;
-        if (binary && input >= 1000) {
-            return input.toLocaleString(undefined, { maximumFractionDigits: 0 }) + ' M' + i;
-        }
-        return input.toLocaleString(undefined, { maximumSignificantDigits: 3 }) + ' M' + i;
-    }
-    if (input > factor) {
-        input /= factor;
-        var prefix = ' k';
-        if (binary) {
-            prefix = ' K';
-        }
-        if (binary && input >= 1000) {
-            return input.toLocaleString(undefined, { maximumFractionDigits: 0 }) + prefix + i;
-        }
-        return input.toLocaleString(undefined, { maximumSignificantDigits: 3 }) + prefix + i;
+    if (input === undefined || isNaN(input)) return '0 ';
+    const factor = binary ? 1024 : 1000;
+    for (const [power, suffix] of [[4, 'T'], [3, 'G'], [2, 'M'], [1, binary ? 'K' : 'k']]) {
+        if (input <= factor ** power) continue;
+        const value = input / factor ** power;
+        const whole = power === 4 ? value > 1000 : binary && value >= 1000;
+        return value.toLocaleString(undefined, whole
+            ? {maximumFractionDigits: 0} : {maximumSignificantDigits: 3})
+            + ' ' + suffix + (binary ? 'i' : '');
     }
     return Math.round(input).toLocaleString() + ' ';
-};
+}
 
-export function duration(input, precision, language, humanize = globalThis.humanizeDuration) {
-    const SECONDS_IN = {d: 86400, h: 3600, m: 60, s: 1};
-    if (!precision) {
-        precision = "s";
+export function duration(input, precision = 's') {
+    const units = [['d', 86400], ['h', 3600], ['m', 60], ['s', 1]];
+    const end = units.findIndex(([unit]) => unit === precision);
+    if (end < 0) throw new RangeError('Duration precision must be d, h, m or s');
+    let remaining = Math.abs(parseInt(input, 10)) || 0;
+    const parts = [];
+    for (const [unit, seconds] of units.slice(0, end + 1)) {
+        const value = Math.floor(remaining / seconds);
+        if (value || (unit === precision && remaining > 0)) parts.push(value + unit);
+        remaining %= seconds;
     }
-    input = parseInt(input, 10);
-    var language_cc = language;
-    if (language_cc != null) {
-        language_cc = language_cc.replace("-", "_");
-        var fallbacks = [];
-        var language = language_cc.substr(0, 2);
-        switch (language) {
-        case "zh":
-            // Use zh_TW for zh_HK
-            fallbacks.push("zh_TW");
-            break
-        }
-        if (language != language_cc) {
-            fallbacks.push(language);
-        }
-        // Fallback to english, if the language isn't found
-        fallbacks.push("en");
-
-        var units = ["d", "h", "m", "s"];
-        switch (precision) {
-            case "d":
-                units.pop();
-                // fallthrough
-            case "h":
-                units.pop();
-                // fallthrough
-            case "m":
-                units.pop();
-                // fallthrough
-            case "s":
-                break
-            default:
-                return "[Error: precision must be d, h, m or s, it's " + precision + "]";
-        }
-
-        try {
-            // humanizeDuration accepts only milliseconds
-            return humanize(input * 1000, {
-                language: language_cc,
-                maxDecimalPoints: 0,
-                units: units,
-                fallbacks: fallbacks
-            });
-        } catch(err) {
-            console.log(err.message + ": language_cc=" + language_cc)
-            // if we crash, fallthrough to english
-        }
-    }
-    var result = "";
-    for (var k in SECONDS_IN) {
-        var t = (input / SECONDS_IN[k] | 0); // Math.floor
-
-        if (t > 0) {
-            if (!result) {
-                result = t + k;
-            } else {
-                result += " " + t + k;
-            }
-        }
-
-        if (precision == k) {
-            return result ? result : "<1" + k;
-        } else {
-            input %= SECONDS_IN[k];
-        }
-    }
-    return "[Error: incorrect usage, precision must be one of " + Object.keys(SECONDS_IN) + "]";
+    return parts.join(' ') || '0' + precision;
 }
 
 export function timestamp(value) {

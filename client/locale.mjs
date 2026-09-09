@@ -21,5 +21,5 @@ export async function loadEnglish({pageUrl = location.href,
     fetch: fetcher = globalThis.fetch} = {}) {
     const response = await fetcher(new URL('assets/lang/lang-en.json', pageUrl));
     if (!response.ok) throw new Error('Could not load English interface text');
-    return {language: 'en', t: translator(await response.json())};
+    return {t: translator(await response.json())};
 }

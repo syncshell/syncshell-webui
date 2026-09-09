@@ -22,7 +22,6 @@ test('the interface loads only the English catalog', async () => {
             requests.push(url.href);
             return new Response('{"Folders":"Folders"}');
         }});
-    assert.equal(locale.language, 'en');
     assert.equal(locale.t('Folders'), 'Folders');
     assert.deepEqual(requests,
         ['https://localhost/sync/assets/lang/lang-en.json']);

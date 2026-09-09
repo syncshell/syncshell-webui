@@ -1,46 +1,60 @@
 import assert from 'node:assert/strict';
 import {test} from 'node:test';
-import {referenceSource} from './reference.mjs';
-import vm from 'node:vm';
 import {folderStatus, folderClass, folderStateClass, folderStateDetails,
     syncPercentage} from '../client/folders.mjs';
 import {compactNumber, unitPrefixed} from '../client/format.mjs';
 
-const source = referenceSource('syncthing/core/syncthingController.js');
-const scope = {model: {}, hasFailedFiles: id => scope.model[id]?.errors !== 0,
-    hasReceiveOnlyChanged: folder => ['receiveonly', 'receiveencrypted']
-        .includes(folder.type) && scope.model[folder.id]?.receiveOnlyTotalItems > 0};
-const context = vm.createContext({$scope: scope});
-vm.runInContext(source.slice(source.indexOf('        $scope.folderStatus ='),
-    source.indexOf('        $scope.scanPercentage =')) +
-    source.slice(source.indexOf('        function progressIntegerPercentage'),
-        source.indexOf('        $scope.scanRate =')), context);
+const folder = {id: 'folder', devices: [{}, {}], type: 'sendreceive'};
+const idle = {state: 'idle', errors: 0, needTotalItems: 0, needBytes: 0,
+    globalFiles: 2, localFiles: 2, globalDirectories: 1, localDirectories: 1,
+    globalBytes: 100, localBytes: 100, inSyncBytes: 100};
 
-test('status, semantic colors, details and progress agree with shipped rules', () => {
-    const base = {state: 'idle', errors: 0, needTotalItems: 0, needBytes: 0,
-        globalFiles: 2, localFiles: 2, globalDirectories: 1, localDirectories: 1,
-        globalBytes: 100, localBytes: 100, inSyncBytes: 100};
-    const infos = [undefined, {}, base, {...base, localFiles: 1},
-        {...base, errors: 1}, {...base, receiveOnlyTotalItems: 1},
-        {...base, needTotalItems: 1},
-        {...base, needTotalItems: 1, needBytes: 50, inSyncBytes: 50},
-        ...['error', 'scanning', 'syncing', 'scan-waiting', 'starting', 'cleaning',
-            'sync-preparing', 'sync-waiting', 'clean-waiting', 'unknown']
-            .map(state => ({...base, state}))];
-    for (const paused of [false, true]) for (const devices of [[], [{}, {}]]) {
-        for (const type of ['sendreceive', 'receiveonly', 'receiveencrypted']) {
-            const folder = {id: 'folder', devices, paused, type};
-            for (const info of infos) {
-                scope.model.folder = info;
-                const status = folderStatus(folder, info);
-                assert.equal(status, scope.folderStatus(folder));
-                assert.equal(folderClass(status), scope.folderClass(folder));
-                assert.equal(folderStateClass(status), scope.folderStateClass(folder));
-                assert.equal(folderStateDetails(folder, info), !!scope.folderStateDetails(folder));
-                assert.equal(syncPercentage(info), scope.syncPercentage('folder'));
-            }
-        }
+test('folder state prioritizes pause, failure, pending work and local changes', () => {
+    for (const [info, overrides, status] of [
+        [undefined, {}, 'unknown'], [{}, {}, 'unknown'], [idle, {}, 'idle'],
+        [{...idle, state: 'error'}, {}, 'stopped'],
+        [{...idle, errors: 1}, {}, 'faileditems'],
+        [{...idle, needTotalItems: 1, errors: 1}, {}, 'outofsync'],
+        [idle, {devices: []}, 'unshared'],
+        [{...idle, receiveOnlyTotalItems: 1}, {type: 'receiveonly'}, 'localadditions'],
+        [{...idle, receiveOnlyTotalItems: 1}, {type: 'receiveencrypted'}, 'localunencrypted'],
+        [{...idle, receiveOnlyTotalItems: 1}, {}, 'idle'],
+        [{...idle, state: 'error'}, {paused: true}, 'paused'],
+        [undefined, {paused: true}, 'paused']
+    ]) assert.equal(folderStatus({...folder, ...overrides}, info), status);
+    for (const state of ['scanning', 'syncing', 'starting', 'cleaning', 'sync-preparing',
+        'scan-waiting', 'sync-waiting', 'clean-waiting', 'unknown']) {
+        assert.equal(folderStatus(folder, {...idle, state}), state);
     }
+});
+
+test('status colors distinguish progress, warnings, failures and unknown state', () => {
+    for (const [status, card, summary] of [
+        ['idle', 'success', 'success'], ['localadditions', 'success', 'warning'],
+        ['paused', 'default', 'default'], ['scanning', 'primary', 'warning'],
+        ['syncing', 'primary', 'warning'], ['outofsync', 'danger', 'warning'],
+        ['faileditems', 'danger', 'danger'], ['stopped', 'danger', 'danger'],
+        ['localunencrypted', 'danger', 'danger'], ['unshared', 'warning', 'warning'],
+        ['scan-waiting', 'warning', 'warning'], ['unknown', 'info', 'info']
+    ]) {
+        assert.equal(folderClass(status), card);
+        assert.equal(folderStateClass(status), summary);
+    }
+});
+
+test('details and progress preserve incomplete and zero-byte states', () => {
+    assert.equal(folderStateDetails(folder, idle), false);
+    assert.equal(folderStateDetails(folder, undefined), false);
+    for (const field of ['localFiles', 'localDirectories', 'localBytes']) {
+        assert.equal(folderStateDetails(folder, {...idle, [field]: 0}), true);
+    }
+    assert.equal(folderStateDetails({...folder, paused: true}, {...idle, errors: 1}), false);
+    assert.equal(folderStateDetails(folder, {...idle, state: 'scanning'}), true);
+    assert.equal(syncPercentage(undefined), 100);
+    assert.equal(syncPercentage(idle), 100);
+    assert.equal(syncPercentage({...idle, needTotalItems: 1}), 95);
+    assert.equal(syncPercentage({...idle, needTotalItems: 1, needBytes: 1}), 99);
+    assert.equal(syncPercentage({...idle, needTotalItems: 1, needBytes: 50, inSyncBytes: 50}), 50);
 });
 
 test('compact counts retain truncation at k, M and B boundaries', () => {

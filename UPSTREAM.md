@@ -4,9 +4,8 @@ Syncshell Web was extracted from `omarchy-QOL/syncshell` at commit
 `0016be98bae080138fa5ffd4d17b7f0a9a72baeb`. Its relevant frontend, test, logo
 and theme history is retained in this repository through path filtering.
 
-The Preact port's behavioral reference is plugin commit
-`ec4e2a83dacb44fffbae376e2034028ddb76ad3d`, based on Syncthing v2.1.3.
-Exact comparison files and provenance live in `tests/reference/`.
+The Preact port is based on Syncthing v2.1.3. Tests describe the current
+application contract; old framework implementations remain only in Git history.
 
 Original Syncthing authors and license notices remain credited in About.
 `LICENSE.syncthing`, `licenses/` and vendor license files travel with compiled

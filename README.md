@@ -19,7 +19,7 @@ bash syncshell-webui-v0.1.2/install.sh /absolute/gui-override-directory
 Use the **GUI override directory** reported for the Syncthing instance you
 intend to customize. Pass its usual `--home` or `--config` options to
 `syncthing paths` if needed. An instance using `STGUIASSETS` uses that override
-instead. Older Syncthing versions may spell the command `syncthing --paths`.
+instead.
 
 After first installation, restart that instance and select `syncshell-modern`
 in its GUI theme setting. Open its usual GUI address, normally
@@ -53,8 +53,8 @@ discovery and relays disabled, and stop them on exit. Set
 
 `app/` and `client/` own the application; `static/` owns its external assets;
 `themes/` owns base palettes; `integration/` owns the optional Omarchy CSS
-template and browser refresh helper. Historical comparison fixtures live in
-`tests/reference/`, with their source commit recorded there.
+template and browser refresh helper. Tests assert the current API, rendering
+and formatting contracts directly.
 
 ## Plugin integration
 
