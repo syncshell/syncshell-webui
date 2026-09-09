@@ -2,7 +2,7 @@ import assert from 'node:assert/strict';
 import {test} from 'node:test';
 import {referenceSource} from './reference.mjs';
 import vm from 'node:vm';
-import {createEvents} from '../../webui/client/events.mjs';
+import {createEvents} from '../client/events.mjs';
 
 function reference(script) {
     let factory;

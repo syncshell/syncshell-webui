@@ -13,7 +13,7 @@ export function About({api, version, onClose}) {
         return () => controller.abort();
     }, [api]);
     return <Dialog title="About" large status="info" icon="far fa-heart" onClose={onClose}>
-        <h2 class="text-center"><a href="https://github.com/omarchy-QOL/syncshell" target="_blank" rel="noreferrer">Syncshell</a></h2>
+        <h2 class="text-center"><a href="https://github.com/syncshell/syncshell-webui" target="_blank" rel="noreferrer">Syncshell</a></h2>
         <p class="text-center">Modern / Omarchy Web UI, based on Syncthing.</p>
         <p class="text-center">Syncthing {version.version || ''} {version.codename || ''}</p>
         {version.date && <p class="text-center">Build {version.date.slice(0, 10)} {Array.isArray(version.tags) ? version.tags.join(', ') : ''}</p>}

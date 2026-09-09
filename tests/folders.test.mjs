@@ -3,8 +3,8 @@ import {test} from 'node:test';
 import {referenceSource} from './reference.mjs';
 import vm from 'node:vm';
 import {folderStatus, folderClass, folderStateClass, folderStateDetails,
-    syncPercentage} from '../../webui/client/folders.mjs';
-import {compactNumber, unitPrefixed} from '../../webui/client/format.mjs';
+    syncPercentage} from '../client/folders.mjs';
+import {compactNumber, unitPrefixed} from '../client/format.mjs';
 
 const source = referenceSource('syncthing/core/syncthingController.js');
 const scope = {model: {}, hasFailedFiles: id => scope.model[id]?.errors !== 0,

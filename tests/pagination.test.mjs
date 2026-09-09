@@ -2,7 +2,7 @@ import assert from 'node:assert/strict';
 import {test} from 'node:test';
 import {referenceSource} from './reference.mjs';
 import vm from 'node:vm';
-import {paginationPages} from '../../webui/client/pagination.mjs';
+import {paginationPages} from '../client/pagination.mjs';
 
 test('page ranges retain first, last and ellipsis behavior from the existing UI', () => {
     const source = referenceSource('vendor/angular/angular-dirPagination.js');

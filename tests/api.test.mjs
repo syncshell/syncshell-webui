@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import {test} from 'node:test';
-import {createApi, HttpError} from '../../webui/client/api.mjs';
+import {createApi, HttpError} from '../client/api.mjs';
 
 function client(fetch, cookie = () => '') {
     return createApi({pageUrl: 'https://localhost/sync/index.html?lang=de',

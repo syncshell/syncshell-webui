@@ -1,4 +1,4 @@
-import syncshellMark from '../../assets/mono/status-default.svg?url';
+import syncshellMark from '../assets/status-default.svg?url';
 import {desktopActions} from '../client/desktop.mjs';
 import {render} from 'preact';
 import {useEffect, useState} from 'preact/hooks';
@@ -20,7 +20,7 @@ import {LocaleContext} from './locale-context.jsx';
 import '../client/components.css';
 
 const tabs = [['overview', 'Overview'], ['conflicts', 'Resolve sync conflicts'], ['notifications', 'Notifications']];
-const helpLinks = [['Introduction','https://github.com/omarchy-QOL/syncshell#readme'], ['Home page','https://github.com/omarchy-QOL/syncshell'], ['Documentation','https://docs.syncthing.net/'], ['Support','https://github.com/omarchy-QOL/syncshell/issues'], ['Changelog','https://github.com/omarchy-QOL/syncshell/blob/main/CHANGELOG.md'], ['Statistics','https://data.syncthing.net/'], ['Bugs','https://github.com/omarchy-QOL/syncshell/issues'], ['Source Code','https://github.com/omarchy-QOL/syncshell']];
+const helpLinks = [['Introduction','https://github.com/syncshell/syncshell-webui#readme'], ['Home page','https://github.com/syncshell/syncshell-webui'], ['Documentation','https://docs.syncthing.net/'], ['Support','https://github.com/syncshell/syncshell-webui/issues'], ['Changelog','https://github.com/syncshell/syncshell-webui/releases'], ['Statistics','https://data.syncthing.net/'], ['Bugs','https://github.com/syncshell/syncshell-webui/issues'], ['Source Code','https://github.com/syncshell/syncshell-webui']];
 const desktop = desktopActions();
 
 function App() {

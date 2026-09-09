@@ -1,16 +1,21 @@
 {
-  "name": "syncshell-webui-preact",
+  "name": "syncshell-webui",
+  "version": "0.1.0",
   "private": true,
   "type": "module",
   "scripts": {
     "build": "vite build && node scripts/assets.mjs",
-    "test": "node --test ../tests/webui/*.test.mjs"
+    "test": "node --test tests/*.test.mjs",
+    "test:browser": "playwright test --config tests/playwright.config.mjs",
+    "test:integration": "bash scripts/test-integration.sh",
+    "release": "node scripts/release.mjs"
   },
   "dependencies": {
     "preact": "10.29.8"
   },
   "devDependencies": {
     "vite": "8.2.2",
-    "@preact/preset-vite": "2.10.6"
+    "@preact/preset-vite": "2.10.6",
+    "@playwright/test": "1.63.0"
   }
 }

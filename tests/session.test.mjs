@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import {test} from 'node:test';
-import {createSession, initialState, folderEvent} from '../../webui/client/session.mjs';
+import {createSession, initialState, folderEvent} from '../client/session.mjs';
 
 test('folder event updates preserve unrelated folders and clear obsolete scan data', () => {
     const original = {...initialState(), model: {a: {state: 'idle'}, b: {state: 'idle'}},

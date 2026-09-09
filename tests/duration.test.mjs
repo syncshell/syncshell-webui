@@ -2,7 +2,7 @@ import assert from 'node:assert/strict';
 import {test} from 'node:test';
 import {referenceSource} from './reference.mjs';
 import vm from 'node:vm';
-import {duration, timestamp} from '../../webui/client/format.mjs';
+import {duration, timestamp} from '../client/format.mjs';
 
 test('localized durations retain the shipped formatter across units and locales', () => {
     let factory;

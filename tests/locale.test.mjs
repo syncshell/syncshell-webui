@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import {test} from 'node:test';
-import {loadEnglish, translator} from '../../webui/client/locale.mjs';
+import {loadEnglish, translator} from '../client/locale.mjs';
 
 test('English text resolves nested keys and keeps substituted values literal', () => {
     const t = translator({Folders: 'Folders', theme: {name: {dark: 'Dark'}},
