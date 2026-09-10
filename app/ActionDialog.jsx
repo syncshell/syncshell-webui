@@ -12,6 +12,7 @@ import {RemoteFiles} from './RemoteFiles.jsx';
 import {RestoreVersions} from './RestoreVersions.jsx';
 import {deviceName, sharedFolders, serviceHealth} from '../client/devices.mjs';
 import {timestamp} from '../client/format.mjs';
+import {Tooltip} from './Tooltip.jsx';
 export function ActionDialog({action, state, api, session, onClose}) {
     const {t} = useContext(LocaleContext);
     const friendly = id => deviceName(state.config.devices.find(device => device.deviceID.startsWith(id || '\0'))) || id || t('Unknown');
@@ -46,9 +47,18 @@ export function ActionDialog({action, state, api, session, onClose}) {
             {folders.map(folder => <RemoteFiles key={folder.id} api={api} folder={folder} device={action.device} state={state} single={folders.length === 1} />)}
         </Dialog>;
     }
-    if (action.type === 'changes') return <Dialog title="Recent Changes" large icon="info" onClose={onClose}>
-        <div class="table-responsive"><table class="table table-condensed table-striped"><thead><tr>{['Device', 'Action', 'Type', 'Folder', 'Path', 'Time'].map(label => <th key={label}>{t(label)}</th>)}</tr></thead>
-            <tbody>{state.globalChanges.map(event => <tr key={event.id}><td>{friendly(event.data.modifiedBy)}</td><td>{t(event.data.action)}</td><td>{t(event.data.type)}</td><td>{state.config.folders.find(folder => folder.id === event.data.folder)?.label || event.data.folder}</td><td class="word-break-all">{event.data.path}</td><td>{timestamp(event.time)}</td></tr>)}</tbody>
+    if (action.type === 'changes') return <Dialog title="Recent Changes" large expandable icon="info" onClose={onClose}>
+        <div class="table-responsive"><table class="table table-condensed table-striped recent-changes-table">
+            <colgroup><col class="recent-device" /><col class="recent-action" /><col class="recent-type" />
+                <col class="recent-folder" /><col class="recent-path" /><col class="recent-time" /></colgroup>
+            <thead><tr>{['Device', 'Action', 'Type', 'Folder', 'Path', 'Time'].map(label => <th key={label}>{t(label)}</th>)}</tr></thead>
+            <tbody>{state.globalChanges.map(event => {
+                const folder = state.config.folders.find(item => item.id === event.data.folder)?.label || event.data.folder;
+                return <tr key={event.id}><td title={friendly(event.data.modifiedBy)}>{friendly(event.data.modifiedBy)}</td>
+                    <td>{t(event.data.action)}</td><td>{t(event.data.type)}</td><td title={folder}>{folder}</td>
+                    <td><Tooltip label={event.data.path} text={event.data.path} triggerText={event.data.path} tail /></td>
+                    <td>{timestamp(event.time)}</td></tr>;
+            })}</tbody>
         </table></div>
     </Dialog>;
     return null;

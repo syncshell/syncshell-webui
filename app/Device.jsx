@@ -12,16 +12,19 @@ import {Counts} from './Counts.jsx';
 import {Tooltip} from './Tooltip.jsx';
 import {Identicon} from './Identicon.jsx';
 import {Icon} from './Icon.jsx';
+import {useDismissableMenu} from './useDismissableMenu.mjs';
 
 export function Device({device, state, session, local = false, metric, toggleUnits, onAction}) {
     const {t} = useContext(LocaleContext);
     const [open, setOpen] = useState(local);
     const [foldersOpen, setFoldersOpen] = useState(false);
     const panel = useRef();
+    const foldersMenu = useRef();
+    useDismissableMenu(foldersMenu, foldersOpen, setFoldersOpen);
     useEffect(() => { if (open) return stripeSections(panel.current); }, [open]);
     const conn = local ? state.connectionsTotal : state.connections[device.deviceID] || {};
     const completion = state.completion[device.deviceID] || {};
-    const folders = sharedFolders(state.config, device.deviceID);
+    const folders = local ? state.config.folders : sharedFolders(state.config, device.deviceID);
     const status = deviceStatus(device, state);
     const type = connectionType(conn);
     const age = lastSeenDays(state.deviceStats[device.deviceID]?.lastSeen);
@@ -103,7 +106,6 @@ export function Device({device, state, session, local = false, metric, toggleUni
                 <table class="table table-condensed table-auto"><tbody>
                     {local ? <>
                         <Field label="Uptime">{duration(state.system.uptime, 'm')}</Field>
-                        <Field label="Identification" help="The unique ID used to pair this device with other devices. Click the shortened ID to see the full ID and QR code."><a href="#identification" onClick={event => link(event, 'identification')}>{device.deviceID.slice(0, 7)}</a></Field>
                         <Field label="Version" help="Version and platform of the Syncthing service running on this device.">{state.version.version} ({state.version.os} {state.version.arch})</Field>
                     </> : <>
                         {conn.clientVersion && <Field label="Version">{conn.clientVersion}</Field>}
@@ -116,18 +118,21 @@ export function Device({device, state, session, local = false, metric, toggleUni
                 </tbody></table>
             </details>
         </div>
-        {!local && <div class="panel-footer folder-actions remote-actions">
+        <div class="panel-footer folder-actions device-actions">
             <button class="btn btn-sm btn-default" onClick={() => openAction('identification')}><Icon name="qrcode" />&nbsp;{t('Identification')}</button>
-            {folders.length > 0 && <div class={`dropup folder-sharing remote-folders ${foldersOpen ? 'open' : ''}`}>
+            {folders.length > 0 && <div ref={foldersMenu} class={`dropup folder-sharing device-folders ${foldersOpen ? 'open' : ''}`}>
                 <button class="btn btn-sm btn-default dropdown-toggle" aria-expanded={foldersOpen} onClick={() => setFoldersOpen(!foldersOpen)}><Icon name="folder" />&nbsp;{t('Folders')} <span class="caret" /></button>
-                <ul class="dropdown-menu">{folders.map(folder => <li key={folder.id}><a href="#folder-sharing" onClick={event => { event.preventDefault(); setFoldersOpen(false); onAction({type: 'edit-folder', folder, tab: 'sharing'}); }}>{folder.label || folder.id} <ShareStatus encrypted={folder.type === 'receiveencrypted' || !!folder.devices.find(member => member.deviceID === device.deviceID)?.encryptionPassword} remoteState={state.completion[device.deviceID]?.[folder.id]?.remoteState} /></a></li>)}</ul>
+                <ul class="dropdown-menu">{folders.map(folder => <li key={folder.id}><a href={local ? '#folder' : '#folder-sharing'} onClick={event => { event.preventDefault(); setFoldersOpen(false); onAction({type: 'edit-folder', folder, ...(local ? {} : {tab: 'sharing'})}); }}>{folder.label || folder.id}{!local && <> <ShareStatus encrypted={folder.type === 'receiveencrypted' || !!folder.devices.find(member => member.deviceID === device.deviceID)?.encryptionPassword} remoteState={state.completion[device.deviceID]?.[folder.id]?.remoteState} /></>}</a></li>)}</ul>
             </div>}
             <span class="pull-right">
-                {device.remoteGUIPort > 0 && <a class="btn btn-sm btn-default" href={gui || undefined} aria-disabled={!gui}><Icon name="monitor" />&nbsp;{t('Remote GUI')}</a>}
-                <button class="btn btn-sm btn-default" onClick={() => perform(session.setPaused('devices', device.deviceID, !device.paused))}><Icon name={device.paused ? 'play' : 'pause'} />&nbsp;{t(device.paused ? 'Resume' : 'Pause')}</button>
-                <button class="btn btn-sm btn-default" onClick={() => openAction('edit-device')}><Icon name="pencil" />&nbsp;{t('Edit')}</button>
+                {local ? state.config.folders.length > 0 && <button class="btn btn-sm btn-default" onClick={() => perform(session.setPaused('folders', undefined, state.config.folders.some(folder => !folder.paused)))}><Icon name={state.config.folders.some(folder => !folder.paused) ? 'pause' : 'play'} />&nbsp;{t(state.config.folders.some(folder => !folder.paused) ? 'Pause' : 'Resume')}</button> : <>
+                    {device.remoteGUIPort > 0 && <a class="btn btn-sm btn-default" href={gui || undefined} aria-disabled={!gui}><Icon name="monitor" />&nbsp;{t('Remote GUI')}</a>}
+                    <button class="btn btn-sm btn-default" onClick={() => perform(session.setPaused('devices', device.deviceID, !device.paused))}><Icon name={device.paused ? 'play' : 'pause'} />&nbsp;{t(device.paused ? 'Resume' : 'Pause')}</button>
+                    <button class="btn btn-sm btn-default" onClick={() => openAction('edit-device')}><Icon name="pencil" />&nbsp;{t('Edit')}</button>
+                </>}
+                {local && <button class="btn btn-sm btn-default" onClick={() => openAction('settings')}><Icon name="settings" />&nbsp;{t('Settings')}</button>}
             </span>
-        </div>}
+        </div>
         </div>}
     </div>;
 }

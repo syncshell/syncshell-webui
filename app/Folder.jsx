@@ -15,6 +15,7 @@ import {Field} from './Field.jsx';
 import {Versioning} from './Versioning.jsx';
 import {ItemsDialog} from './ItemsDialog.jsx';
 import {Icon} from './Icon.jsx';
+import {useDismissableMenu} from './useDismissableMenu.mjs';
 
 export function Folder({folder, info, stats, progress, api, rescan, state, session, onAction}) {
     const {t} = useContext(LocaleContext);
@@ -23,6 +24,8 @@ export function Folder({folder, info, stats, progress, api, rescan, state, sessi
     const [itemsKind, setItemsKind] = useState('');
     const [sharingOpen, setSharingOpen] = useState(false);
     const panel = useRef();
+    const sharingMenu = useRef();
+    useDismissableMenu(sharingMenu, sharingOpen, setSharingOpen);
     useEffect(() => { if (open) return stripeSections(panel.current); }, [open]);
     const status = folderStatus(folder, info);
     const label = folderStatusText(status);
@@ -113,7 +116,7 @@ export function Folder({folder, info, stats, progress, api, rescan, state, sessi
             </div>
                 <div class="panel-footer folder-actions">
                     {recoveryActions(folder, info, status).map(type => <button key={type} class="btn btn-danger btn-sm" onClick={() => onAction({type, folder})}>{t(managementActions[type].title)}</button>)}
-                    <div class={`dropdown folder-sharing pull-left ${sharingOpen ? 'open' : ''}`}>
+                    <div ref={sharingMenu} class={`dropdown folder-sharing pull-left ${sharingOpen ? 'open' : ''}`}>
                         <button class="btn btn-sm btn-default dropdown-toggle" aria-expanded={sharingOpen} disabled={!folder.devices.some(device => device.deviceID !== state.system.myID)} onClick={() => setSharingOpen(!sharingOpen)}><Icon name="share" /> {t('Shared')} <span class="caret" /></button>
                         <ul class="dropdown-menu">{folder.devices.filter(device => device.deviceID !== state.system.myID).map(member => {
                             const device = state.config.devices.find(item => item.deviceID === member.deviceID);

@@ -4,7 +4,7 @@ import {
     CircleHelp, Clock, Cloud, CloudDownload, Copy, Download, Eye,
     EyeOff, File, Files, Folder, FolderInput, FolderOpen, Globe, Handshake,
     HardDrive, Heart, House, Hourglass, Info, Link, ListFilter, Lock, Mail,
-    MessageCircle, Minimize2, Monitor, Network, Pause, Pencil, Play, Plus,
+    Maximize2, MessageCircle, Minimize2, Monitor, Network, Pause, Pencil, Play, Plus,
     Power, QrCode, Recycle, RefreshCw, Search, Settings, Share2, ShieldUser,
     Shuffle, Signal, Signpost, Square, SquareMinus, Tag, ThumbsUp, Trash2,
     TriangleAlert, Undo2, Unlink, Unlock, Upload, Wrench, X, Zap
@@ -22,7 +22,7 @@ const icons = {
     'folder-input': FolderInput, 'folder-open': FolderOpen, globe: Globe,
     handshake: Handshake, drive: HardDrive, heart: Heart, house: House,
     hourglass: Hourglass, link: Link, filter: ListFilter, lock: Lock,
-    mail: Mail, message: MessageCircle, minimize: Minimize2, monitor: Monitor,
+    mail: Mail, maximize: Maximize2, message: MessageCircle, minimize: Minimize2, monitor: Monitor,
     network: Network, pause: Pause, pencil: Pencil, play: Play, plus: Plus,
     power: Power, qrcode: QrCode, recycle: Recycle, refresh: RefreshCw,
     search: Search, settings: Settings, share: Share2, 'shield-user': ShieldUser,

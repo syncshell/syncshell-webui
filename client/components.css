@@ -30,6 +30,51 @@
     width: 900px;
 }
 
+.port-dialog.expandable .modal-content {
+    display: flex;
+    flex-direction: column;
+    max-height: calc(100vh - 60px);
+}
+
+.port-dialog.expandable .modal-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.port-dialog.expandable .modal-title {
+    flex: 1;
+    min-width: 0;
+}
+
+.modal-header-actions {
+    display: flex;
+    flex: none;
+    gap: 5px;
+}
+
+.modal-header-actions .btn {
+    margin: 0;
+}
+
+.port-dialog.expandable .modal-body {
+    min-height: 0;
+    overflow: auto;
+}
+
+.port-dialog.full-view {
+    top: 10px;
+    width: calc(100vw - 20px);
+    height: calc(100vh - 20px);
+    max-width: none;
+    max-height: none;
+}
+
+.port-dialog.full-view .modal-content {
+    height: 100%;
+    max-height: none;
+}
+
 @media (max-width: 767px) {
     .port-dialog {
         top: 10px;
@@ -49,7 +94,46 @@
         column-gap: 24px;
         align-items: start;
     }
-    .dashboard-devices > h3 { grid-column: 1 / -1; }
+    .dashboard-devices > .dashboard-heading { grid-column: 1 / -1; }
+}
+
+.dashboard-heading {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.dashboard-heading h3 {
+    flex: 1;
+    min-width: 0;
+}
+
+table.table-condensed.recent-changes-table {
+    table-layout: fixed;
+    min-width: 760px;
+}
+
+.recent-changes-table :is(th, td) {
+    padding-right: 14px;
+    padding-left: 14px;
+    white-space: nowrap;
+}
+
+.recent-changes-table .recent-device { width: 110px; }
+.recent-changes-table .recent-action { width: 100px; }
+.recent-changes-table .recent-type { width: 70px; }
+.recent-changes-table .recent-folder { width: 120px; }
+.recent-changes-table .recent-time { width: 185px; }
+
+.recent-changes-table td:nth-child(5) {
+    direction: rtl;
+    text-align: left;
+}
+
+.recent-changes-table .folder-tail {
+    display: block;
+    max-width: 100%;
+    text-align: left;
 }
 
 .port-version-filters { display: flex; flex-wrap: wrap; gap: 12px; margin-bottom: 12px; }

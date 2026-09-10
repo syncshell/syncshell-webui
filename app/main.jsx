@@ -132,14 +132,15 @@ function App() {
                                     <button class="btn btn-sm btn-default" onClick={() => openAction({type: 'add-folder'})}><Icon name="plus" /> {t('Add Folder')}</button>
                                 </div>
                             </section>
-                            <section class="dashboard-devices" aria-label={t('Devices')}><h3>{t('Devices')}</h3>
+                            <section class="dashboard-devices" aria-label={t('Devices')}><div class="dashboard-heading"><h3>{t('Devices')}</h3>
+                                <button class="btn btn-sm btn-default" onClick={() => openAction({type: 'changes'})}><Icon name="clock" /> {t('Recent Changes')}</button>
+                            </div>
                                 {self && <Device device={self} state={state} session={session} local metric={metric} toggleUnits={toggleUnits} onAction={openAction} />}
                                 <div class="dashboard-remotes">{deviceGroups.map(([group, devices]) => <div key={group}>{group && <h4>{group}{devices.length > 1 ? ' (' + devices.length + ')' : ''}</h4>}
                                     <div class="panel-group">{devices.map(device => <Device key={device.deviceID} device={device} state={state} session={session} metric={metric} toggleUnits={toggleUnits} onAction={openAction} />)}</div></div>)}
                                     <div class="folder-actions">
                                         {others.some(device => !device.paused) && <button class="btn btn-sm btn-default" onClick={() => perform(session.setPaused('devices', undefined, true))}>{t('Pause All')}</button>}
                                         {others.some(device => device.paused) && <button class="btn btn-sm btn-default" onClick={() => perform(session.setPaused('devices', undefined, false))}>{t('Resume All')}</button>}
-                                        <button class="btn btn-sm btn-default" onClick={() => openAction({type: 'changes'})}>{t('Recent Changes')}</button>
                                         <button class="btn btn-sm btn-default" onClick={() => openAction({type: 'add-device'})}>{t('Add Remote Device')}</button>
                                     </div>
                                 </div>
