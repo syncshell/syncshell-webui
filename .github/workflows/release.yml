@@ -6,12 +6,19 @@ on:
     tags: ['v*']
   pull_request:
   workflow_dispatch:
+    inputs:
+      verify_handoff:
+        description: Verify the plugin handoff credentials without releasing
+        required: false
+        default: false
+        type: boolean
 
 permissions:
   contents: read
 
 jobs:
   test:
+    if: github.event_name != 'workflow_dispatch' || !inputs.verify_handoff
     runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:
@@ -54,8 +61,26 @@ jobs:
           name: browser-failures
           path: test-results/
 
+  handoff-credentials:
+    if: startsWith(github.ref, 'refs/tags/v') || inputs.verify_handoff
+    runs-on: ubuntu-latest
+    steps:
+      - name: Create plugin installation token
+        uses: actions/create-github-app-token@fee1f7d63c2ff003460e3d139729b119787bc349
+        id: app
+        with:
+          app-id: ${{ vars.SYNCSHELL_APP_ID }}
+          private-key: ${{ secrets.SYNCSHELL_APP_PRIVATE_KEY }}
+          owner: omarchy-QOL
+          repositories: syncshell
+          permission-contents: write
+      - name: Verify plugin repository access
+        env:
+          GH_TOKEN: ${{ steps.app.outputs.token }}
+        run: test "$(gh api repos/omarchy-QOL/syncshell --jq .full_name)" = "omarchy-QOL/syncshell"
+
   publish:
-    needs: test
+    needs: [test, handoff-credentials]
     if: startsWith(github.ref, 'refs/tags/v')
     runs-on: ubuntu-latest
     permissions:
@@ -87,6 +112,7 @@ jobs:
           private-key: ${{ secrets.SYNCSHELL_APP_PRIVATE_KEY }}
           owner: omarchy-QOL
           repositories: syncshell
+          permission-contents: write
       - name: Notify pinned plugin update
         env:
           GH_TOKEN: ${{ steps.app.outputs.token }}
