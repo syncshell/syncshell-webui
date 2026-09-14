@@ -1,0 +1,8 @@
+node_modules/
+dist/
+release/
+test-results/
+playwright-report/
+TODO/external/webUI-original/
+static/vendor/
+integration/omarchy-theme.css.in
