@@ -8,19 +8,20 @@
 */
 
 .panel-progress {
-    background: #3498db;
+  background: #3498db;
 }
 
 .identicon rect {
-    fill: #333;
+  fill: #333;
 }
 
 .panel-warning .identicon rect {
-    fill: #fff;
+  fill: #fff;
 }
 
-.panel-heading:hover, .panel-heading:focus {
-    text-decoration: none;
+.panel-heading:hover,
+.panel-heading:focus {
+  text-decoration: none;
 }
 
 /*
@@ -29,5 +30,6 @@
 
 /* Remote Devices 'connection type'-icon color set to #333 */
 .reception {
-    filter: invert(12%) sepia(11%) saturate(20%) hue-rotate(318deg) brightness(100%) contrast(80%);
+  filter: invert(12%) sepia(11%) saturate(20%) hue-rotate(318deg)
+    brightness(100%) contrast(80%);
 }

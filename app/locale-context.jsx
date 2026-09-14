@@ -1,2 +1,2 @@
-import {createContext} from 'preact';
+import { createContext } from 'preact';
 export const LocaleContext = createContext();
