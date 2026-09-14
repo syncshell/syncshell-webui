@@ -5,7 +5,6 @@ import { ConfirmAction } from './ConfirmAction.jsx';
 import {
   copy,
   getValue,
-  setValue,
   editorFields,
   inputValue,
   changedValue,

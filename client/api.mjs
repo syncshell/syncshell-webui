@@ -61,7 +61,7 @@ export function createApi({
     if (
       text &&
       (response.headers.get('Content-Type')?.includes('json') ||
-        /^[\s]*[\[{]/.test(text))
+        /^\s*(?:\[|\{)/.test(text))
     ) {
       try {
         data = JSON.parse(text);

@@ -68,7 +68,9 @@ function App() {
     setMetric((value) => {
       try {
         localStorage.setItem('metricRates', String(!value));
-      } catch {}
+      } catch {
+        // Storage can be unavailable in restricted browser contexts.
+      }
       return !value;
     });
   }
@@ -136,7 +138,9 @@ function App() {
       .catch((error) => session.reportError(error));
     try {
       setMetric(localStorage.getItem('metricRates') === 'true');
-    } catch {}
+    } catch {
+      // Storage can be unavailable in restricted browser contexts.
+    }
     function outside(event) {
       if (!event.target.closest('.action-menu')) setMenu('');
     }

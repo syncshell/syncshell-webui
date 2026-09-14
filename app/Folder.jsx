@@ -78,6 +78,7 @@ export function Folder({
     try {
       await rescan();
     } catch {
+      // The session reports rescan failures in the global error state.
     } finally {
       setScanning(false);
     }

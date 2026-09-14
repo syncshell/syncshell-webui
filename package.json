@@ -5,8 +5,10 @@
   "type": "module",
   "scripts": {
     "build": "vite build && node scripts/assets.mjs",
+    "check": "npm run format:check && npm run lint && npm test",
     "format": "prettier --write . --ignore-unknown",
     "format:check": "prettier --check . --ignore-unknown",
+    "lint": "eslint .",
     "test": "node --test tests/*.test.mjs",
     "test:browser": "playwright test --config tests/playwright.config.mjs",
     "test:integration": "bash scripts/test-integration.sh",
@@ -17,8 +19,11 @@
     "preact": "10.29.8"
   },
   "devDependencies": {
+    "@eslint/js": "10.0.1",
     "@playwright/test": "1.63.0",
     "@preact/preset-vite": "2.10.6",
+    "eslint": "10.10.0",
+    "globals": "17.12.0",
     "prettier": "3.9.6",
     "vite": "8.2.2"
   }
