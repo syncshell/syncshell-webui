@@ -1,6 +1,15 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
 import {
+  changedValue,
+  copy,
+  getValue,
+  ignoreLines,
+  inputValue,
+  normalizeEditor,
+  setValue,
+} from '../client/edit.mjs';
+import {
   editorFieldState,
   folderPath,
   newXattrEntry,
@@ -18,6 +27,160 @@ const folderContext = {
   config: { defaults: { folder: { path: '/srv/sync' } } },
   system: { pathSeparator: '/', tilde: '/home/tester' },
 };
+
+test('configuration values are cloned before a dotted path is changed', () => {
+  const original = {
+    label: 'Photos',
+    versioning: { type: 'simple', params: { keep: '5' } },
+    devices: [{ deviceID: 'local' }],
+  };
+
+  const cloned = copy(original);
+  cloned.devices[0].deviceID = 'changed';
+  assert.equal(original.devices[0].deviceID, 'local');
+  assert.equal(getValue(original, 'versioning.params.keep'), '5');
+  assert.equal(getValue(original, 'versioning.params.missing'), undefined);
+
+  const updated = setValue(original, 'versioning.params.keep', '10');
+  assert.equal(updated.versioning.params.keep, '10');
+  assert.equal(original.versioning.params.keep, '5');
+
+  const added = setValue(original, 'xattrFilter.maxTotalSize', 4096);
+  assert.deepEqual(added.xattrFilter, { maxTotalSize: 4096 });
+  assert.equal(original.xattrFilter, undefined);
+});
+
+test('selecting versioning supplies defaults without replacing existing values', () => {
+  const original = {
+    versioning: {
+      type: '',
+      params: { cleanoutDays: '30' },
+      cleanupIntervalS: 1800,
+      fsPath: '/srv/versions',
+    },
+  };
+  const simple = setValue(original, 'versioning.type', 'simple');
+  assert.deepEqual(simple.versioning, {
+    type: 'simple',
+    params: { keep: '5', cleanoutDays: '30' },
+    cleanupIntervalS: 1800,
+    fsPath: '/srv/versions',
+  });
+  assert.equal(original.versioning.type, '');
+
+  const staggered = setValue({}, 'versioning.type', 'staggered');
+  assert.deepEqual(staggered.versioning, {
+    type: 'staggered',
+    params: { maxAge: String(365 * 86400) },
+    cleanupIntervalS: 3600,
+    fsPath: '',
+  });
+
+  const external = setValue({}, 'versioning.type', 'external');
+  assert.deepEqual(external.versioning.params, { command: '' });
+});
+
+test('form values convert according to their field type', () => {
+  const draft = {
+    addresses: ['dynamic', 'tcp://192.0.2.1:22000'],
+    enabled: false,
+    count: 4,
+  };
+  assert.equal(
+    inputValue(draft, { path: 'addresses', type: 'list' }),
+    'dynamic, tcp://192.0.2.1:22000',
+  );
+  assert.equal(inputValue(draft, { path: 'missing', type: 'text' }), '');
+
+  assert.equal(changedValue({ type: 'checkbox' }, { checked: true }), true);
+  assert.equal(changedValue({ type: 'number' }, { value: '' }), 0);
+  assert.equal(changedValue({ type: 'number' }, { value: '12.5' }), 12.5);
+  assert.ok(Number.isNaN(changedValue({ type: 'number' }, { value: 'bad' })));
+  assert.deepEqual(
+    changedValue(
+      { type: 'list' },
+      { value: 'dynamic, tcp://192.0.2.1:22000  quic://host:22000' },
+    ),
+    ['dynamic', 'tcp://192.0.2.1:22000', 'quic://host:22000'],
+  );
+  assert.equal(
+    changedValue({ type: 'text' }, { value: ' Photos ' }),
+    ' Photos ',
+  );
+});
+
+test('ignore text preserves intentional empty and trailing lines', () => {
+  assert.deepEqual(ignoreLines(''), []);
+  assert.deepEqual(ignoreLines('*.tmp\n\n# keep\n'), [
+    '*.tmp',
+    '',
+    '# keep',
+    '',
+  ]);
+});
+
+test('folder normalization removes unfinished attribute rules from a clone', () => {
+  const draft = {
+    id: 'photos',
+    xattrFilter: {
+      entries: [
+        { match: 'user.*', permit: true },
+        { match: '', permit: false },
+      ],
+    },
+    versioning: {
+      type: 'simple',
+      params: { keep: '5', cleanoutDays: '0' },
+    },
+  };
+
+  const normalized = normalizeEditor(draft, 'folder');
+  assert.deepEqual(normalized.xattrFilter.entries, [
+    { match: 'user.*', permit: true },
+  ]);
+  assert.equal(draft.xattrFilter.entries.length, 2);
+});
+
+test('folder normalization rejects invalid versioning boundaries', () => {
+  for (const keep of ['', '0', '-1', 'not-a-number']) {
+    assert.throws(
+      () =>
+        normalizeEditor(
+          {
+            versioning: {
+              type: 'simple',
+              params: { keep, cleanoutDays: '0' },
+            },
+          },
+          'folder',
+        ),
+      /keep at least one version/,
+      `keep=${keep}`,
+    );
+  }
+
+  for (const [type, params] of [
+    ['simple', { keep: '5', cleanoutDays: '-1' }],
+    ['trashcan', { cleanoutDays: '' }],
+    ['staggered', { maxAge: 'not-a-number' }],
+  ]) {
+    assert.throws(
+      () => normalizeEditor({ versioning: { type, params } }, 'folder'),
+      /negative number of days/,
+      type,
+    );
+  }
+
+  assert.doesNotThrow(() =>
+    normalizeEditor(
+      { versioning: { type: 'external', params: { command: '' } } },
+      'folder',
+    ),
+  );
+  assert.deepEqual(normalizeEditor({ name: 'Peer' }, 'device'), {
+    name: 'Peer',
+  });
+});
 
 test('enabling device trust restrictions disables incompatible options', () => {
   const original = {
