@@ -7,6 +7,7 @@ import {
   ignoreLines,
   inputValue,
   normalizeEditor,
+  saveEditor,
   setValue,
 } from '../client/edit.mjs';
 import {
@@ -27,6 +28,109 @@ const folderContext = {
   config: { defaults: { folder: { path: '/srv/sync' } } },
   system: { pathSeparator: '/', tilde: '/home/tester' },
 };
+
+function editorConfig() {
+  return {
+    folders: [
+      {
+        id: 'photos',
+        label: 'Photos',
+        path: '/srv/photos',
+        type: 'sendreceive',
+        devices: [
+          { deviceID: 'LOCAL' },
+          { deviceID: 'PEER', encryptionPassword: 'old-password' },
+        ],
+      },
+      {
+        id: 'archive',
+        label: 'Archive',
+        path: '/srv/archive',
+        type: 'sendreceive',
+        devices: [{ deviceID: 'LOCAL' }],
+      },
+      {
+        id: 'removed-share',
+        label: 'Removed share',
+        path: '/srv/removed',
+        type: 'sendreceive',
+        devices: [{ deviceID: 'LOCAL' }, { deviceID: 'PEER' }],
+      },
+    ],
+    devices: [
+      { deviceID: 'LOCAL', name: 'This device' },
+      { deviceID: 'PEER', name: 'Peer' },
+    ],
+    defaults: {
+      folder: {},
+      device: {},
+      ignores: { lines: [] },
+    },
+    options: {},
+    gui: {},
+  };
+}
+
+function createSaveFixture({
+  config = editorConfig(),
+  pendingFolders = {},
+  deviceCheck,
+} = {}) {
+  const calls = [];
+  let savedConfig;
+  const api = {
+    async get(path, query) {
+      calls.push({ path, query });
+      if (path !== 'svc/deviceid')
+        throw new Error(`Unexpected request: ${path}`);
+      return deviceCheck || { id: query.id };
+    },
+  };
+  const session = {
+    async changeConfig(edit) {
+      const next = copy(config);
+      edit(next);
+      savedConfig = next;
+      return next;
+    },
+  };
+  return {
+    api,
+    calls,
+    savedConfig: () => savedConfig,
+    session,
+    state: {
+      config,
+      pendingFolders,
+      system: { myID: 'LOCAL' },
+    },
+  };
+}
+
+function folderDraft(overrides = {}) {
+  return {
+    id: 'new-folder',
+    label: 'New folder',
+    path: '/srv/new-folder',
+    type: 'sendreceive',
+    devices: [{ deviceID: 'LOCAL' }],
+    versioning: { type: '' },
+    ...overrides,
+  };
+}
+
+async function saveFolder(fixture, draft, overrides = {}) {
+  return saveEditor({
+    session: fixture.session,
+    api: fixture.api,
+    state: fixture.state,
+    kind: 'folder',
+    draft,
+    isNew: true,
+    shares: {},
+    ...overrides,
+  });
+}
 
 test('configuration values are cloned before a dotted path is changed', () => {
   const original = {
@@ -180,6 +284,245 @@ test('folder normalization rejects invalid versioning boundaries', () => {
   assert.deepEqual(normalizeEditor({ name: 'Peer' }, 'device'), {
     name: 'Peer',
   });
+});
+
+test('saving defaults normalizes folder rules and keeps ignore lines', async () => {
+  const fixture = createSaveFixture();
+  await saveFolder(
+    fixture,
+    {
+      label: 'Future folders',
+      xattrFilter: {
+        entries: [
+          { match: 'user.*', permit: true },
+          { match: '', permit: false },
+        ],
+      },
+      versioning: { type: '' },
+    },
+    { defaults: true, ignores: ['*.tmp', '', '# keep empty line'] },
+  );
+
+  assert.deepEqual(fixture.savedConfig().defaults.folder.xattrFilter.entries, [
+    { match: 'user.*', permit: true },
+  ]);
+  assert.deepEqual(fixture.savedConfig().defaults.ignores.lines, [
+    '*.tmp',
+    '',
+    '# keep empty line',
+  ]);
+
+  const deviceDefaults = createSaveFixture();
+  await saveEditor({
+    session: deviceDefaults.session,
+    api: deviceDefaults.api,
+    state: deviceDefaults.state,
+    kind: 'device',
+    draft: { name: 'Future peers', addresses: ['dynamic'] },
+    isNew: false,
+    shares: {},
+    defaults: true,
+  });
+  assert.deepEqual(deviceDefaults.savedConfig().defaults.device, {
+    name: 'Future peers',
+    addresses: ['dynamic'],
+  });
+  assert.deepEqual(deviceDefaults.calls, []);
+});
+
+test('folder saves reject blank, duplicate and incomplete versioning values', async () => {
+  const fixture = createSaveFixture();
+  for (const [draft, message] of [
+    [folderDraft({ id: ' ' }), /folder ID cannot be blank/],
+    [folderDraft({ path: ' ' }), /folder path cannot be blank/],
+    [folderDraft({ id: 'photos' }), /folder ID must be unique/],
+    [
+      folderDraft({
+        versioning: { type: 'external', params: { command: ' ' } },
+      }),
+      /External Versioning Command cannot be blank/,
+    ],
+  ]) {
+    await assert.rejects(saveFolder(fixture, draft), message);
+  }
+  assert.equal(fixture.savedConfig(), undefined);
+});
+
+test('folder saves add the local device and replace the matching folder', async () => {
+  const fixture = createSaveFixture();
+  await saveFolder(
+    fixture,
+    folderDraft({
+      id: 'photos',
+      label: 'Updated photos',
+      devices: [],
+      versioning: undefined,
+    }),
+    { isNew: false },
+  );
+
+  const saved = fixture.savedConfig();
+  assert.equal(
+    saved.folders.filter((folder) => folder.id === 'photos').length,
+    1,
+  );
+  const photos = saved.folders.find((folder) => folder.id === 'photos');
+  assert.equal(photos.label, 'Updated photos');
+  assert.deepEqual(photos.devices, [{ deviceID: 'LOCAL' }]);
+  assert.deepEqual(photos.versioning, { type: '' });
+});
+
+test('folder saves require passwords for untrusted or encrypted offers', async () => {
+  const untrustedConfig = editorConfig();
+  untrustedConfig.devices.find(
+    (device) => device.deviceID === 'PEER',
+  ).untrusted = true;
+  const untrusted = createSaveFixture({ config: untrustedConfig });
+  const shared = folderDraft({
+    devices: [{ deviceID: 'LOCAL' }, { deviceID: 'PEER' }],
+  });
+  await assert.rejects(
+    saveFolder(untrusted, shared),
+    /Encryption Password is required for an untrusted device/,
+  );
+
+  const pending = createSaveFixture({
+    pendingFolders: {
+      'new-folder': {
+        offeredBy: { PEER: { remoteEncrypted: true } },
+      },
+    },
+  });
+  await assert.rejects(
+    saveFolder(pending, shared),
+    /Encryption Password is required for an untrusted device/,
+  );
+
+  await saveFolder(
+    untrusted,
+    folderDraft({
+      devices: [
+        { deviceID: 'LOCAL' },
+        { deviceID: 'PEER', encryptionPassword: 'secret' },
+      ],
+    }),
+  );
+  assert.equal(
+    untrusted
+      .savedConfig()
+      .folders.find((folder) => folder.id === 'new-folder')
+      .devices.find((device) => device.deviceID === 'PEER').encryptionPassword,
+    'secret',
+  );
+
+  const encryptedFolder = createSaveFixture({ config: untrustedConfig });
+  await saveFolder(
+    encryptedFolder,
+    folderDraft({
+      type: 'receiveencrypted',
+      devices: [{ deviceID: 'LOCAL' }, { deviceID: 'PEER' }],
+    }),
+  );
+  assert.ok(encryptedFolder.savedConfig());
+});
+
+test('device saves validate IDs and reject duplicate new devices', async () => {
+  const invalid = createSaveFixture({
+    deviceCheck: { error: 'device ID is invalid' },
+  });
+  await assert.rejects(
+    saveEditor({
+      session: invalid.session,
+      api: invalid.api,
+      state: invalid.state,
+      kind: 'device',
+      draft: { deviceID: 'invalid', name: 'Invalid' },
+      isNew: true,
+      shares: {},
+    }),
+    /device ID is invalid/,
+  );
+
+  const duplicate = createSaveFixture({ deviceCheck: { id: 'PEER' } });
+  await assert.rejects(
+    saveEditor({
+      session: duplicate.session,
+      api: duplicate.api,
+      state: duplicate.state,
+      kind: 'device',
+      draft: { deviceID: 'peer', name: 'Duplicate' },
+      isNew: true,
+      shares: {},
+    }),
+    /device with that ID is already added/,
+  );
+  assert.deepEqual(duplicate.calls, [
+    { path: 'svc/deviceid', query: { id: 'peer' } },
+  ]);
+});
+
+test('device saves require encrypted-share passwords before changing config', async () => {
+  const fixture = createSaveFixture();
+  await assert.rejects(
+    saveEditor({
+      session: fixture.session,
+      api: fixture.api,
+      state: fixture.state,
+      kind: 'device',
+      draft: { deviceID: 'NEW-PEER', name: 'New peer', untrusted: true },
+      isNew: true,
+      shares: {
+        photos: { selected: true, password: '' },
+      },
+    }),
+    /Encryption Password is required for an untrusted device/,
+  );
+  assert.equal(fixture.savedConfig(), undefined);
+});
+
+test('device saves replace the device and update every folder share', async () => {
+  const fixture = createSaveFixture({ deviceCheck: { id: 'PEER' } });
+  await saveEditor({
+    session: fixture.session,
+    api: fixture.api,
+    state: fixture.state,
+    kind: 'device',
+    draft: { deviceID: 'peer', name: 'Renamed peer', untrusted: false },
+    isNew: false,
+    shares: {
+      photos: { selected: true, password: 'new-password' },
+      archive: { selected: true, password: '' },
+      'removed-share': { selected: false, password: '' },
+    },
+  });
+
+  const saved = fixture.savedConfig();
+  assert.equal(
+    saved.devices.filter((device) => device.deviceID === 'PEER').length,
+    1,
+  );
+  assert.equal(
+    saved.devices.find((device) => device.deviceID === 'PEER').name,
+    'Renamed peer',
+  );
+  assert.deepEqual(
+    saved.folders
+      .find((folder) => folder.id === 'photos')
+      .devices.find((device) => device.deviceID === 'PEER'),
+    { deviceID: 'PEER', encryptionPassword: 'new-password' },
+  );
+  assert.deepEqual(
+    saved.folders
+      .find((folder) => folder.id === 'archive')
+      .devices.find((device) => device.deviceID === 'PEER'),
+    { deviceID: 'PEER', encryptionPassword: '' },
+  );
+  assert.equal(
+    saved.folders
+      .find((folder) => folder.id === 'removed-share')
+      .devices.some((device) => device.deviceID === 'PEER'),
+    false,
+  );
 });
 
 test('enabling device trust restrictions disables incompatible options', () => {
