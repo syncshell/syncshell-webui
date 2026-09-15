@@ -8,9 +8,11 @@ import {
 
 async function createSessionFixture(testContext) {
   const calls = [];
+  const failures = new Map();
   let eventHandlers;
   let latestState;
   let ready;
+  let authExpirations = 0;
 
   const loaded = new Promise((resolve) => {
     ready = resolve;
@@ -35,19 +37,27 @@ async function createSessionFixture(testContext) {
     'events/disk': [],
     'system/upgrade': null,
   };
+  function failIfRequested(method, path) {
+    const error = failures.get(`${method} ${path}`);
+    if (error) throw error;
+  }
   const api = {
     async get(path, query) {
       calls.push({ method: 'GET', path, query });
+      failIfRequested('GET', path);
       return responses[path];
     },
     async post(path, body, query) {
       calls.push({ method: 'POST', path, body, query });
+      failIfRequested('POST', path);
     },
     async put(path, body) {
       calls.push({ method: 'PUT', path, body });
+      failIfRequested('PUT', path);
     },
     async delete(path, query) {
       calls.push({ method: 'DELETE', path, query });
+      failIfRequested('DELETE', path);
     },
   };
   const createEventStream = (_api, handlers) => {
@@ -61,6 +71,9 @@ async function createSessionFixture(testContext) {
   };
   const session = createSession(api, {
     createEventStream,
+    onAuthExpired() {
+      authExpirations += 1;
+    },
     publish(state) {
       latestState = state;
       if (state.ready) ready();
@@ -89,11 +102,22 @@ async function createSessionFixture(testContext) {
     return latestState;
   }
 
-  function callsFor(path) {
-    return calls.filter((call) => call.path === path);
+  function callsFor(path, method) {
+    return calls.filter(
+      (call) => call.path === path && (!method || call.method === method),
+    );
   }
 
-  return { callsFor, emit, goOffline, responses };
+  return {
+    authExpirations: () => authExpirations,
+    callsFor,
+    emit,
+    failures,
+    goOffline,
+    responses,
+    session,
+    state: () => latestState,
+  };
 }
 
 test('folder event updates preserve unrelated folders and clear obsolete scan data', () => {
@@ -378,4 +402,126 @@ test('index events refresh revisions and folder activity', async (testContext) =
   assert.equal(state.model.photos.state, 'idle');
   assert.equal(fixture.callsFor('stats/folder').length, statsBefore + 2);
   assert.equal(fixture.callsFor('events/disk').length, changesBefore + 2);
+});
+
+test('configuration commands clone and update the active configuration', async (testContext) => {
+  const fixture = await createSessionFixture(testContext);
+  fixture.responses['db/status'] = { state: 'idle' };
+  const sourceConfig = {
+    folders: [
+      {
+        id: 'photos',
+        paused: false,
+        devices: [{ deviceID: 'local' }],
+      },
+      {
+        id: 'archive',
+        paused: true,
+        devices: [{ deviceID: 'local' }],
+      },
+    ],
+    devices: [
+      { deviceID: 'local', paused: false },
+      { deviceID: 'peer', paused: false },
+      { deviceID: 'offline-peer', paused: true },
+    ],
+    options: { unackedNotificationIDs: ['keep', 'dismiss'] },
+    gui: {},
+  };
+  await fixture.emit('ConfigSaved', sourceConfig);
+
+  await fixture.session.setPaused('folders', undefined, true);
+  let saved = fixture.callsFor('config', 'PUT').at(-1).body;
+  assert.deepEqual(
+    saved.folders.map((folder) => folder.paused),
+    [true, true],
+  );
+  assert.equal(sourceConfig.folders[0].paused, false);
+
+  await fixture.session.setPaused('devices', undefined, true);
+  saved = fixture.callsFor('config', 'PUT').at(-1).body;
+  assert.deepEqual(
+    saved.devices.map((device) => device.paused),
+    [false, true, true],
+  );
+
+  await fixture.session.setPaused('devices', 'peer', false);
+  saved = fixture.callsFor('config', 'PUT').at(-1).body;
+  assert.equal(
+    saved.devices.find((device) => device.deviceID === 'peer').paused,
+    false,
+  );
+
+  await fixture.session.dismissNotification('dismiss');
+  saved = fixture.callsFor('config', 'PUT').at(-1).body;
+  assert.deepEqual(saved.options.unackedNotificationIDs, ['keep']);
+  assert.equal(fixture.state().config, saved);
+});
+
+test('service commands clear errors and dismiss pending devices', async (testContext) => {
+  const fixture = await createSessionFixture(testContext);
+  fixture.responses['system/error'] = {
+    errors: [
+      { when: '2026-09-09T11:00:00Z', message: 'first warning' },
+      { when: '2026-09-09T12:00:00Z', message: 'latest warning' },
+    ],
+  };
+  await fixture.emit('DeviceConnected', { id: 'peer' });
+
+  await fixture.session.clearErrors();
+  assert.equal(fixture.callsFor('system/error/clear', 'POST').length, 1);
+  assert.deepEqual(fixture.state().errors, []);
+  assert.equal(fixture.state().seenError, '2026-09-09T12:00:00Z');
+
+  fixture.responses['cluster/pending/devices'] = {
+    peer: { name: 'Pending peer' },
+  };
+  await fixture.emit('PendingDevicesChanged', {});
+  fixture.responses['cluster/pending/devices'] = {};
+  await fixture.session.dismissPending('peer');
+  assert.deepEqual(
+    fixture.callsFor('cluster/pending/devices', 'DELETE').at(-1),
+    {
+      method: 'DELETE',
+      path: 'cluster/pending/devices',
+      query: { device: 'peer', folder: undefined },
+    },
+  );
+  assert.deepEqual(fixture.state().pendingDevices, {});
+
+  await fixture.session.systemAction('restart');
+  assert.equal(fixture.callsFor('system/restart', 'POST').length, 1);
+});
+
+test('failed commands publish errors, reject, and preserve configuration', async (testContext) => {
+  const fixture = await createSessionFixture(testContext);
+  const originalConfig = fixture.state().config;
+  const saveError = Object.assign(new Error('authentication expired'), {
+    status: 403,
+  });
+  fixture.failures.set('PUT config', saveError);
+
+  await assert.rejects(
+    fixture.session.saveConfig({
+      folders: [{ id: 'unwanted' }],
+      devices: [],
+      options: {},
+      gui: {},
+    }),
+    (error) => error === saveError,
+  );
+  assert.equal(fixture.state().config, originalConfig);
+  assert.equal(fixture.state().error, saveError);
+  assert.equal(fixture.authExpirations(), 1);
+
+  const restartError = Object.assign(new Error('restart unavailable'), {
+    status: 500,
+  });
+  fixture.failures.set('POST system/restart', restartError);
+  await assert.rejects(
+    fixture.session.systemAction('restart'),
+    (error) => error === restartError,
+  );
+  assert.equal(fixture.state().error, restartError);
+  assert.equal(fixture.authExpirations(), 1);
 });
