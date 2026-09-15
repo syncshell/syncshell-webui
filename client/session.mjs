@@ -89,7 +89,13 @@ export function folderEvent(state, event) {
 
 export function createSession(
   api,
-  { publish, onAuthExpired, refreshMs = 10000, retryMs = 1000 } = {},
+  {
+    publish,
+    onAuthExpired,
+    refreshMs = 10000,
+    retryMs = 1000,
+    createEventStream = createEvents,
+  } = {},
 ) {
   let state = initialState();
   let controller;
@@ -292,7 +298,7 @@ export function createSession(
       .catch(() => update({ ...state, upgradeInfo: null }));
   }
 
-  const events = createEvents(api, {
+  const events = createEventStream(api, {
     retryMs,
     onAuthExpired,
     onOnline() {
