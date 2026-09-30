@@ -10,7 +10,7 @@ export const sharedFolders = (config, id) =>
     folder.devices.some((device) => device.deviceID === id),
   );
 
-export function grouped(items, name, id) {
+export function groupAndSortItems(items, name, id) {
   const groups = {};
   for (const item of items) (groups[item.group || ''] ||= []).push(item);
   return Object.keys(groups)

@@ -5,7 +5,7 @@ import { useEffect, useState } from 'preact/hooks';
 import { createApi } from '../client/api.mjs';
 import { createInitialState, createSession } from '../client/session.mjs';
 import { loadEnglish, translator } from '../client/locale.mjs';
-import { grouped, deviceName } from '../client/devices.mjs';
+import { deviceName, groupAndSortItems } from '../client/devices.mjs';
 import { UsageReport } from './UsageReport.jsx';
 import { needsUsageConsent } from '../client/reports.mjs';
 import { updateEditor } from '../client/editor-behavior.mjs';
@@ -58,8 +58,8 @@ function App() {
   const others = state.config.devices.filter(
     (device) => device.deviceID !== state.system.myID,
   );
-  const folderGroups = grouped(state.config.folders, 'label', 'id');
-  const deviceGroups = grouped(others, 'name', 'deviceID');
+  const folderGroups = groupAndSortItems(state.config.folders, 'label', 'id');
+  const deviceGroups = groupAndSortItems(others, 'name', 'deviceID');
   const cards = notices(state);
   const name = deviceName(self) || 'Syncthing';
   const { t } = locale;
