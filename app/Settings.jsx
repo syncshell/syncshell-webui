@@ -8,7 +8,7 @@ import { cloneConfig, setValue } from '../client/edit.mjs';
 import {
   settingsTabs,
   settingsFields,
-  settingsConfig,
+  prepareSettingsForSave,
   upgradeMode,
   ignoredFolders,
   unignore,
@@ -48,7 +48,7 @@ export function Settings({ state, api, session, onClose, advanced = false }) {
     try {
       const config = advanced
         ? cloneConfig(draft)
-        : settingsConfig(
+        : prepareSettingsForSave(
             draft,
             mode,
             state.system,

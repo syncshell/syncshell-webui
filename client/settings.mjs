@@ -50,7 +50,13 @@ export function settingsFields(tab, draft, myID, themes) {
       ]);
   return fields;
 }
-export function settingsConfig(draft, mode, system, version, supported) {
+export function prepareSettingsForSave(
+  draft,
+  mode,
+  system,
+  version,
+  supported,
+) {
   const config = cloneConfig(draft),
     options = config.options;
   if (supported) {
