@@ -1,21 +1,15 @@
 import { useContext, useEffect, useState } from 'preact/hooks';
+import { servicePresentation } from '../client/service.mjs';
 import { LocaleContext } from './locale-context.jsx';
 import { Dialog } from './Dialog.jsx';
+
 export function ServiceDialog({ kind, state, session, onClose }) {
   const { t } = useContext(LocaleContext);
   const [started] = useState(state.system.startTime);
   const [phase, setPhase] = useState('confirm');
   const [error, setError] = useState('');
   const major = state.upgradeInfo?.majorNewer;
-  const title = error
-    ? 'Error'
-    : phase === 'confirm'
-      ? major
-        ? 'Major Upgrade'
-        : 'Upgrade'
-      : kind === 'shutdown'
-        ? 'Shutdown Complete'
-        : 'Restarting';
+  const presentation = servicePresentation(kind, phase, error, major);
   useEffect(() => {
     if (kind !== 'upgrade') apply();
   }, []);
@@ -43,49 +37,30 @@ export function ServiceDialog({ kind, state, session, onClose }) {
       setError(value.message);
     }
   }
-  return (
-    <Dialog
-      title={title}
-      status={
-        error
-          ? 'danger'
-          : phase === 'confirm'
-            ? major
-              ? 'danger'
-              : 'warning'
-            : kind === 'shutdown'
-              ? 'success'
-              : 'info'
-      }
-      icon={kind === 'shutdown' && phase === 'waiting' ? 'power' : 'hourglass'}
-      onClose={onClose}
-      onCancel={() => {
-        if (phase === 'confirm' || error) onClose();
-      }}
-      footer={
+  function renderFooter() {
+    if (error)
+      return (
+        <button class="btn btn-default" onClick={onClose}>
+          {t('Close')}
+        </button>
+      );
+    if (phase === 'confirm')
+      return (
         <>
-          {error ? (
-            <button class="btn btn-default" onClick={onClose}>
-              {t('Close')}
-            </button>
-          ) : (
-            phase === 'confirm' && (
-              <>
-                <button class="btn btn-primary" onClick={apply}>
-                  {t('Upgrade')}
-                </button>
-                <button class="btn btn-default" onClick={onClose}>
-                  {t('Close')}
-                </button>
-              </>
-            )
-          )}
+          <button class="btn btn-primary" onClick={apply}>
+            {t('Upgrade')}
+          </button>
+          <button class="btn btn-default" onClick={onClose}>
+            {t('Close')}
+          </button>
         </>
-      }
-    >
-      {error ? (
-        <p role="alert">{error}</p>
-      ) : phase === 'confirm' ? (
+      );
+    return <></>;
+  }
+  function renderBody() {
+    if (error) return <p role="alert">{error}</p>;
+    if (phase === 'confirm')
+      return (
         <>
           {major ? (
             <p>
@@ -113,7 +88,9 @@ export function ServiceDialog({ kind, state, session, onClose }) {
             </a>
           </p>
         </>
-      ) : kind === 'shutdown' ? (
+      );
+    if (kind === 'shutdown')
+      return (
         <p role="status">
           {t(
             phase === 'working'
@@ -121,11 +98,25 @@ export function ServiceDialog({ kind, state, session, onClose }) {
               : 'Syncthing has been shut down.',
           )}
         </p>
-      ) : (
-        <p role="status">
-          {t('Syncthing is restarting.')} {t('Please wait')}...
-        </p>
-      )}
+      );
+    return (
+      <p role="status">
+        {t('Syncthing is restarting.')} {t('Please wait')}...
+      </p>
+    );
+  }
+  return (
+    <Dialog
+      title={presentation.title}
+      status={presentation.status}
+      icon={presentation.icon}
+      onClose={onClose}
+      onCancel={() => {
+        if (phase === 'confirm' || error) onClose();
+      }}
+      footer={renderFooter()}
+    >
+      {renderBody()}
     </Dialog>
   );
 }
