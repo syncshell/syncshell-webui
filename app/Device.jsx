@@ -35,13 +35,13 @@ export function Device({
   device,
   state,
   session,
-  local = false,
+  isLocalDevice = false,
   metric,
   toggleUnits,
   onAction,
 }) {
   const { t } = useContext(LocaleContext);
-  const [open, setOpen] = useState(local);
+  const [open, setOpen] = useState(isLocalDevice);
   const [foldersOpen, setFoldersOpen] = useState(false);
   const panel = useRef();
   const foldersMenu = useRef();
@@ -49,11 +49,11 @@ export function Device({
   useEffect(() => {
     if (open) return stripeSections(panel.current);
   }, [open]);
-  const conn = local
+  const conn = isLocalDevice
     ? state.connectionsTotal
     : state.connections[device.deviceID] || {};
   const completion = state.completion[device.deviceID] || {};
-  const folders = local
+  const folders = isLocalDevice
     ? state.config.folders
     : sharedFolders(state.config, device.deviceID);
   const status = deviceStatus(device, state);
@@ -88,7 +88,7 @@ export function Device({
         aria-expanded={open}
         onClick={() => setOpen(!open)}
       >
-        {!local && status === 'syncing' && (
+        {!isLocalDevice && status === 'syncing' && (
           <span
             class="panel-progress"
             style={{ width: completion._total + '%' }}
@@ -96,7 +96,7 @@ export function Device({
         )}
         <span class="panel-title device-title">
           <Identicon id={device.deviceID} />
-          {!local && (
+          {!isLocalDevice && (
             <span
               class={`panel-status pull-right text-${deviceColor(device, state)}`}
             >
@@ -120,7 +120,7 @@ export function Device({
               {deviceName(device)}
             </span>
             <small class="device-role text-success">
-              ({t(local ? 'This Device' : 'Remote')})
+              ({t(isLocalDevice ? 'This Device' : 'Remote')})
             </small>
           </span>
         </span>
@@ -128,7 +128,7 @@ export function Device({
       {open && (
         <div class="panel-collapse" ref={panel}>
           <div class="panel-body less-padding">
-            {!local && (
+            {!isLocalDevice && (
               <table class="table table-condensed visible-xs remote-status">
                 <tbody>
                   <Field label="Device Status" icon={deviceIcons[status]}>
@@ -137,7 +137,7 @@ export function Device({
                 </tbody>
               </table>
             )}
-            {(local ||
+            {(isLocalDevice ||
               conn.connected ||
               folders.length > 0 ||
               completion._needItems > 0) && (
@@ -145,16 +145,21 @@ export function Device({
                 <summary>{t('Current activity')}</summary>
                 <table class="table table-condensed table-auto">
                   <tbody>
-                    {!local && !conn.connected && folders.length > 0 && (
-                      <Field label="Sync Status">
-                        {completion._total === 100
-                          ? t('Up to Date')
-                          : completion._total < 100
-                            ? t('Out of Sync') + ' (' + completion._total + '%)'
-                            : ''}
-                      </Field>
-                    )}
-                    {(local || conn.connected) &&
+                    {!isLocalDevice &&
+                      !conn.connected &&
+                      folders.length > 0 && (
+                        <Field label="Sync Status">
+                          {completion._total === 100
+                            ? t('Up to Date')
+                            : completion._total < 100
+                              ? t('Out of Sync') +
+                                ' (' +
+                                completion._total +
+                                '%)'
+                              : ''}
+                        </Field>
+                      )}
+                    {(isLocalDevice || conn.connected) &&
                       ['in', 'out'].map((direction) => (
                         <Field
                           key={direction}
@@ -164,10 +169,10 @@ export function Device({
                           icon={direction === 'in' ? 'download' : 'upload'}
                           help={
                             direction === 'in'
-                              ? local
+                              ? isLocalDevice
                                 ? 'Incoming traffic across all connected devices. Click the rate to switch between bytes and bits per second. A configured limit appears below.'
                                 : 'Data received by this machine from this remote device. Click the rate to switch between bytes and bits per second.'
-                              : local
+                              : isLocalDevice
                                 ? 'Outgoing traffic across all connected devices. Click the rate to switch between bytes and bits per second. A configured limit appears below.'
                                 : 'Data sent by this machine to this remote device. Click the rate to switch between bytes and bits per second.'
                           }
@@ -181,7 +186,7 @@ export function Device({
                             }}
                           >
                             {rate(conn[direction + 'bps'] || 0)}
-                            {(local ? state.config.options : device)[
+                            {(isLocalDevice ? state.config.options : device)[
                               direction === 'in' ? 'maxRecvKbps' : 'maxSendKbps'
                             ] > 0 && (
                               <small>
@@ -189,13 +194,15 @@ export function Device({
                                 <i class="text-muted">
                                   {t('Limit')}:{' '}
                                   {rate(
-                                    (local ? state.config.options : device)[
+                                    (isLocalDevice
+                                      ? state.config.options
+                                      : device)[
                                       direction === 'in'
                                         ? 'maxRecvKbps'
                                         : 'maxSendKbps'
                                     ] * 1024,
                                   )}
-                                  {local &&
+                                  {isLocalDevice &&
                                     state.config.options.limitBandwidthInLan &&
                                     ` (${t('Applied to LAN')})`}
                                 </i>
@@ -204,7 +211,7 @@ export function Device({
                           </a>
                         </Field>
                       ))}
-                    {local && (
+                    {isLocalDevice && (
                       <Field label="Local State (Total)">
                         <Counts
                           prefix="local"
@@ -216,7 +223,7 @@ export function Device({
                         />
                       </Field>
                     )}
-                    {!local && completion._needItems > 0 && (
+                    {!isLocalDevice && completion._needItems > 0 && (
                       <Field label="Out of Sync Items">
                         <a
                           href="#remote-needed"
@@ -240,7 +247,7 @@ export function Device({
               <summary>{t('Connectivity')}</summary>
               <table class="table table-condensed table-auto">
                 <tbody>
-                  {local ? (
+                  {isLocalDevice ? (
                     <>
                       <Field label="Listeners">
                         <a
@@ -357,7 +364,7 @@ export function Device({
               <summary>{t('Device information')}</summary>
               <table class="table table-condensed table-auto">
                 <tbody>
-                  {local ? (
+                  {isLocalDevice ? (
                     <>
                       <Field label="Uptime">
                         {duration(state.system.uptime, 'm')}
@@ -441,19 +448,19 @@ export function Device({
                   {folders.map((folder) => (
                     <li key={folder.id}>
                       <a
-                        href={local ? '#folder' : '#folder-sharing'}
+                        href={isLocalDevice ? '#folder' : '#folder-sharing'}
                         onClick={(event) => {
                           event.preventDefault();
                           setFoldersOpen(false);
                           onAction({
                             type: 'edit-folder',
                             folder,
-                            ...(local ? {} : { tab: 'sharing' }),
+                            ...(isLocalDevice ? {} : { tab: 'sharing' }),
                           });
                         }}
                       >
                         {folder.label || folder.id}
-                        {!local && (
+                        {!isLocalDevice && (
                           <>
                             {' '}
                             <ShareStatus
@@ -478,7 +485,7 @@ export function Device({
               </div>
             )}
             <span class="pull-right">
-              {local ? (
+              {isLocalDevice ? (
                 state.config.folders.length > 0 && (
                   <button
                     class="btn btn-sm btn-default"
@@ -543,7 +550,7 @@ export function Device({
                   </button>
                 </>
               )}
-              {local && (
+              {isLocalDevice && (
                 <button
                   class="btn btn-sm btn-default"
                   onClick={() => openAction('settings')}

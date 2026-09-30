@@ -510,7 +510,7 @@ function App() {
                         device={self}
                         state={state}
                         session={session}
-                        local
+                        isLocalDevice
                         metric={metric}
                         toggleUnits={toggleUnits}
                         onAction={openAction}
