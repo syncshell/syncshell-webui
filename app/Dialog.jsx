@@ -24,7 +24,7 @@ export function Dialog({
   return (
     <dialog
       ref={dialog}
-      class={`port-dialog ${large ? 'large' : ''} ${expandable ? 'expandable' : ''} ${full ? 'full-view' : ''}`}
+      class={`dialog ${large ? 'large' : ''} ${expandable ? 'expandable' : ''} ${full ? 'full-view' : ''}`}
       aria-label={t(title)}
       onClose={onClose}
       onCancel={(event) => {

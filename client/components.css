@@ -12,7 +12,7 @@
   display: none;
 }
 
-.port-dialog {
+.dialog {
   text-align: start;
   color: inherit;
   position: fixed;
@@ -26,23 +26,23 @@
   background: transparent;
 }
 
-.port-dialog.large {
+.dialog.large {
   width: 900px;
 }
 
-.port-dialog.expandable .modal-content {
+.dialog.expandable .modal-content {
   display: flex;
   flex-direction: column;
   max-height: calc(100vh - 60px);
 }
 
-.port-dialog.expandable .modal-header {
+.dialog.expandable .modal-header {
   display: flex;
   align-items: center;
   gap: 12px;
 }
 
-.port-dialog.expandable .modal-title {
+.dialog.expandable .modal-title {
   flex: 1;
   min-width: 0;
 }
@@ -57,12 +57,12 @@
   margin: 0;
 }
 
-.port-dialog.expandable .modal-body {
+.dialog.expandable .modal-body {
   min-height: 0;
   overflow: auto;
 }
 
-.port-dialog.full-view {
+.dialog.full-view {
   top: 10px;
   width: calc(100vw - 20px);
   height: calc(100vh - 20px);
@@ -70,13 +70,13 @@
   max-height: none;
 }
 
-.port-dialog.full-view .modal-content {
+.dialog.full-view .modal-content {
   height: 100%;
   max-height: none;
 }
 
 @media (max-width: 767px) {
-  .port-dialog {
+  .dialog {
     top: 10px;
     max-height: calc(100vh - 20px);
   }
