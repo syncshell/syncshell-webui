@@ -120,6 +120,15 @@ function App() {
       session.reportError(error);
     }
   }
+  useEffect(() => {
+    if (!state.ready) return;
+    const launch = desktop?.takeLaunchAction?.();
+    if (launch?.type !== 'edit-device') return;
+    const device = state.config.devices.find(
+      (candidate) => candidate.deviceID === launch.device,
+    );
+    if (device) openAction({ type: 'edit-device', device });
+  }, [state.ready, state.config.devices]);
   function tabKey(event) {
     let index = tabs.findIndex(([id]) => id === activeTab);
     if (event.key === 'ArrowRight') index = (index + 1) % tabs.length;

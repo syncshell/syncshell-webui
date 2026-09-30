@@ -1,14 +1,23 @@
 const storageKey = 'syncshell-desktop';
+const launchKey = 'syncshell-launch-action';
 export const desktopHelp =
   'Local file actions are unavailable. Open this UI from Syncshell on the desktop running Syncthing, under the same user.';
 
 // Only the plugin launch grants access; the address bar and HTTP requests retain no token.
 export function desktopActions(browser = window) {
   let grant;
+  let launch = null;
   try {
-    const fragment = browser.location.hash.slice(1);
-    if (fragment.startsWith('syncshell-desktop=')) {
-      grant = fragment.slice('syncshell-desktop='.length);
+    const fragment = new URLSearchParams(browser.location.hash.slice(1));
+    if (fragment.has('syncshell-desktop')) {
+      grant = fragment.get('syncshell-desktop');
+      const action = fragment.get('syncshell-action');
+      const device = fragment.get('device');
+      if (
+        action === 'edit-device' &&
+        /^[A-Z2-7]{7}(-[A-Z2-7]{7}){7}$/.test(device || '')
+      )
+        launch = { type: action, device };
       browser.history.replaceState(
         null,
         '',
@@ -21,6 +30,13 @@ export function desktopActions(browser = window) {
   }
   const match = /^127\.0\.0\.1:([0-9]{1,5})\/([a-f0-9]{64})$/.exec(grant || '');
   if (!match || Number(match[1]) < 1 || Number(match[1]) > 65535) return null;
+  if (launch) {
+    try {
+      browser.sessionStorage.setItem(launchKey, JSON.stringify(launch));
+    } catch {
+      return null;
+    }
+  }
   async function request(action, body) {
     let response;
     try {
@@ -62,6 +78,18 @@ export function desktopActions(browser = window) {
     modified: file.modified,
   });
   return {
+    takeLaunchAction() {
+      let action;
+      try {
+        action = JSON.parse(
+          browser.sessionStorage.getItem(launchKey) || 'null',
+        );
+        browser.sessionStorage.setItem(launchKey, '');
+      } catch {
+        return null;
+      }
+      return action;
+    },
     status: (device) => request('status', { device }),
     check: (device, group, file) =>
       request('check', fileRequest(device, group, file)),
