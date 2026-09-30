@@ -21,9 +21,9 @@ import '../client/components.css';
 import { Icon } from './Icon.jsx';
 
 const tabs = [
-  ['overview', 'Overview'],
-  ['conflicts', 'Resolve sync conflicts'],
-  ['notifications', 'Notifications'],
+  { id: 'overview', label: 'Overview' },
+  { id: 'conflicts', label: 'Resolve sync conflicts' },
+  { id: 'notifications', label: 'Notifications' },
 ];
 const helpLinks = [
   ['Introduction', 'https://github.com/syncshell/syncshell-webui#readme'],
@@ -130,7 +130,7 @@ function App() {
     if (device) openAction({ type: 'edit-device', device });
   }, [state.ready, state.config.devices]);
   function tabKey(event) {
-    let index = tabs.findIndex(([id]) => id === activeTab);
+    let index = tabs.findIndex((tab) => tab.id === activeTab);
     if (event.key === 'ArrowRight') index = (index + 1) % tabs.length;
     else if (event.key === 'ArrowLeft')
       index = (index + tabs.length - 1) % tabs.length;
@@ -138,7 +138,7 @@ function App() {
     else if (event.key === 'End') index = tabs.length - 1;
     else return;
     event.preventDefault();
-    setActiveTab(tabs[index][0]);
+    setActiveTab(tabs[index].id);
     event.currentTarget.querySelectorAll('[role="tab"]')[index].focus();
   }
   useEffect(() => {
@@ -361,7 +361,7 @@ function App() {
                 role="tablist"
                 onKeyDown={tabKey}
               >
-                {tabs.map(([id, label]) => (
+                {tabs.map(({ id, label }) => (
                   <li
                     key={id}
                     class={id === activeTab ? 'active' : ''}
