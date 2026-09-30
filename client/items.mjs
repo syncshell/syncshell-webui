@@ -34,9 +34,13 @@ export function neededItems(data) {
 }
 
 export function pageItems(kind, data) {
-  return kind === 'need'
-    ? neededItems(data)
-    : kind === 'failed'
-      ? data.errors || []
-      : data.files || [];
+  switch (kind) {
+    case 'need':
+      return neededItems(data);
+    case 'failed':
+      return data.errors || [];
+    case 'local':
+    default:
+      return data.files || [];
+  }
 }
