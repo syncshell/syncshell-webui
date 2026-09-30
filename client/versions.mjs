@@ -40,7 +40,7 @@ export function selectVersions(selections, files, action) {
   return next;
 }
 export const versionActions = [
-  ['latest', 'Select latest version'],
-  ['oldest', 'Select oldest version'],
-  ['unset', 'Do not restore all'],
+  { action: 'latest', label: 'Select latest version' },
+  { action: 'oldest', label: 'Select oldest version' },
+  { action: 'unset', label: 'Do not restore all' },
 ];

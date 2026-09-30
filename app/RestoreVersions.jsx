@@ -59,7 +59,7 @@ export function RestoreVersions({ api, folder, onClose }) {
     }
   }
   const massActions = (files) =>
-    versionActions.map(([action, label]) => (
+    versionActions.map(({ action, label }) => (
       <button
         key={action}
         class="btn btn-default btn-sm"
