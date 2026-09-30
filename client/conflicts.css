@@ -150,9 +150,9 @@ html:lang(de) .conflict-review {
   }
 }
 
-.review-design-03,
-.review-design-03 > thead,
-.review-design-03 > tbody {
+.review-table,
+.review-table > thead,
+.review-table > tbody {
   display: block;
 }
 .review-table > thead > .review-column-headings > th {
@@ -161,22 +161,22 @@ html:lang(de) .conflict-review {
   font-size: 14px;
 }
 .review-mobile-label,
-.review-design-03 .review-current > .review-cell-label {
+.review-table .review-current > .review-cell-label {
   display: none;
 }
 @media (max-width: 1050px) {
-  .review-design-03 > thead {
+  .review-table > thead {
     display: none;
   }
   .review-mobile-label {
     display: inline;
   }
-  .review-design-03 .review-current > .review-cell-label {
+  .review-table .review-current > .review-cell-label {
     display: block;
   }
 }
 
-.review-design-03 .review-version {
+.review-table .review-version {
   margin-top: 0;
 }
 .review-missing-hint {

@@ -186,7 +186,7 @@ export function Conflicts({
           </p>
         ))}
         <table
-          class="table table-striped review-table review-design-03"
+          class="table table-striped review-table"
           aria-label={t('Conflict files')}
         >
           <thead>
