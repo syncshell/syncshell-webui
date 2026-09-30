@@ -56,6 +56,42 @@ export function ItemsDialog({
       setError(failure.message);
     }
   }
+  function renderItemPath(file) {
+    if (kind !== 'need') return file.path || file.name;
+    return (
+      <>
+        {file.type === 'queued' && (
+          <button
+            class="btn btn-link btn-sm"
+            aria-label={t('Move to top of queue')}
+            onClick={() => prioritize(file.name)}
+          >
+            <Icon name="arrow-up-to-line" />
+          </button>
+        )}
+        <Tooltip
+          label={file.name}
+          text={file.name}
+          triggerText={file.name.split('/').at(-1)}
+        />
+      </>
+    );
+  }
+  function renderItemDetail(file) {
+    if (
+      kind === 'need' &&
+      file.type === 'progress' &&
+      file.action === 'Sync' &&
+      progress[file.name]
+    )
+      return <TransferProgress progress={progress[file.name]} />;
+    if (kind === 'failed') return file.error;
+    if (kind === 'local')
+      return ['DIRECTORY', 'FILE_INFO_TYPE_DIRECTORY'].includes(file.type)
+        ? ''
+        : unitPrefixed(file.size, true) + 'B';
+    return file.size > 0 ? unitPrefixed(file.size, true) + 'B' : '';
+  }
   return (
     <Dialog
       title={view.title}
@@ -120,50 +156,8 @@ export function ItemsDialog({
                   <Icon name={needIcons[file.action]} /> {t(file.action)}
                 </td>
               )}
-              <td class="word-break-all">
-                {kind === 'need' ? (
-                  <>
-                    {file.type === 'queued' && (
-                      <button
-                        class="btn btn-link btn-sm"
-                        aria-label={t('Move to top of queue')}
-                        onClick={() => prioritize(file.name)}
-                      >
-                        <Icon name="arrow-up-to-line" />
-                      </button>
-                    )}
-                    <Tooltip
-                      label={file.name}
-                      text={file.name}
-                      triggerText={file.name.split('/').at(-1)}
-                    />
-                  </>
-                ) : (
-                  file.path || file.name
-                )}
-              </td>
-              <td>
-                {kind === 'need' &&
-                file.type === 'progress' &&
-                file.action === 'Sync' &&
-                progress[file.name] ? (
-                  <TransferProgress progress={progress[file.name]} />
-                ) : kind === 'failed' ? (
-                  file.error
-                ) : kind === 'local' ? (
-                  ['DIRECTORY', 'FILE_INFO_TYPE_DIRECTORY'].includes(
-                    file.type,
-                  ) ? (
-                    ''
-                  ) : (
-                    unitPrefixed(file.size, true) + 'B'
-                  )
-                ) : file.size > 0 ? (
-                  unitPrefixed(file.size, true) + 'B'
-                ) : (
-                  ''
-                )}
-              </td>
+              <td class="word-break-all">{renderItemPath(file)}</td>
+              <td>{renderItemDetail(file)}</td>
             </tr>
           ))}
         </tbody>
