@@ -40,7 +40,7 @@ export function Tooltip({
         ref={tip}
         popover="manual"
         role="tooltip"
-        class={`tooltip in port-tooltip folder-${kind}-tooltip`}
+        class={`tooltip in tooltip-popover folder-${kind}-tooltip`}
       >
         <div class="tooltip-arrow" />
         <div class="tooltip-inner">

@@ -1,4 +1,4 @@
-.port-tooltip {
+.tooltip-popover {
   position: fixed;
   inset: auto;
   margin: 0;
@@ -8,7 +8,7 @@
   overflow: visible;
 }
 
-.port-tooltip:not(:popover-open) {
+.tooltip-popover:not(:popover-open) {
   display: none;
 }
 
