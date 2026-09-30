@@ -30,9 +30,11 @@ async function api(body) {
 const original = await api();
 if (original.user)
   throw new Error('Authentication fixture must start without a login user');
+function ignoreListenerRestart() {
+  // Applying authentication may close the old GUI listener before it replies.
+}
 async function setGUI(value) {
-  // The GUI listener may close its response while applying authentication.
-  await api(value).catch(() => {});
+  await api(value).catch(ignoreListenerRestart);
   await expect
     .poll(() =>
       api().then(

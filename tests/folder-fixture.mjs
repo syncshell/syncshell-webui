@@ -1,3 +1,7 @@
+function ignoreFixtureShutdownRace() {
+  // The page or intercepted request can already be closed during teardown.
+}
+
 export async function folderFixture(
   page,
   { folder = {}, model = {}, progress } = {},
@@ -50,8 +54,8 @@ export async function folderFixture(
         ],
       });
     } else {
-      await page.waitForEvent('close').catch(() => {});
-      await route.abort().catch(() => {});
+      await page.waitForEvent('close').catch(ignoreFixtureShutdownRace);
+      await route.abort().catch(ignoreFixtureShutdownRace);
     }
   });
 }
