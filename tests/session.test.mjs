@@ -3,7 +3,7 @@ import { test } from 'node:test';
 import {
   createSession,
   createInitialState,
-  folderEvent,
+  reduceFolderEvent,
 } from '../client/session.mjs';
 
 async function createSessionFixture(testContext) {
@@ -126,7 +126,7 @@ test('folder event updates preserve unrelated folders and clear obsolete scan da
     model: { a: { state: 'idle' }, b: { state: 'idle' } },
     scanProgress: { a: { current: 50 }, b: { current: 20 } },
   };
-  const scanning = folderEvent(original, {
+  const scanning = reduceFolderEvent(original, {
     type: 'StateChanged',
     data: { folder: 'a', from: 'idle', to: 'scanning' },
   });
@@ -136,14 +136,14 @@ test('folder event updates preserve unrelated folders and clear obsolete scan da
   assert.equal(original.model.a.state, 'idle');
   const summary = { state: 'idle', localFiles: 3 };
   assert.equal(
-    folderEvent(scanning, {
+    reduceFolderEvent(scanning, {
       type: 'FolderSummary',
       data: { folder: 'a', summary },
     }).model.a,
     summary,
   );
   assert.equal(
-    folderEvent(scanning, {
+    reduceFolderEvent(scanning, {
       type: 'FolderErrors',
       data: { folder: 'unknown', errors: ['bad'] },
     }),

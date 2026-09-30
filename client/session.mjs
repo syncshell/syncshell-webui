@@ -33,7 +33,7 @@ export function createInitialState() {
   };
 }
 
-export function folderEvent(state, event) {
+export function reduceFolderEvent(state, event) {
   const data = event.data;
   switch (event.type) {
     case 'FolderSummary':
@@ -314,7 +314,7 @@ export function createSession(
       update({ ...state, online: false, error });
     },
     onEvent(event) {
-      update(folderEvent(state, event));
+      update(reduceFolderEvent(state, event));
       const data = event.data;
       if (event.type === 'DownloadProgress') {
         const progress = transferProgress(data),
