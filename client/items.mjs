@@ -16,18 +16,27 @@ export const itemViews = {
   },
 };
 
+const ITEM_FLAG_DELETED = 1 << 12;
+const ITEM_FLAG_DIRECTORY = 1 << 14;
+const ITEM_ACTION_FLAGS = ITEM_FLAG_DELETED | ITEM_FLAG_DIRECTORY;
+
+function neededAction(flags) {
+  switch (flags & ITEM_ACTION_FLAGS) {
+    case ITEM_ACTION_FLAGS:
+      return 'Del (dir)';
+    case ITEM_FLAG_DELETED:
+      return 'Del';
+    case ITEM_FLAG_DIRECTORY:
+      return 'Update';
+    default:
+      return 'Sync';
+  }
+}
+
 export function neededItems(data) {
   return ['progress', 'queued', 'rest'].flatMap((type) =>
     (data[type] || []).map((file) => {
-      const flags = file.flags;
-      const action =
-        (flags & 20480) === 20480
-          ? 'Del (dir)'
-          : flags & 4096
-            ? 'Del'
-            : flags & 16384
-              ? 'Update'
-              : 'Sync';
+      const action = neededAction(file.flags);
       return { ...file, type, action };
     }),
   );
