@@ -3,7 +3,7 @@ import { desktopActions } from '../client/desktop.mjs';
 import { render } from 'preact';
 import { useEffect, useState } from 'preact/hooks';
 import { createApi } from '../client/api.mjs';
-import { createSession, initialState } from '../client/session.mjs';
+import { createInitialState, createSession } from '../client/session.mjs';
 import { loadEnglish, translator } from '../client/locale.mjs';
 import { grouped, deviceName } from '../client/devices.mjs';
 import { UsageReport } from './UsageReport.jsx';
@@ -38,7 +38,7 @@ const helpLinks = [
 const desktop = desktopActions();
 
 function App() {
-  const [state, setState] = useState(initialState);
+  const [state, setState] = useState(createInitialState);
   const [api] = useState(() => createApi());
   const [locale, setLocale] = useState({ t: translator({}) });
   const [session] = useState(() =>

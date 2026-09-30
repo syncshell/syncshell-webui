@@ -2,7 +2,7 @@ import assert from 'node:assert/strict';
 import { test } from 'node:test';
 import {
   createSession,
-  initialState,
+  createInitialState,
   folderEvent,
 } from '../client/session.mjs';
 
@@ -122,7 +122,7 @@ async function createSessionFixture(testContext) {
 
 test('folder event updates preserve unrelated folders and clear obsolete scan data', () => {
   const original = {
-    ...initialState(),
+    ...createInitialState(),
     model: { a: { state: 'idle' }, b: { state: 'idle' } },
     scanProgress: { a: { current: 50 }, b: { current: 20 } },
   };

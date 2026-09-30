@@ -5,7 +5,7 @@ import { createEvents } from './events.mjs';
 import { transferProgress, endedTransfers } from './transfer.mjs';
 import { completionTotal, connectionRates } from './devices.mjs';
 
-export function initialState() {
+export function createInitialState() {
   return {
     online: false,
     ready: false,
@@ -97,7 +97,7 @@ export function createSession(
     createEventStream = createEvents,
   } = {},
 ) {
-  let state = initialState();
+  let state = createInitialState();
   let controller;
   let interval;
   let hydrating;
