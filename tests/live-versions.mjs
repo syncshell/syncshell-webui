@@ -76,7 +76,7 @@ try {
   await page.goto(current.url);
   await page.locator('.dashboard-folders .panel-heading').click();
   const original = await api(page, 'config/folders/test-folder');
-  const source = await mkdtemp(join(peerRoot, 'files', 'port-version-'));
+  const source = await mkdtemp(join(peerRoot, 'files', 'version-fixture-'));
   const relative = basename(source) + '/version.txt';
   const destination = join(runtime, 'files', relative);
   try {
