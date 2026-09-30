@@ -36,7 +36,7 @@ export function Device({
   state,
   session,
   isLocalDevice = false,
-  metric,
+  usesMetricRates,
   toggleUnits,
   onAction,
 }) {
@@ -75,8 +75,8 @@ export function Device({
   const perform = (promise) => promise.catch(() => {});
   const openAction = (type, extra = {}) => onAction({ type, device, ...extra });
   const rate = (bytes) =>
-    unitPrefixed(metric ? bytes * 8 : bytes, !metric) +
-    (metric ? 'bps' : 'B/s');
+    unitPrefixed(usesMetricRates ? bytes * 8 : bytes, !usesMetricRates) +
+    (usesMetricRates ? 'bps' : 'B/s');
   const link = (event, action) => {
     event.preventDefault();
     openAction(action);

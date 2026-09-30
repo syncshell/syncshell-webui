@@ -50,7 +50,7 @@ function App() {
   const [activeTab, setActiveTab] = useState('overview'),
     [menu, setMenu] = useState('');
   const [action, setAction] = useState(null),
-    [metric, setMetric] = useState(false);
+    [usesMetricRates, setUsesMetricRates] = useState(false);
   const authenticated = Boolean(window.metadata?.authenticated);
   const self = state.config.devices.find(
     (device) => device.deviceID === state.system.myID,
@@ -65,7 +65,7 @@ function App() {
   const { t } = locale;
   const perform = (promise) => promise.catch(() => {});
   function toggleUnits() {
-    setMetric((value) => {
+    setUsesMetricRates((value) => {
       try {
         localStorage.setItem('metricRates', String(!value));
       } catch {
@@ -146,7 +146,7 @@ function App() {
       .then(setLocale)
       .catch((error) => session.reportError(error));
     try {
-      setMetric(localStorage.getItem('metricRates') === 'true');
+      setUsesMetricRates(localStorage.getItem('metricRates') === 'true');
     } catch {
       // Storage can be unavailable in restricted browser contexts.
     }
@@ -511,7 +511,7 @@ function App() {
                         state={state}
                         session={session}
                         isLocalDevice
-                        metric={metric}
+                        usesMetricRates={usesMetricRates}
                         toggleUnits={toggleUnits}
                         onAction={openAction}
                       />
@@ -534,7 +534,7 @@ function App() {
                                 device={device}
                                 state={state}
                                 session={session}
-                                metric={metric}
+                                usesMetricRates={usesMetricRates}
                                 toggleUnits={toggleUnits}
                                 onAction={openAction}
                               />
