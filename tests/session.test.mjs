@@ -4,6 +4,7 @@ import {
   createSession,
   createInitialState,
   reduceFolderEvent,
+  runReportedSessionAction,
 } from '../client/session.mjs';
 
 async function createSessionFixture(testContext) {
@@ -119,6 +120,18 @@ async function createSessionFixture(testContext) {
     state: () => latestState,
   };
 }
+
+test('reported session actions settle after their command rejects', async () => {
+  const failure = new Error('already published');
+  let calls = 0;
+
+  await runReportedSessionAction(async () => {
+    calls++;
+    throw failure;
+  });
+
+  assert.equal(calls, 1);
+});
 
 test('folder events leave other folders unchanged and clear obsolete scan data', () => {
   const original = {

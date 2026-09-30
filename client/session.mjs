@@ -5,6 +5,14 @@ import { createEvents } from './events.mjs';
 import { transferProgress, endedTransfers } from './transfer.mjs';
 import { completionTotal, connectionRates } from './devices.mjs';
 
+export async function runReportedSessionAction(action) {
+  try {
+    await action();
+  } catch {
+    // Session commands publish their failures before rejecting.
+  }
+}
+
 export function createInitialState() {
   return {
     online: false,

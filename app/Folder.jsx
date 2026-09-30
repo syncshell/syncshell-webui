@@ -32,6 +32,7 @@ import { Versioning } from './Versioning.jsx';
 import { ItemsDialog } from './ItemsDialog.jsx';
 import { Icon } from './Icon.jsx';
 import { useDismissibleMenu } from './useDismissibleMenu.mjs';
+import { runReportedSessionAction } from '../client/session.mjs';
 
 export function Folder({
   folder,
@@ -76,9 +77,7 @@ export function Folder({
   async function scan() {
     setScanning(true);
     try {
-      await rescan();
-    } catch {
-      // The session reports rescan failures in the global error state.
+      await runReportedSessionAction(() => rescan());
     } finally {
       setScanning(false);
     }
@@ -425,9 +424,9 @@ export function Folder({
               <button
                 class="btn btn-sm btn-default"
                 onClick={() =>
-                  session
-                    .setPaused('folders', folder.id, !folder.paused)
-                    .catch(() => {})
+                  runReportedSessionAction(() =>
+                    session.setPaused('folders', folder.id, !folder.paused),
+                  )
                 }
               >
                 <Icon name={folder.paused ? 'play' : 'pause'} />{' '}

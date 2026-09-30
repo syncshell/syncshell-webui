@@ -30,6 +30,7 @@ import { Tooltip } from './Tooltip.jsx';
 import { Identicon } from './Identicon.jsx';
 import { Icon } from './Icon.jsx';
 import { useDismissibleMenu } from './useDismissibleMenu.mjs';
+import { runReportedSessionAction } from '../client/session.mjs';
 
 export function Device({
   device,
@@ -72,7 +73,6 @@ export function Device({
       (address) => ({ address, source: 'Discovered' }),
     ),
   ];
-  const perform = (promise) => promise.catch(() => {});
   const openAction = (type, extra = {}) => onAction({ type, device, ...extra });
   const rate = (bytes) =>
     unitPrefixed(usesMetricRates ? bytes * 8 : bytes, !usesMetricRates) +
@@ -490,7 +490,7 @@ export function Device({
                   <button
                     class="btn btn-sm btn-default"
                     onClick={() =>
-                      perform(
+                      runReportedSessionAction(() =>
                         session.setPaused(
                           'folders',
                           undefined,
@@ -529,7 +529,7 @@ export function Device({
                   <button
                     class="btn btn-sm btn-default"
                     onClick={() =>
-                      perform(
+                      runReportedSessionAction(() =>
                         session.setPaused(
                           'devices',
                           device.deviceID,

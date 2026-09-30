@@ -4,6 +4,7 @@ import { noticeAction } from '../client/notices.mjs';
 import { timestamp } from '../client/format.mjs';
 import { Identicon } from './Identicon.jsx';
 import { Icon } from './Icon.jsx';
+import { runReportedSessionAction } from '../client/session.mjs';
 
 const color = (action) =>
   ['Ignore', 'Disable Crash Reporting'].includes(action)
@@ -100,8 +101,8 @@ export function Notifications({ cards, session, onAction }) {
                     key={action}
                     class={`btn btn-sm btn-${color(action)}`}
                     onClick={() =>
-                      noticeAction(session, card, action, onAction).catch(
-                        () => {},
+                      runReportedSessionAction(() =>
+                        noticeAction(session, card, action, onAction),
                       )
                     }
                   >

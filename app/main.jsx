@@ -3,7 +3,11 @@ import { desktopActions } from '../client/desktop.mjs';
 import { render } from 'preact';
 import { useEffect, useState } from 'preact/hooks';
 import { createApi } from '../client/api.mjs';
-import { createInitialState, createSession } from '../client/session.mjs';
+import {
+  createInitialState,
+  createSession,
+  runReportedSessionAction,
+} from '../client/session.mjs';
 import { loadEnglish, translator } from '../client/locale.mjs';
 import { deviceName, groupAndSortItems } from '../client/devices.mjs';
 import { UsageReport } from './UsageReport.jsx';
@@ -81,7 +85,6 @@ function App() {
   const cards = notices(state);
   const name = deviceName(self) || 'Syncthing';
   const { t } = locale;
-  const perform = (promise) => promise.catch(() => {});
   function toggleUnits() {
     setUsesMetricRates((value) => {
       try {
@@ -477,7 +480,7 @@ function App() {
                         <button
                           class="btn btn-sm btn-default"
                           onClick={() =>
-                            perform(
+                            runReportedSessionAction(() =>
                               session.setPaused('folders', undefined, true),
                             )
                           }
@@ -489,7 +492,7 @@ function App() {
                         <button
                           class="btn btn-sm btn-default"
                           onClick={() =>
-                            perform(
+                            runReportedSessionAction(() =>
                               session.setPaused('folders', undefined, false),
                             )
                           }
@@ -500,7 +503,9 @@ function App() {
                       {state.config.folders.length > 0 && (
                         <button
                           class="btn btn-sm btn-default"
-                          onClick={() => perform(session.rescan())}
+                          onClick={() =>
+                            runReportedSessionAction(() => session.rescan())
+                          }
                         >
                           <Icon name="refresh" /> {t('Rescan All')}
                         </button>
@@ -565,7 +570,7 @@ function App() {
                           <button
                             class="btn btn-sm btn-default"
                             onClick={() =>
-                              perform(
+                              runReportedSessionAction(() =>
                                 session.setPaused('devices', undefined, true),
                               )
                             }
@@ -577,7 +582,7 @@ function App() {
                           <button
                             class="btn btn-sm btn-default"
                             onClick={() =>
-                              perform(
+                              runReportedSessionAction(() =>
                                 session.setPaused('devices', undefined, false),
                               )
                             }
