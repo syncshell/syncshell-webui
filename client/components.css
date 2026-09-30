@@ -148,24 +148,24 @@ table.table-condensed.recent-changes-table {
   text-align: left;
 }
 
-.port-version-filters {
+.version-filters {
   display: flex;
   flex-wrap: wrap;
   gap: 12px;
   margin-bottom: 12px;
 }
-.port-version-filters label {
+.version-filters label {
   flex: 1 1 180px;
   min-width: 0;
 }
-.port-version-group {
+.version-group {
   margin-top: 12px;
 }
-.port-version-group summary {
+.version-group summary {
   font-size: 16px;
   overflow-wrap: anywhere;
 }
-.port-version-row {
+.version-row {
   display: flex;
   flex-wrap: wrap;
   gap: 12px;
@@ -173,7 +173,7 @@ table.table-condensed.recent-changes-table {
   align-items: center;
   font-size: 14px;
 }
-.port-version-row > * {
+.version-row > * {
   flex: 1 1 220px;
   min-width: 0;
 }

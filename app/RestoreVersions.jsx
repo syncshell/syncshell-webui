@@ -144,7 +144,7 @@ export function RestoreVersions({ api, folder, onClose }) {
       ) : (
         versions && (
           <fieldset disabled={busy || confirm}>
-            <div class="port-version-filters">
+            <div class="version-filters">
               <label>
                 {t('Filter by name')}
                 <input
@@ -179,7 +179,7 @@ export function RestoreVersions({ api, folder, onClose }) {
               {massActions(groups.flatMap(([, files]) => files))}
             </div>
             {groups.map(([parent, files]) => (
-              <details key={parent} class="port-version-group" open>
+              <details key={parent} class="version-group" open>
                 <summary>
                   <Icon name="folder" /> {parent || folder.label || folder.id}
                 </summary>
@@ -187,7 +187,7 @@ export function RestoreVersions({ api, folder, onClose }) {
                 {files.map((file, index) => (
                   <div
                     key={file.path}
-                    class={`port-version-row ${index % 2 === 0 ? 'section-stripe' : ''}`}
+                    class={`version-row ${index % 2 === 0 ? 'section-stripe' : ''}`}
                   >
                     <span class="folder-text" title={file.path}>
                       {file.path.slice(file.path.lastIndexOf('/') + 1)}
