@@ -125,22 +125,22 @@ export async function loadSettings(api, signal) {
 }
 export function advancedSections(config) {
   const sections = [
-    ['GUI', 'gui'],
-    ['LDAP', 'ldap'],
-    ['Options', 'options'],
-    ...config.folders.map((folder, i) => [
-      'Folder: ' + (folder.label || folder.id),
-      'folders.' + i,
-    ]),
-    ...config.devices.map((device, i) => [
-      'Device: ' + (device.name || device.deviceID),
-      'devices.' + i,
-    ]),
-    ['Default Folder', 'defaults.folder'],
-    ['Default Device', 'defaults.device'],
-    ['Default Ignore Patterns', 'defaults.ignores'],
+    { label: 'GUI', path: 'gui' },
+    { label: 'LDAP', path: 'ldap' },
+    { label: 'Options', path: 'options' },
+    ...config.folders.map((folder, index) => ({
+      label: 'Folder: ' + (folder.label || folder.id),
+      path: 'folders.' + index,
+    })),
+    ...config.devices.map((device, index) => ({
+      label: 'Device: ' + (device.name || device.deviceID),
+      path: 'devices.' + index,
+    })),
+    { label: 'Default Folder', path: 'defaults.folder' },
+    { label: 'Default Device', path: 'defaults.device' },
+    { label: 'Default Ignore Patterns', path: 'defaults.ignores' },
   ];
-  return sections.map(([label, path]) => {
+  return sections.map(({ label, path }) => {
     const object = path.split('.').reduce((value, key) => value?.[key], config);
     const fields = Object.entries(object || {}).flatMap(([key, value]) => {
       if (
