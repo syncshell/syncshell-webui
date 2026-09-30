@@ -726,7 +726,7 @@ export function Editor({ action, state, api, session, onClose, onSaved }) {
                       </p>
                       {(draft.xattrFilter?.entries || []).map(
                         (entry, index) => (
-                          <div class="port-xattr-rule" key={index}>
+                          <div class="xattr-rule" key={index}>
                             <input
                               type="checkbox"
                               aria-label={t('permit') + ' ' + (index + 1)}
