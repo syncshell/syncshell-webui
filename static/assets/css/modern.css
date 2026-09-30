@@ -54,10 +54,28 @@
   display: none;
 }
 
+.notification-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 20px;
+  align-items: start;
+}
+
+.notification-grid > .panel {
+  min-width: 0;
+  margin-bottom: 0;
+}
+
 .dashboard-folders,
 .dashboard-devices,
 .notifications {
   min-width: 0;
+}
+
+@media (min-width: 700px) {
+  .notification-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
 }
 
 @media (min-width: 1000px) {
@@ -67,6 +85,10 @@
     gap: 24px;
     align-items: start;
   }
+
+  .notification-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
 }
 
 @media (min-width: 1400px) {
@@ -75,8 +97,9 @@
       minmax(320px, calc((100% - 48px) * 0.25))
       minmax(320px, calc((100% - 48px) * 0.25));
   }
-  .notifications {
-    width: max(280px, calc((100% - 48px) * 0.1875));
+
+  .notification-grid {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
   }
 }
 
@@ -127,21 +150,26 @@
   font-size: 16px;
   display: flex;
   flex-wrap: wrap;
-  align-items: center;
+  align-items: flex-start;
   gap: 0.4em;
 }
 
-.notifications .panel-title > .panel-icon,
-.notifications .panel-title > .syncshell-icon {
-  flex-shrink: 0;
+.notifications .panel-title > .panel-icon {
+  flex: 0 0 auto;
+  margin: 0.125em 0;
+}
+
+.notification-title-text {
+  flex: 1 1 0;
+  min-width: 0;
 }
 
 .notifications .panel-body {
   font-size: 14px;
 }
 
-.notifications .panel-title .pull-right {
-  flex-basis: 100%;
+.notification-time {
+  flex: 1 0 100%;
   font-size: 14px;
   text-align: right;
 }

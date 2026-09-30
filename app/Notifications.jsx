@@ -34,86 +34,86 @@ export function Notifications({ cards, session, onAction }) {
       {!cards.length && (
         <p class="notifications-empty">{t('No pending notifications.')}</p>
       )}
-      {cards.map((card) => (
-        <div class="row" key={card.id}>
-          <div class="col-md-12">
-            <div class={`panel panel-${card.severity}`}>
-              <div class="panel-heading">
-                <h3 class="panel-title">
-                  {card.kind === 'device' ? (
-                    <Identicon id={card.device} />
-                  ) : (
-                    <span class="panel-icon">
-                      <Icon
-                        name={
-                          card.kind === 'folder'
-                            ? 'folder'
-                            : card.severity === 'success'
-                              ? 'zap'
-                              : 'circle-alert'
-                        }
-                      />
-                    </span>
-                  )}
-                  {t(card.title)}
-                  {card.time && (
-                    <span class="pull-right">{timestamp(card.time)}</span>
-                  )}
-                </h3>
-              </div>
-              <div class="panel-body">
-                {(card.paragraphs || []).map((paragraph, index) => (
-                  <p key={index}>{t(paragraph, card.params)}</p>
-                ))}
-                {(card.errors || []).map((error, index) => (
-                  <p key={index}>
-                    <small>{timestamp(error.when)}:</small> {error.message}
-                  </p>
-                ))}
-                {card.watchers && (
-                  <table>
-                    <tbody>
-                      {card.watchers.map((watcher) => (
-                        <tr key={watcher.name}>
-                          <td>{watcher.name}: </td>
-                          <td>{watcher.error}</td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                )}
-                {card.link && (
-                  <p>
-                    <a href={card.link} target="_blank" rel="noreferrer">
-                      <Icon name="info" />
-                      &nbsp;
-                      {t(card.id === 'watchers' ? 'Support' : 'Learn more')}
-                    </a>
-                  </p>
-                )}
-              </div>
-              {card.actions?.length > 0 && (
-                <div class="panel-footer clearfix">
-                  {card.actions.map((action) => (
-                    <button
-                      key={action}
-                      class={`btn btn-sm btn-${color(action)}`}
-                      onClick={() =>
-                        noticeAction(session, card, action, onAction).catch(
-                          () => {},
-                        )
+      <div class="notification-grid">
+        {cards.map((card) => (
+          <div class={`panel panel-${card.severity}`} key={card.id}>
+            <div class="panel-heading">
+              <h3 class="panel-title">
+                {card.kind === 'device' ? (
+                  <Identicon id={card.device} />
+                ) : (
+                  <span class="panel-icon">
+                    <Icon
+                      name={
+                        card.kind === 'folder'
+                          ? 'folder'
+                          : card.severity === 'success'
+                            ? 'zap'
+                            : 'circle-alert'
                       }
-                    >
-                      <Icon name={icon(action)} />
-                      &nbsp;{t(action)}
-                    </button>
-                  ))}
-                </div>
+                    />
+                  </span>
+                )}
+                <span class="notification-title-text">{t(card.title)}</span>
+                {card.time && (
+                  <time class="notification-time" dateTime={card.time}>
+                    {timestamp(card.time)}
+                  </time>
+                )}
+              </h3>
+            </div>
+            <div class="panel-body">
+              {(card.paragraphs || []).map((paragraph, index) => (
+                <p key={index}>{t(paragraph, card.params)}</p>
+              ))}
+              {(card.errors || []).map((error, index) => (
+                <p key={index}>
+                  <small>{timestamp(error.when)}:</small> {error.message}
+                </p>
+              ))}
+              {card.watchers && (
+                <table>
+                  <tbody>
+                    {card.watchers.map((watcher) => (
+                      <tr key={watcher.name}>
+                        <td>{watcher.name}: </td>
+                        <td>{watcher.error}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              )}
+              {card.link && (
+                <p>
+                  <a href={card.link} target="_blank" rel="noreferrer">
+                    <Icon name="info" />
+                    &nbsp;
+                    {t(card.id === 'watchers' ? 'Support' : 'Learn more')}
+                  </a>
+                </p>
               )}
             </div>
+            {card.actions?.length > 0 && (
+              <div class="panel-footer clearfix">
+                {card.actions.map((action) => (
+                  <button
+                    key={action}
+                    class={`btn btn-sm btn-${color(action)}`}
+                    onClick={() =>
+                      noticeAction(session, card, action, onAction).catch(
+                        () => {},
+                      )
+                    }
+                  >
+                    <Icon name={icon(action)} />
+                    &nbsp;{t(action)}
+                  </button>
+                ))}
+              </div>
+            )}
           </div>
-        </div>
-      ))}
+        ))}
+      </div>
     </>
   );
 }
