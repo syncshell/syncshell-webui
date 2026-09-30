@@ -1,10 +1,13 @@
 export const aboutPaths = [
-  ['User Home', ['baseDir-userHome']],
-  ['Configuration Directory', ['baseDir-config']],
-  ['Configuration File', ['config']],
-  ['Device Certificate', ['certFile', 'keyFile']],
-  ['GUI / API HTTPS Certificate', ['httpsCertFile', 'httpsKeyFile']],
-  ['Database Location', ['database']],
-  ['Log File', ['logFile']],
-  ['GUI Override Directory', ['guiAssets']],
+  { label: 'User Home', keys: ['baseDir-userHome'] },
+  { label: 'Configuration Directory', keys: ['baseDir-config'] },
+  { label: 'Configuration File', keys: ['config'] },
+  { label: 'Device Certificate', keys: ['certFile', 'keyFile'] },
+  {
+    label: 'GUI / API HTTPS Certificate',
+    keys: ['httpsCertFile', 'httpsKeyFile'],
+  },
+  { label: 'Database Location', keys: ['database'] },
+  { label: 'Log File', keys: ['logFile'] },
+  { label: 'GUI Override Directory', keys: ['guiAssets'] },
 ];

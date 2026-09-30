@@ -97,7 +97,7 @@ export function About({ api, version, onClose }) {
         <table class="table table-condensed table-striped port-about-paths">
           <caption>{t('Internally used paths:')}</caption>
           <tbody>
-            {aboutPaths.map(([label, keys]) => (
+            {aboutPaths.map(({ label, keys }) => (
               <tr key={label}>
                 <th>{t(label)}</th>
                 <td>
