@@ -24,10 +24,10 @@ export function groupAndSortItems(items, name, id) {
 }
 
 export function completionTotal(folders = {}) {
-  let bytes = 0,
-    needed = 0,
-    items = 0,
-    deletes = 0;
+  let bytes = 0;
+  let needed = 0;
+  let items = 0;
+  let deletes = 0;
   for (const [key, folder] of Object.entries(folders)) {
     if (key.startsWith('_')) continue;
     bytes += folder.globalBytes;

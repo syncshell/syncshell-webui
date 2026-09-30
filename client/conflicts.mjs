@@ -25,8 +25,8 @@ async function record(api, folder, path, signal) {
     throw error;
   }
   if (!usable(info.global)) return null;
-  const available = usable(info.local),
-    file = available ? info.local : info.global;
+  const available = usable(info.local);
+  const file = available ? info.local : info.global;
   return {
     path,
     name: basename(path),

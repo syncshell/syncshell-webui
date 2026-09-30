@@ -101,8 +101,8 @@ export function editorFieldState(
 }
 export function newXattrEntry(entries = []) {
   if (entries.some((entry) => entry.match === '')) return entries;
-  const next = entries.slice(),
-    entry = { match: '', permit: false };
+  const next = entries.slice();
+  const entry = { match: '', permit: false };
   next.splice(
     next.at(-1)?.match === '*' ? next.length - 1 : next.length,
     0,

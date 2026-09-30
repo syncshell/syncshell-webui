@@ -2,8 +2,8 @@
 // SPDX-License-Identifier: MPL-2.0
 
 export function versionGroups(versions, search = '', start = '', end = '') {
-  const groups = new Map(),
-    query = search.toLowerCase().replaceAll('\\', '/');
+  const groups = new Map();
+  const query = search.toLowerCase().replaceAll('\\', '/');
   const minimum = start ? new Date(start).getTime() : -Infinity;
   const maximum = end ? new Date(end).getTime() : Infinity;
   for (const [path, entries] of Object.entries(versions || {}).sort(

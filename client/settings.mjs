@@ -57,8 +57,8 @@ export function prepareSettingsForSave(
   version,
   supported,
 ) {
-  const config = cloneConfig(draft),
-    options = config.options;
+  const config = cloneConfig(draft);
+  const options = config.options;
   if (supported) {
     options.autoUpgradeIntervalH =
       mode === 'none' ? 0 : options.autoUpgradeIntervalH || 12;

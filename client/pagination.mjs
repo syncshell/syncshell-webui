@@ -3,9 +3,9 @@
 // see licenses/angular-utils-pagination.txt
 
 export function paginationPages(current, length, perPage) {
-  const total = Math.ceil(length / perPage),
-    range = 9,
-    half = 5;
+  const total = Math.ceil(length / perPage);
+  const range = 9;
+  const half = 5;
   const start =
     total > range && current > half
       ? current > total - half

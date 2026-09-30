@@ -1,6 +1,6 @@
 export function needsUsageConsent(state) {
-  const options = state.config.options || {},
-    maximum = state.system.urVersionMax;
+  const options = state.config.options || {};
+  const maximum = state.system.urVersionMax;
   return (
     state.ready &&
     options.urAccepted > -1 &&
