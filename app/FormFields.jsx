@@ -28,7 +28,7 @@ export function FormFields({ draft, fields, onChange }) {
                 onChange(field.path, event.currentTarget.value)
               }
             >
-              {field.options.map(([value, label]) => (
+              {field.options.map(({ value, label }) => (
                 <option key={value} value={value}>
                   {t(label)}
                 </option>

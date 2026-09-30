@@ -596,7 +596,7 @@ export function Editor({ action, state, api, session, onClose, onSaved }) {
                               update(field.path, event.currentTarget.value)
                             }
                           >
-                            {field.options.map(([value, label]) => (
+                            {field.options.map(({ value, label }) => (
                               <option key={value} value={value}>
                                 {t(label)}
                               </option>

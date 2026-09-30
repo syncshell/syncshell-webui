@@ -75,7 +75,8 @@ export function editorFieldState(
   if (field.path === 'type' && !isNew && !defaults) {
     value.disabled = draft.type === 'receiveencrypted';
     value.options = field.options.filter(
-      ([type]) => type !== 'receiveencrypted' || draft.type === type,
+      (option) =>
+        option.value !== 'receiveencrypted' || draft.type === option.value,
     );
   }
   value.disabled ||=

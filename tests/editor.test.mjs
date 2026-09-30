@@ -678,8 +678,8 @@ test('new folder names update only an automatic path', () => {
 
 test('folder fields reflect type, versioning and ownership restrictions', () => {
   const typeOptions = [
-    ['sendreceive', 'Send & Receive'],
-    ['receiveencrypted', 'Receive Encrypted'],
+    { value: 'sendreceive', label: 'Send & Receive' },
+    { value: 'receiveencrypted', label: 'Receive Encrypted' },
   ];
   const existingType = editorFieldState(
     { path: 'type', options: typeOptions },
@@ -687,7 +687,9 @@ test('folder fields reflect type, versioning and ownership restrictions', () => 
     { kind: 'folder', isNew: false, defaults: false },
   );
   assert.equal(existingType.disabled, false);
-  assert.deepEqual(existingType.options, [['sendreceive', 'Send & Receive']]);
+  assert.deepEqual(existingType.options, [
+    { value: 'sendreceive', label: 'Send & Receive' },
+  ]);
 
   const encryptedType = editorFieldState(
     { path: 'type', options: typeOptions },

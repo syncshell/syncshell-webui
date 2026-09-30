@@ -43,7 +43,7 @@ export function settingsFields(tab, draft, myID, themes) {
                 type: 'select',
                 options: [...new Set([...themes, draft.gui.theme])]
                   .filter(Boolean)
-                  .map((theme) => [theme, theme]),
+                  .map((theme) => ({ value: theme, label: theme })),
               },
             ]
           : []),
