@@ -26,14 +26,32 @@ const tabs = [
   { id: 'notifications', label: 'Notifications' },
 ];
 const helpLinks = [
-  ['Introduction', 'https://github.com/syncshell/syncshell-webui#readme'],
-  ['Home page', 'https://github.com/syncshell/syncshell-webui'],
-  ['Documentation', 'https://docs.syncthing.net/'],
-  ['Support', 'https://github.com/syncshell/syncshell-webui/issues'],
-  ['Changelog', 'https://github.com/syncshell/syncshell-webui/releases'],
-  ['Statistics', 'https://data.syncthing.net/'],
-  ['Bugs', 'https://github.com/syncshell/syncshell-webui/issues'],
-  ['Source Code', 'https://github.com/syncshell/syncshell-webui'],
+  {
+    label: 'Introduction',
+    url: 'https://github.com/syncshell/syncshell-webui#readme',
+  },
+  {
+    label: 'Home page',
+    url: 'https://github.com/syncshell/syncshell-webui',
+  },
+  { label: 'Documentation', url: 'https://docs.syncthing.net/' },
+  {
+    label: 'Support',
+    url: 'https://github.com/syncshell/syncshell-webui/issues',
+  },
+  {
+    label: 'Changelog',
+    url: 'https://github.com/syncshell/syncshell-webui/releases',
+  },
+  { label: 'Statistics', url: 'https://data.syncthing.net/' },
+  {
+    label: 'Bugs',
+    url: 'https://github.com/syncshell/syncshell-webui/issues',
+  },
+  {
+    label: 'Source Code',
+    url: 'https://github.com/syncshell/syncshell-webui',
+  },
 ];
 const desktop = desktopActions();
 
@@ -190,7 +208,7 @@ function App() {
                 <Icon name="help" /> {t('Help')} <span class="caret" />
               </a>
               <ul class="dropdown-menu">
-                {helpLinks.map(([label, url]) => (
+                {helpLinks.map(({ label, url }) => (
                   <li key={label}>
                     <a href={url} target="_blank" rel="noreferrer">
                       {t(label)}
