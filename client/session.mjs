@@ -123,6 +123,10 @@ export function createSession(
     update({ ...state, error });
   }
 
+  function clearUnavailableUpgradeInfo() {
+    update({ ...state, upgradeInfo: null });
+  }
+
   async function read(path, query) {
     return api.get(path, query, controller.signal);
   }
@@ -303,7 +307,7 @@ export function createSession(
       .then((upgradeInfo) =>
         update({ ...state, upgradeInfo: upgradeInfo || null }),
       )
-      .catch(() => update({ ...state, upgradeInfo: null }));
+      .catch(clearUnavailableUpgradeInfo);
   }
 
   const events = createEventStream(api, {
