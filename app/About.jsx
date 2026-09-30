@@ -94,7 +94,7 @@ export function About({ api, version, onClose }) {
           </ul>
         </>
       ) : (
-        <table class="table table-condensed table-striped port-about-paths">
+        <table class="table table-condensed table-striped about-paths">
           <caption>{t('Internally used paths:')}</caption>
           <tbody>
             {aboutPaths.map(({ label, keys }) => (
