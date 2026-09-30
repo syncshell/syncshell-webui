@@ -5,7 +5,7 @@ import { Dialog } from './Dialog.jsx';
 import { TransferProgress } from './TransferProgress.jsx';
 import { needIcons } from '../client/transfer.mjs';
 import { Tooltip } from './Tooltip.jsx';
-import { itemRoutes, itemTitles, pageItems } from '../client/items.mjs';
+import { itemViews, pageItems } from '../client/items.mjs';
 import { unitPrefixed } from '../client/format.mjs';
 import { Icon } from './Icon.jsx';
 
@@ -25,15 +25,12 @@ export function ItemsDialog({
   const [items, setItems] = useState([]);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+  const view = itemViews[kind];
   useEffect(() => {
     const controller = new AbortController();
     setLoading(true);
     api
-      .get(
-        itemRoutes[kind],
-        { folder: folder.id, page, perpage },
-        controller.signal,
-      )
+      .get(view.route, { folder: folder.id, page, perpage }, controller.signal)
       .then((data) => {
         setItems(pageItems(kind, data));
         setError('');
@@ -45,7 +42,7 @@ export function ItemsDialog({
         if (!controller.signal.aborted) setLoading(false);
       });
     return () => controller.abort();
-  }, [api, folder.id, kind, page, perpage, revision, total]);
+  }, [api, folder.id, kind, page, perpage, revision, total, view.route]);
   async function prioritize(file) {
     try {
       const data = await api.post('db/prio', undefined, {
@@ -61,7 +58,7 @@ export function ItemsDialog({
   }
   return (
     <Dialog
-      title={itemTitles[kind]}
+      title={view.title}
       large
       status={
         kind === 'failed' ||
@@ -69,7 +66,7 @@ export function ItemsDialog({
           ? 'warning'
           : 'info'
       }
-      icon={kind === 'need' ? 'cloud-download' : 'circle-alert'}
+      icon={view.icon}
       onClose={onClose}
     >
       {kind === 'failed' && (

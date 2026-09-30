@@ -1,12 +1,19 @@
-export const itemRoutes = {
-  need: 'db/need',
-  failed: 'folder/errors',
-  local: 'db/localchanged',
-};
-export const itemTitles = {
-  need: 'Out of Sync Items',
-  failed: 'Failed Items',
-  local: 'Locally Changed Items',
+export const itemViews = {
+  need: {
+    route: 'db/need',
+    title: 'Out of Sync Items',
+    icon: 'cloud-download',
+  },
+  failed: {
+    route: 'folder/errors',
+    title: 'Failed Items',
+    icon: 'circle-alert',
+  },
+  local: {
+    route: 'db/localchanged',
+    title: 'Locally Changed Items',
+    icon: 'circle-alert',
+  },
 };
 
 export function neededItems(data) {
