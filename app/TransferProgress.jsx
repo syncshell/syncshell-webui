@@ -13,7 +13,7 @@ export function TransferProgress({ progress, legend = false }) {
       aria-valuemax={legend ? undefined : progress.bytesTotal}
       aria-valuenow={legend ? undefined : progress.bytesDone}
     >
-      {transferSegments.map(([key, label, color]) => (
+      {transferSegments.map(({ key, label, color }) => (
         <div
           key={key}
           class={`progress-bar ${color ? 'progress-bar-' + color : ''}`}

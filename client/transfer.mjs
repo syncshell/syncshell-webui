@@ -1,9 +1,13 @@
 export const transferSegments = [
-  ['reused', 'Reused', 'success'],
-  ['copiedFromOrigin', 'Copied from original', ''],
-  ['copiedFromElsewhere', 'Copied from elsewhere', 'info'],
-  ['pulled', 'Downloaded', 'warning'],
-  ['pulling', 'Downloading', 'danger'],
+  { key: 'reused', label: 'Reused', color: 'success' },
+  { key: 'copiedFromOrigin', label: 'Copied from original', color: '' },
+  {
+    key: 'copiedFromElsewhere',
+    label: 'Copied from elsewhere',
+    color: 'info',
+  },
+  { key: 'pulled', label: 'Downloaded', color: 'warning' },
+  { key: 'pulling', label: 'Downloading', color: 'danger' },
 ];
 export function transferProgress(stats) {
   return Object.fromEntries(
@@ -12,7 +16,7 @@ export function transferProgress(stats) {
       Object.fromEntries(
         Object.entries(files).map(([file, value]) => {
           const parts = Object.fromEntries(
-            transferSegments.map(([key]) => [
+            transferSegments.map(({ key }) => [
               key,
               (100 * value[key]) / value.total,
             ]),
