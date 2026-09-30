@@ -65,10 +65,10 @@ function App() {
       onAuthExpired: () => location.reload(),
     }),
   );
-  const [activeTab, setActiveTab] = useState('overview'),
-    [menu, setMenu] = useState('');
-  const [action, setAction] = useState(null),
-    [usesMetricRates, setUsesMetricRates] = useState(false);
+  const [activeTab, setActiveTab] = useState('overview');
+  const [menu, setMenu] = useState('');
+  const [action, setAction] = useState(null);
+  const [usesMetricRates, setUsesMetricRates] = useState(false);
   const authenticated = Boolean(window.metadata?.authenticated);
   const self = state.config.devices.find(
     (device) => device.deviceID === state.system.myID,

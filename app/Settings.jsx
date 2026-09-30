@@ -17,18 +17,18 @@ import {
 } from '../client/settings.mjs';
 import { timestamp } from '../client/format.mjs';
 export function Settings({ state, api, session, onClose, advanced = false }) {
-  const { t } = useContext(LocaleContext),
-    form = useRef();
+  const { t } = useContext(LocaleContext);
+  const form = useRef();
   const [initial] = useState(() => cloneConfig(state.config));
-  const [draft, setDraft] = useState(() => cloneConfig(initial)),
-    [mode, setMode] = useState(upgradeMode(initial));
-  const [tab, setTab] = useState('General'),
-    [options, setOptions] = useState({ themes: [], upgrade: null });
-  const [busy, setBusy] = useState(false),
-    [error, setError] = useState('');
-  const [nested, setNested] = useState(null),
-    [report, setReport] = useState(null),
-    [discard, setDiscard] = useState(false);
+  const [draft, setDraft] = useState(() => cloneConfig(initial));
+  const [mode, setMode] = useState(upgradeMode(initial));
+  const [tab, setTab] = useState('General');
+  const [options, setOptions] = useState({ themes: [], upgrade: null });
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState('');
+  const [nested, setNested] = useState(null);
+  const [report, setReport] = useState(null);
+  const [discard, setDiscard] = useState(false);
   const fields = settingsFields(tab, draft, state.system.myID, options.themes);
   const ignored = ignoredFolders(draft);
   useEffect(() => {

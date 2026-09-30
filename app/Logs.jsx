@@ -2,15 +2,15 @@ import { useContext, useEffect, useRef, useState } from 'preact/hooks';
 import { LocaleContext } from './locale-context.jsx';
 import { Dialog } from './Dialog.jsx';
 export function Logs({ api, onClose }) {
-  const { t } = useContext(LocaleContext),
-    area = useRef(),
-    pausedRef = useRef(false);
-  const [tab, setTab] = useState('Log'),
-    [entries, setEntries] = useState([]);
+  const { t } = useContext(LocaleContext);
+  const area = useRef();
+  const pausedRef = useRef(false);
+  const [tab, setTab] = useState('Log');
+  const [entries, setEntries] = useState([]);
   const [facilities, setFacilities] = useState({ levels: {}, packages: {} });
-  const [error, setError] = useState(''),
-    [busy, setBusy] = useState(false),
-    [paused, setPaused] = useState(false);
+  const [error, setError] = useState('');
+  const [busy, setBusy] = useState(false);
+  const [paused, setPaused] = useState(false);
   const content = entries
     .map(
       (entry) =>

@@ -20,16 +20,16 @@ export function Conflicts({
   device,
 }) {
   const { t } = useContext(LocaleContext);
-  const [groups, setGroups] = useState([]),
-    [search, setSearch] = useState('');
-  const [selected, setSelected] = useState({}),
-    [loading, setLoading] = useState(false);
+  const [groups, setGroups] = useState([]);
+  const [search, setSearch] = useState('');
+  const [selected, setSelected] = useState({});
+  const [loading, setLoading] = useState(false);
   const [scanning, setScanning] = useState(null);
-  const [errors, setErrors] = useState([]),
-    [message, setMessage] = useState(''),
-    [rename, setRename] = useState(null);
-  const [access, setAccess] = useState({}),
-    [desktopError, setDesktopError] = useState('');
+  const [errors, setErrors] = useState([]);
+  const [message, setMessage] = useState('');
+  const [rename, setRename] = useState(null);
+  const [access, setAccess] = useState({});
+  const [desktopError, setDesktopError] = useState('');
   const controller = useRef();
   const folderKey = folders.map((folder) => folder.id).join('|');
   useEffect(() => {

@@ -10,8 +10,8 @@ export function ConfirmAction({
   onDone,
   devices = [],
 }) {
-  const { t } = useContext(LocaleContext),
-    definition = managementActions[action.type];
+  const { t } = useContext(LocaleContext);
+  const definition = managementActions[action.type];
   const name =
     action.folder?.label ||
     action.folder?.id ||
@@ -21,8 +21,8 @@ export function ConfirmAction({
     (device) =>
       device.deviceID === action.device?.introducedBy && device.introducer,
   );
-  const [busy, setBusy] = useState(false),
-    [error, setError] = useState('');
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState('');
   async function apply() {
     setBusy(true);
     setError('');

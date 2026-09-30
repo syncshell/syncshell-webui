@@ -12,17 +12,17 @@ import { Icon } from './Icon.jsx';
 
 export function RestoreVersions({ api, folder, onClose }) {
   const { t } = useContext(LocaleContext);
-  const [versions, setVersions] = useState(null),
-    [selections, setSelections] = useState({});
-  const [errors, setErrors] = useState({}),
-    [error, setError] = useState('');
-  const [busy, setBusy] = useState(false),
-    [confirm, setConfirm] = useState(false);
-  const [search, setSearch] = useState(''),
-    [start, setStart] = useState(''),
-    [end, setEnd] = useState('');
-  const groups = versionGroups(versions, search, start, end),
-    chosen = selectedVersions(selections);
+  const [versions, setVersions] = useState(null);
+  const [selections, setSelections] = useState({});
+  const [errors, setErrors] = useState({});
+  const [error, setError] = useState('');
+  const [busy, setBusy] = useState(false);
+  const [confirm, setConfirm] = useState(false);
+  const [search, setSearch] = useState('');
+  const [start, setStart] = useState('');
+  const [end, setEnd] = useState('');
+  const groups = versionGroups(versions, search, start, end);
+  const chosen = selectedVersions(selections);
   const count = Object.keys(chosen).length;
   useEffect(() => {
     const controller = new AbortController();

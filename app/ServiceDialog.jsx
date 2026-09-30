@@ -2,10 +2,10 @@ import { useContext, useEffect, useState } from 'preact/hooks';
 import { LocaleContext } from './locale-context.jsx';
 import { Dialog } from './Dialog.jsx';
 export function ServiceDialog({ kind, state, session, onClose }) {
-  const { t } = useContext(LocaleContext),
-    [started] = useState(state.system.startTime);
-  const [phase, setPhase] = useState('confirm'),
-    [error, setError] = useState('');
+  const { t } = useContext(LocaleContext);
+  const [started] = useState(state.system.startTime);
+  const [phase, setPhase] = useState('confirm');
+  const [error, setError] = useState('');
   const major = state.upgradeInfo?.majorNewer;
   const title = error
     ? 'Error'

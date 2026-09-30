@@ -5,9 +5,9 @@ import data from '../client/about-data.json';
 import { aboutPaths } from '../client/about.mjs';
 export function About({ api, version, onClose }) {
   const { t } = useContext(LocaleContext);
-  const [tab, setTab] = useState('Authors'),
-    [paths, setPaths] = useState({}),
-    [error, setError] = useState('');
+  const [tab, setTab] = useState('Authors');
+  const [paths, setPaths] = useState({});
+  const [error, setError] = useState('');
   useEffect(() => {
     const controller = new AbortController();
     if (window.metadata?.authenticated)

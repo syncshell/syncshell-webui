@@ -5,10 +5,10 @@ import { unitPrefixed, timestamp } from '../client/format.mjs';
 import { Pagination } from './Pagination.jsx';
 export function RemoteFiles({ api, folder, device, state, single }) {
   const { t } = useContext(LocaleContext);
-  const [page, setPage] = useState(1),
-    [perpage, setPerpage] = useState(10);
-  const [files, setFiles] = useState([]),
-    [error, setError] = useState('');
+  const [page, setPage] = useState(1);
+  const [perpage, setPerpage] = useState(10);
+  const [files, setFiles] = useState([]);
+  const [error, setError] = useState('');
   const revision =
     state.completion[device.deviceID]?.[folder.id]?.needItems +
     ':' +

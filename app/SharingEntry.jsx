@@ -13,8 +13,8 @@ export function SharingEntry({
   onSelected,
   onPassword,
 }) {
-  const { t } = useContext(LocaleContext),
-    [plain, setPlain] = useState(false);
+  const { t } = useContext(LocaleContext);
+  const [plain, setPlain] = useState(false);
   return (
     <div class="form-group">
       <label title={id}>

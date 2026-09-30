@@ -3,14 +3,14 @@ import { LocaleContext } from './locale-context.jsx';
 import { Dialog } from './Dialog.jsx';
 import { usageReport, decideUsage } from '../client/reports.mjs';
 export function UsageReport({ api, session, state, consent = false, onClose }) {
-  const { t } = useContext(LocaleContext),
-    [maximum] = useState(state.system.urVersionMax || 2);
-  const [version, setVersion] = useState(maximum),
-    [diff, setDiff] = useState(false),
-    [preview, setPreview] = useState(!consent);
-  const [report, setReport] = useState(null),
-    [error, setError] = useState(''),
-    [busy, setBusy] = useState(false);
+  const { t } = useContext(LocaleContext);
+  const [maximum] = useState(state.system.urVersionMax || 2);
+  const [version, setVersion] = useState(maximum);
+  const [diff, setDiff] = useState(false);
+  const [preview, setPreview] = useState(!consent);
+  const [report, setReport] = useState(null);
+  const [error, setError] = useState('');
+  const [busy, setBusy] = useState(false);
   useEffect(() => {
     if (!preview) return;
     const controller = new AbortController();

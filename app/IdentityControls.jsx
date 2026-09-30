@@ -5,10 +5,10 @@ import { identityMessage } from '../client/identity.mjs';
 import { Icon } from './Icon.jsx';
 export function IdentityControls({ device, api }) {
   const { t } = useContext(LocaleContext);
-  const [method, setMethod] = useState(''),
-    [validated, setValidated] = useState(null);
-  const [copied, setCopied] = useState(false),
-    [error, setError] = useState('');
+  const [method, setMethod] = useState('');
+  const [validated, setValidated] = useState(null);
+  const [copied, setCopied] = useState(false);
+  const [error, setError] = useState('');
   const message = validated ? identityMessage(validated, method, t) : null;
   async function use(action) {
     setError('');
