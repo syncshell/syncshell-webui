@@ -60,7 +60,7 @@ export function Logs({ api, onClose }) {
     if (!pausedRef.current && area.current)
       area.current.scrollTop = area.current.scrollHeight;
   }, [entries, tab]);
-  async function level(key, value) {
+  async function setLoggingLevel(key, value) {
     setBusy(true);
     try {
       await api.post('system/loglevels', {
@@ -144,7 +144,7 @@ export function Logs({ api, onClose }) {
                       disabled={busy}
                       value={value}
                       onChange={(event) =>
-                        level(key, event.currentTarget.value)
+                        setLoggingLevel(key, event.currentTarget.value)
                       }
                     >
                       {[
