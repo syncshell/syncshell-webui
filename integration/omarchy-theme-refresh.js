@@ -44,6 +44,10 @@
     current.parentNode.insertBefore(replacement, current.nextSibling);
   }
 
+  function ignoreThemeCheckFailure() {
+    // Theme refresh is best effort; the next poll retries transient failures.
+  }
+
   function checkTheme() {
     if (document.hidden) return;
 
@@ -59,7 +63,7 @@
         var version = value.trim();
         if (/^[A-Za-z0-9._-]+$/.test(version)) applyTheme(version);
       })
-      .catch(function () {});
+      .catch(ignoreThemeCheckFailure);
   }
 
   document.addEventListener('visibilitychange', checkTheme);
