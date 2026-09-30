@@ -73,7 +73,7 @@ test('notification cards form a responsive grid with aligned headers', async ({
   await page.route('**/rest/cluster/pending/folders', (route) =>
     route.fulfill({
       json: {
-        'port-verification': {
+        'test-folder': {
           offeredBy: {
             [peer]: {
               label: 'Existing folder',

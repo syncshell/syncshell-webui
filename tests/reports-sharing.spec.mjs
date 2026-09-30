@@ -154,7 +154,7 @@ test('pending encrypted sharing opens the editor and preserves a password across
     await expect.poll(() => !!peer).toBe(true);
     await route.fulfill({
       json: {
-        'port-verification': {
+        'test-folder': {
           offeredBy: {
             [peer.deviceID]: {
               label: 'Encrypted offer',

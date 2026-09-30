@@ -115,7 +115,7 @@ test('recent changes use compact columns and scroll only when needed', async ({
             modifiedBy: '',
             action: 'modified',
             type: 'file',
-            folder: 'port-verification',
+            folder: 'test-folder',
             path,
           },
         },

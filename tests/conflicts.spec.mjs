@@ -59,7 +59,7 @@ test('rechecks show activity until completion and clear it after errors', async 
     await expect(button.locator('.text-warning .icon-spin')).toBeVisible();
     await expect(button).toBeDisabled();
     if (fail) {
-      expect(request.searchParams.get('folder')).toBe('port-verification');
+      expect(request.searchParams.get('folder')).toBe('test-folder');
       expect(request.searchParams.get('sub')).toBe('notes');
       await expect(all).toHaveAttribute('aria-busy', 'false');
     } else expect([...request.searchParams]).toEqual([]);

@@ -18,7 +18,7 @@ async function api(path, body) {
 }
 const { myID } = await api('system/status');
 const device = await api('config/devices/' + myID);
-const folder = await api('config/folders/port-verification');
+const folder = await api('config/folders/test-folder');
 const browser = await chromium.launch({
   headless: true,
   ...(process.env.SYNCSHELL_CHROMIUM
@@ -43,7 +43,7 @@ try {
   await page.evaluate(() => {
     window.configurationAcceptance = 'retained';
   });
-  await api('config/folders/port-verification', {
+  await api('config/folders/test-folder', {
     label: 'Updated through native events',
   });
   await expect(page.locator('.dashboard-folders .panel-heading')).toContainText(
@@ -56,6 +56,6 @@ try {
   console.log('Real configuration save and event-driven refresh passed');
 } finally {
   await api('config/devices/' + myID, { name: device.name });
-  await api('config/folders/port-verification', { label: folder.label });
+  await api('config/folders/test-folder', { label: folder.label });
   await browser.close();
 }

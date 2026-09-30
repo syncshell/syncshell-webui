@@ -45,7 +45,7 @@ export async function folderFixture(
           {
             id: 2,
             type: 'FolderScanProgress',
-            data: { folder: 'port-verification', ...progress },
+            data: { folder: 'test-folder', ...progress },
           },
         ],
       });

@@ -65,7 +65,7 @@ test('divergence exposes compact child rows and a working paged error dialog', a
       json: {
         page: Number(url.searchParams.get('page')),
         perpage: Number(url.searchParams.get('perpage')),
-        folder: 'port-verification',
+        folder: 'test-folder',
         errors: [
           {
             path: '<img src=x onerror=alert(1)>literal.txt',

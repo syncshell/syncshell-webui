@@ -234,7 +234,7 @@ func configurePeers(ctx context.Context, primary, peer *testDaemon) error {
 		if err := os.MkdirAll(files, 0700); err != nil {
 			return err
 		}
-		folder["id"], folder["label"], folder["path"] = "port-verification", "Port verification", files
+		folder["id"], folder["label"], folder["path"] = "test-folder", "Test folder", files
 		folder["fsWatcherEnabled"], folder["rescanIntervalS"] = false, 3600
 		folder["devices"] = []map[string]string{{"deviceID": d.id}, {"deviceID": other.id}}
 		config["folders"] = []any{folder}

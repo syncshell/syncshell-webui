@@ -158,7 +158,7 @@ for (const [type, model, label, operation] of [
     await page.route('**/rest/db/' + operation + '?*', async (route) => {
       expect(route.request().method()).toBe('POST');
       expect(new URL(route.request().url()).searchParams.get('folder')).toBe(
-        'port-verification',
+        'test-folder',
       );
       calls++;
       await route.fulfill({ status: 200, body: '' });

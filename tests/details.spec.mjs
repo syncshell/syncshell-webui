@@ -91,6 +91,6 @@ test('remote needed details retain paths metadata and pagination', async ({
   await expect(dialog).toContainText('Unknown');
   await dialog.getByRole('link', { name: '2', exact: true }).click();
   await expect.poll(() => reads.map((read) => read.page)).toEqual([1, 2]);
-  expect(reads[0].folder).toBe('port-verification');
+  expect(reads[0].folder).toBe('test-folder');
   expect(reads[0].device).toBeTruthy();
 });

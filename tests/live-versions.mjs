@@ -27,10 +27,10 @@ async function endpoint(directory) {
 const current = await endpoint(runtime),
   peer = await endpoint(peerRoot);
 async function peerScan() {
-  const response = await fetch(
-    peer.url + 'rest/db/scan?folder=port-verification',
-    { method: 'POST', headers: { 'X-API-Key': peer.key } },
-  );
+  const response = await fetch(peer.url + 'rest/db/scan?folder=test-folder', {
+    method: 'POST',
+    headers: { 'X-API-Key': peer.key },
+  });
   if (!response.ok) throw new Error('Peer scan failed');
   await response.text();
 }
@@ -75,12 +75,12 @@ try {
   page.on('pageerror', (error) => failures.push(error.message));
   await page.goto(current.url);
   await page.locator('.dashboard-folders .panel-heading').click();
-  const original = await api(page, 'config/folders/port-verification');
+  const original = await api(page, 'config/folders/test-folder');
   const source = await mkdtemp(join(peerRoot, 'files', 'port-version-'));
   const relative = basename(source) + '/version.txt';
   const destination = join(runtime, 'files', relative);
   try {
-    await api(page, 'config/folders/port-verification', 'PATCH', {
+    await api(page, 'config/folders/test-folder', 'PATCH', {
       versioning: {
         ...original.versioning,
         type: 'simple',
@@ -171,8 +171,8 @@ try {
       force: true,
     });
     await peerScan();
-    await api(page, 'db/scan?folder=port-verification', 'POST');
-    await api(page, 'config/folders/port-verification', 'PATCH', {
+    await api(page, 'db/scan?folder=test-folder', 'POST');
+    await api(page, 'config/folders/test-folder', 'PATCH', {
       versioning: original.versioning,
     });
     await rm(join(runtime, 'files', '.stversions', basename(source)), {

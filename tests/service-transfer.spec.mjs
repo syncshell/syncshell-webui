@@ -40,7 +40,7 @@ test('needed files show event progress, prioritize a file and refresh when it fi
         id: 2,
         type: 'DownloadProgress',
         data: {
-          'port-verification': {
+          'test-folder': {
             [path]: {
               total: 10,
               reused: 1,
