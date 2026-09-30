@@ -1,4 +1,4 @@
-import { copy, editorFields } from './edit.mjs';
+import { cloneConfig, editorFields } from './edit.mjs';
 const isUnixAddress = (address) =>
   address.startsWith('/') ||
   address.startsWith('unix://') ||
@@ -51,7 +51,7 @@ export function settingsFields(tab, draft, myID, themes) {
   return fields;
 }
 export function settingsConfig(draft, mode, system, version, supported) {
-  const config = copy(draft),
+  const config = cloneConfig(draft),
     options = config.options;
   if (supported) {
     options.autoUpgradeIntervalH =
@@ -90,7 +90,7 @@ export const ignoredFolders = (config) =>
     (device.ignoredFolders || []).map((folder) => ({ device, folder })),
   );
 export function unignore(config, deviceID, folderID) {
-  const next = copy(config);
+  const next = cloneConfig(config);
   if (folderID !== undefined) {
     const device = next.devices.find((device) => device.deviceID === deviceID);
     device.ignoredFolders = device.ignoredFolders.filter(

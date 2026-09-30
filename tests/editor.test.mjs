@@ -2,7 +2,7 @@ import assert from 'node:assert/strict';
 import { test } from 'node:test';
 import {
   changedValue,
-  copy,
+  cloneConfig,
   getValue,
   ignoreLines,
   inputValue,
@@ -88,7 +88,7 @@ function createSaveFixture({
   };
   const session = {
     async changeConfig(edit) {
-      const next = copy(config);
+      const next = cloneConfig(config);
       edit(next);
       savedConfig = next;
       return next;
@@ -139,7 +139,7 @@ test('configuration values are cloned before a dotted path is changed', () => {
     devices: [{ deviceID: 'local' }],
   };
 
-  const cloned = copy(original);
+  const cloned = cloneConfig(original);
   cloned.devices[0].deviceID = 'changed';
   assert.equal(original.devices[0].deviceID, 'local');
   assert.equal(getValue(original, 'versioning.params.keep'), '5');

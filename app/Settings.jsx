@@ -4,7 +4,7 @@ import { Dialog } from './Dialog.jsx';
 import { UsageReport } from './UsageReport.jsx';
 import { Editor } from './Editor.jsx';
 import { FormFields } from './FormFields.jsx';
-import { copy, setValue } from '../client/edit.mjs';
+import { cloneConfig, setValue } from '../client/edit.mjs';
 import {
   settingsTabs,
   settingsFields,
@@ -19,8 +19,8 @@ import { timestamp } from '../client/format.mjs';
 export function Settings({ state, api, session, onClose, advanced = false }) {
   const { t } = useContext(LocaleContext),
     form = useRef();
-  const [initial] = useState(() => copy(state.config));
-  const [draft, setDraft] = useState(() => copy(initial)),
+  const [initial] = useState(() => cloneConfig(state.config));
+  const [draft, setDraft] = useState(() => cloneConfig(initial)),
     [mode, setMode] = useState(upgradeMode(initial));
   const [tab, setTab] = useState('General'),
     [options, setOptions] = useState({ themes: [], upgrade: null });
@@ -47,7 +47,7 @@ export function Settings({ state, api, session, onClose, advanced = false }) {
     setError('');
     try {
       const config = advanced
-        ? copy(draft)
+        ? cloneConfig(draft)
         : settingsConfig(
             draft,
             mode,

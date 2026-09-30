@@ -3,7 +3,7 @@ import { LocaleContext } from './locale-context.jsx';
 import { Dialog } from './Dialog.jsx';
 import { ConfirmAction } from './ConfirmAction.jsx';
 import {
-  copy,
+  cloneConfig,
   getValue,
   editorFields,
   inputValue,
@@ -32,7 +32,7 @@ export function Editor({ action, state, api, session, onClose, onSaved }) {
   const kind = action.type.includes('device') ? 'device' : 'folder';
   const defaults = !!action.defaults;
   const isNew = action.type.startsWith('add');
-  const [draft, setDraft] = useState(() => copy(action[kind]));
+  const [draft, setDraft] = useState(() => cloneConfig(action[kind]));
   const [tab, setTab] = useState(
     action.tab === 'sharing'
       ? 'Sharing'
@@ -242,7 +242,7 @@ export function Editor({ action, state, api, session, onClose, onSaved }) {
           api,
           state,
           kind,
-          draft: { ...copy(draft), paused: true },
+          draft: { ...cloneConfig(draft), paused: true },
           isNew,
           shares,
         });
@@ -264,7 +264,7 @@ export function Editor({ action, state, api, session, onClose, onSaved }) {
         await saveEditor({ session, api, state, kind, draft, isNew, shares });
       }
       saved.current = true;
-      onSaved?.(copy(draft), ignoreLines(ignores));
+      onSaved?.(cloneConfig(draft), ignoreLines(ignores));
       onClose();
     } catch (failure) {
       setError(failure.message);
