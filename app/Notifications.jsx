@@ -101,8 +101,9 @@ export function Notifications({ cards, session, onAction }) {
                     key={action}
                     class={`btn btn-sm btn-${color(action)}`}
                     onClick={() =>
-                      runReportedSessionAction(() =>
-                        noticeAction(session, card, action, onAction),
+                      runReportedSessionAction(
+                        () => noticeAction(session, card, action, onAction),
+                        session.reportError,
                       )
                     }
                   >

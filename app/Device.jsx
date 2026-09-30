@@ -490,12 +490,16 @@ export function Device({
                   <button
                     class="btn btn-sm btn-default"
                     onClick={() =>
-                      runReportedSessionAction(() =>
-                        session.setPaused(
-                          'folders',
-                          undefined,
-                          state.config.folders.some((folder) => !folder.paused),
-                        ),
+                      runReportedSessionAction(
+                        () =>
+                          session.setPaused(
+                            'folders',
+                            undefined,
+                            state.config.folders.some(
+                              (folder) => !folder.paused,
+                            ),
+                          ),
+                        session.reportError,
                       )
                     }
                   >
@@ -529,12 +533,14 @@ export function Device({
                   <button
                     class="btn btn-sm btn-default"
                     onClick={() =>
-                      runReportedSessionAction(() =>
-                        session.setPaused(
-                          'devices',
-                          device.deviceID,
-                          !device.paused,
-                        ),
+                      runReportedSessionAction(
+                        () =>
+                          session.setPaused(
+                            'devices',
+                            device.deviceID,
+                            !device.paused,
+                          ),
+                        session.reportError,
                       )
                     }
                   >

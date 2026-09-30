@@ -480,8 +480,10 @@ function App() {
                         <button
                           class="btn btn-sm btn-default"
                           onClick={() =>
-                            runReportedSessionAction(() =>
-                              session.setPaused('folders', undefined, true),
+                            runReportedSessionAction(
+                              () =>
+                                session.setPaused('folders', undefined, true),
+                              session.reportError,
                             )
                           }
                         >
@@ -492,8 +494,10 @@ function App() {
                         <button
                           class="btn btn-sm btn-default"
                           onClick={() =>
-                            runReportedSessionAction(() =>
-                              session.setPaused('folders', undefined, false),
+                            runReportedSessionAction(
+                              () =>
+                                session.setPaused('folders', undefined, false),
+                              session.reportError,
                             )
                           }
                         >
@@ -504,7 +508,10 @@ function App() {
                         <button
                           class="btn btn-sm btn-default"
                           onClick={() =>
-                            runReportedSessionAction(() => session.rescan())
+                            runReportedSessionAction(
+                              () => session.rescan(),
+                              session.reportError,
+                            )
                           }
                         >
                           <Icon name="refresh" /> {t('Rescan All')}
@@ -570,8 +577,10 @@ function App() {
                           <button
                             class="btn btn-sm btn-default"
                             onClick={() =>
-                              runReportedSessionAction(() =>
-                                session.setPaused('devices', undefined, true),
+                              runReportedSessionAction(
+                                () =>
+                                  session.setPaused('devices', undefined, true),
+                                session.reportError,
                               )
                             }
                           >
@@ -582,8 +591,14 @@ function App() {
                           <button
                             class="btn btn-sm btn-default"
                             onClick={() =>
-                              runReportedSessionAction(() =>
-                                session.setPaused('devices', undefined, false),
+                              runReportedSessionAction(
+                                () =>
+                                  session.setPaused(
+                                    'devices',
+                                    undefined,
+                                    false,
+                                  ),
+                                session.reportError,
                               )
                             }
                           >

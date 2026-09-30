@@ -77,7 +77,7 @@ export function Folder({
   async function scan() {
     setScanning(true);
     try {
-      await runReportedSessionAction(() => rescan());
+      await runReportedSessionAction(() => rescan(), session.reportError);
     } finally {
       setScanning(false);
     }
@@ -424,8 +424,10 @@ export function Folder({
               <button
                 class="btn btn-sm btn-default"
                 onClick={() =>
-                  runReportedSessionAction(() =>
-                    session.setPaused('folders', folder.id, !folder.paused),
+                  runReportedSessionAction(
+                    () =>
+                      session.setPaused('folders', folder.id, !folder.paused),
+                    session.reportError,
                   )
                 }
               >

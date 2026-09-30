@@ -5,11 +5,11 @@ import { createEvents } from './events.mjs';
 import { transferProgress, endedTransfers } from './transfer.mjs';
 import { completionTotal, connectionRates } from './devices.mjs';
 
-export async function runReportedSessionAction(action) {
+export async function runReportedSessionAction(action, reportError) {
   try {
     await action();
-  } catch {
-    // Session commands publish their failures before rejecting.
+  } catch (error) {
+    reportError(error);
   }
 }
 
@@ -121,6 +121,11 @@ export function createSession(
     if (controller?.signal.aborted) return;
     if (error.status === 403) onAuthExpired?.();
     update({ ...state, error });
+  }
+
+  function rethrowCommandError(error) {
+    if (error.status === 403) onAuthExpired?.();
+    throw error;
   }
 
   function clearUnavailableUpgradeInfo() {
@@ -423,8 +428,7 @@ export function createSession(
     try {
       await api.post('db/scan', undefined, { folder, sub }, controller.signal);
     } catch (error) {
-      fail(error);
-      throw error;
+      rethrowCommandError(error);
     }
   }
 
@@ -435,8 +439,7 @@ export function createSession(
       const inSync = await read('config/insync');
       update({ ...state, configInSync: inSync.configInSync });
     } catch (error) {
-      fail(error);
-      throw error;
+      rethrowCommandError(error);
     }
   }
 
@@ -478,8 +481,7 @@ export function createSession(
       );
       update({ ...state, errors: [], seenError });
     } catch (error) {
-      fail(error);
-      throw error;
+      rethrowCommandError(error);
     }
   }
 
@@ -492,8 +494,7 @@ export function createSession(
       );
       await refreshPending();
     } catch (error) {
-      fail(error);
-      throw error;
+      rethrowCommandError(error);
     }
   }
 
@@ -531,8 +532,7 @@ export function createSession(
         controller.signal,
       );
     } catch (error) {
-      fail(error);
-      throw error;
+      rethrowCommandError(error);
     }
   }
 

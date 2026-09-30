@@ -121,16 +121,23 @@ async function createSessionFixture(testContext) {
   };
 }
 
-test('reported session actions settle after their command rejects', async () => {
-  const failure = new Error('already published');
+test('reported session actions pass rejection to their error owner and settle', async () => {
+  const failure = new Error('command failed');
   let calls = 0;
+  let reported;
 
-  await runReportedSessionAction(async () => {
-    calls++;
-    throw failure;
-  });
+  await runReportedSessionAction(
+    async () => {
+      calls++;
+      throw failure;
+    },
+    (error) => {
+      reported = error;
+    },
+  );
 
   assert.equal(calls, 1);
+  assert.equal(reported, failure);
 });
 
 test('folder events leave other folders unchanged and clear obsolete scan data', () => {
@@ -506,7 +513,7 @@ test('service commands clear errors and dismiss pending devices', async (testCon
   assert.equal(fixture.callsFor('system/restart', 'POST').length, 1);
 });
 
-test('failed commands publish errors, reject, and leave configuration unchanged', async (testContext) => {
+test('failed commands reject, leave state unchanged, and expire authentication', async (testContext) => {
   const fixture = await createSessionFixture(testContext);
   const originalConfig = fixture.state().config;
   const saveError = Object.assign(new Error('authentication expired'), {
@@ -524,7 +531,7 @@ test('failed commands publish errors, reject, and leave configuration unchanged'
     (error) => error === saveError,
   );
   assert.equal(fixture.state().config, originalConfig);
-  assert.equal(fixture.state().error, saveError);
+  assert.equal(fixture.state().error, null);
   assert.equal(fixture.authExpirations(), 1);
 
   const restartError = Object.assign(new Error('restart unavailable'), {
@@ -535,6 +542,6 @@ test('failed commands publish errors, reject, and leave configuration unchanged'
     fixture.session.systemAction('restart'),
     (error) => error === restartError,
   );
-  assert.equal(fixture.state().error, restartError);
+  assert.equal(fixture.state().error, null);
   assert.equal(fixture.authExpirations(), 1);
 });
