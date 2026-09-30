@@ -45,7 +45,7 @@ test('local changes show empty-file sizes and page through the API', async ({
   await expect.poll(() => reads).toEqual([1, 2]);
 });
 
-test('remote needed details retain paths metadata and pagination', async ({
+test('remote needed details page through paths with device metadata', async ({
   page,
 }) => {
   await folderFixture(page);

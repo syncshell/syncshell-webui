@@ -213,7 +213,7 @@ test('form values convert according to their field type', () => {
   );
 });
 
-test('ignore text preserves intentional empty and trailing lines', () => {
+test('ignore text keeps intentional empty and trailing lines', () => {
   assert.deepEqual(ignoreLines(''), []);
   assert.deepEqual(ignoreLines('*.tmp\n\n# keep\n'), [
     '*.tmp',

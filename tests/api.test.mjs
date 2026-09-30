@@ -42,7 +42,7 @@ test('relative REST base, encoded query, payload and fresh CSRF cookie', async (
   });
 });
 
-test('HTTP failure preserves status and daemon error; empty success is valid', async () => {
+test('HTTP failure exposes status and daemon error; empty success is valid', async () => {
   const api = client(
     async () =>
       new Response('{"error":"folder missing"}', {

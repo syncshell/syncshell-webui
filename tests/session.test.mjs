@@ -120,7 +120,7 @@ async function createSessionFixture(testContext) {
   };
 }
 
-test('folder event updates preserve unrelated folders and clear obsolete scan data', () => {
+test('folder events leave other folders unchanged and clear obsolete scan data', () => {
   const original = {
     ...createInitialState(),
     model: { a: { state: 'idle' }, b: { state: 'idle' } },
@@ -493,7 +493,7 @@ test('service commands clear errors and dismiss pending devices', async (testCon
   assert.equal(fixture.callsFor('system/restart', 'POST').length, 1);
 });
 
-test('failed commands publish errors, reject, and preserve configuration', async (testContext) => {
+test('failed commands publish errors, reject, and leave configuration unchanged', async (testContext) => {
   const fixture = await createSessionFixture(testContext);
   const originalConfig = fixture.state().config;
   const saveError = Object.assign(new Error('authentication expired'), {

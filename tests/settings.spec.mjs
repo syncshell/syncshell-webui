@@ -12,7 +12,7 @@ async function openSettings(page, advanced = false) {
   return page.getByRole('dialog').first();
 }
 
-test('settings preserve unsaved values across default editing and ignored-list changes', async ({
+test('settings drafts survive default editing and ignored-list changes', async ({
   page,
 }, testInfo) => {
   let original, saved;
@@ -150,7 +150,7 @@ for (const [type, model, label, operation] of [
     'revert',
   ],
 ])
-  test(`${label} requires confirmation and calls the original folder operation`, async ({
+  test(`${label} requires confirmation before the folder request`, async ({
     page,
   }) => {
     await folderFixture(page, { folder: { type }, model });

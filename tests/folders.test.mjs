@@ -83,7 +83,7 @@ test('status colors distinguish progress, warnings, failures and unknown state',
   }
 });
 
-test('details and progress preserve incomplete and zero-byte states', () => {
+test('details and progress expose incomplete and zero-byte states', () => {
   assert.equal(folderStateDetails(folder, idle), false);
   assert.equal(folderStateDetails(folder, undefined), false);
   for (const field of ['localFiles', 'localDirectories', 'localBytes']) {
@@ -115,7 +115,7 @@ test('details and progress preserve incomplete and zero-byte states', () => {
   );
 });
 
-test('compact counts retain truncation at k, M and B boundaries', () => {
+test('compact counts truncate at k, M and B boundaries', () => {
   for (const [input, output] of [
     [0, '0'],
     [999, '999'],

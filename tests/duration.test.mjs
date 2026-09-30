@@ -24,7 +24,7 @@ test('durations use compact English units and truncate at the requested precisio
   assert.throws(() => duration(1, 'weeks'), RangeError);
 });
 
-test('timestamps preserve local yyyy-MM-dd HH:mm:ss layout', () => {
+test('timestamps use local yyyy-MM-dd HH:mm:ss layout', () => {
   assert.equal(timestamp(new Date(2026, 8, 8, 1, 2, 3)), '2026-09-08 01:02:03');
   assert.equal(timestamp('invalid'), '');
 });

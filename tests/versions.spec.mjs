@@ -1,7 +1,7 @@
 import { test, expect } from '@playwright/test';
 import { folderFixture } from './folder-fixture.mjs';
 
-test('version filters, bulk selection and recoverable errors preserve REST values', async ({
+test('version restore sends selected REST values and recovers from errors', async ({
   page,
 }, testInfo) => {
   await page.emulateMedia({ colorScheme: 'dark' });

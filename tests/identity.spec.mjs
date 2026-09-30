@@ -1,6 +1,6 @@
 import { test, expect } from '@playwright/test';
 
-test('identity previews retain encoded text and About retains attribution and paths', async ({
+test('identity links encode text and About lists attribution and paths', async ({
   page,
 }, testInfo) => {
   const pathsResponse = page.waitForResponse(

@@ -112,7 +112,7 @@ test('divergence exposes compact child rows and a working paged error dialog', a
   ).toBeFocused();
 });
 
-test('configuration fields and scanning estimate preserve visibility conditions', async ({
+test('configuration fields and scanning estimate follow visibility rules', async ({
   page,
 }, testInfo) => {
   await folderFixture(page, {

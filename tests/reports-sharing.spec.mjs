@@ -33,7 +33,7 @@ for (const [accepted, answer, result] of [
   [2, 'No', 2],
   [0, 'Yes', 4],
 ])
-  test(`usage consent ${accepted} ${answer} preserves the original decision`, async ({
+  test(`usage consent ${accepted} with ${answer} saves ${result}`, async ({
     page,
   }) => {
     await folderFixture(page);
@@ -66,7 +66,7 @@ for (const [accepted, answer, result] of [
     expect(config().options.urSeen).toBe(4);
   });
 
-test('report versions/difference and major upgrade warning retain their contracts', async ({
+test('report version comparison and major upgrades expose their warnings', async ({
   page,
 }, testInfo) => {
   await folderFixture(page);
@@ -127,7 +127,7 @@ test('report versions/difference and major upgrade warning retain their contract
   ).toContainText('may not be compatible');
 });
 
-test('pending encrypted sharing opens the editor and preserves a password across toggles', async ({
+test('pending encrypted sharing keeps its password across device toggles', async ({
   page,
 }, testInfo) => {
   await folderFixture(page);

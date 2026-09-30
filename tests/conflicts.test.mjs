@@ -50,7 +50,7 @@ function createConflictApi({ trees = {}, records = {} } = {}) {
   };
 }
 
-test('conflict names resolve their original path and reject malformed copies', () => {
+test('conflict names recover source paths and reject malformed copies', () => {
   assert.equal(parentPath('notes/report.txt'), 'notes');
   assert.equal(parentPath('report.txt'), '');
   assert.equal(basename('notes/report.txt'), 'report.txt');

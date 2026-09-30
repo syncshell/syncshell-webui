@@ -1,7 +1,7 @@
 import { test, expect } from '@playwright/test';
 import { folderFixture } from './folder-fixture.mjs';
 
-test('editor retains folder restrictions and ordered attribute rules', async ({
+test('editor enforces folder restrictions and orders attribute rules', async ({
   page,
 }, testInfo) => {
   let saved;
