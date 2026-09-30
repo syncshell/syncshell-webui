@@ -14,7 +14,7 @@ const root = process.env.SYNCSHELL_TEST_OUTPUT || 'test-results';
 if (!runtime || !peerRoot)
   throw new Error('Set SYNCSHELL_TEST_RUNTIME and SYNCSHELL_TEST_PEER');
 async function endpoint(directory) {
-  await access(join(directory, '.syncshell-port-fixture'));
+  await access(join(directory, '.syncshell-test-fixture'));
   const xml = await readFile(join(directory, 'home/config.xml'), 'utf8');
   const address = xml.match(/<gui\b[\s\S]*?<address>(.*?)<\/address>/)[1];
   if (!/^127\.0\.0\.1:\d+$/.test(address))

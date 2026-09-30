@@ -2,7 +2,7 @@ import { chromium, expect } from '@playwright/test';
 import { readFile, access } from 'node:fs/promises';
 
 const runtime = process.env.SYNCSHELL_TEST_RUNTIME;
-await access(runtime + '/.syncshell-port-fixture');
+await access(runtime + '/.syncshell-test-fixture');
 const xml = await readFile(runtime + '/home/config.xml', 'utf8');
 const key = xml.match(/<apikey>(.*?)<\/apikey>/)[1];
 const base = process.env.SYNCSHELL_WEBUI_URL;

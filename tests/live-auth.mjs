@@ -6,7 +6,7 @@ import { randomUUID } from 'node:crypto';
 const runtime = process.env.SYNCSHELL_TEST_RUNTIME;
 if (!runtime)
   throw new Error('Set SYNCSHELL_TEST_RUNTIME to a disposable fixture');
-await readFile(join(runtime, '.syncshell-port-fixture'));
+await readFile(join(runtime, '.syncshell-test-fixture'));
 const xml = await readFile(join(runtime, 'home/config.xml'), 'utf8');
 const key = xml.match(/<apikey>(.*?)<\/apikey>/)[1];
 const address = xml.match(/<gui\b[\s\S]*?<address>(.*?)<\/address>/)[1];

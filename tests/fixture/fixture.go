@@ -131,7 +131,7 @@ func startTestDaemon(ctx context.Context, root, assets string, port int) (*testD
 	if err := os.Mkdir(root, 0700); err != nil {
 		return nil, err
 	}
-	if err := os.WriteFile(filepath.Join(root, ".syncshell-port-fixture"), []byte("disposable Syncthing integration fixture\n"), 0600); err != nil {
+	if err := os.WriteFile(filepath.Join(root, ".syncshell-test-fixture"), []byte("disposable Syncthing integration fixture\n"), 0600); err != nil {
 		return nil, err
 	}
 	home := filepath.Join(root, "home")
