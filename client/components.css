@@ -178,7 +178,7 @@ table.table-condensed.recent-changes-table {
   min-width: 0;
 }
 
-.port-items .folder-text {
+.folder-items-table .folder-text {
   display: inline-block;
   max-width: calc(100% - 36px);
   vertical-align: middle;

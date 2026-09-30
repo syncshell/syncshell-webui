@@ -104,7 +104,7 @@ export function ItemsDialog({
       )}
       {kind === 'need' && progressEnabled && <TransferProgress legend />}
       <table
-        class="table table-striped table-condensed port-items"
+        class="table table-striped table-condensed folder-items-table"
         aria-busy={loading}
       >
         {kind === 'local' && (
