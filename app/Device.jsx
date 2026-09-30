@@ -29,7 +29,7 @@ import { Counts } from './Counts.jsx';
 import { Tooltip } from './Tooltip.jsx';
 import { Identicon } from './Identicon.jsx';
 import { Icon } from './Icon.jsx';
-import { useDismissableMenu } from './useDismissableMenu.mjs';
+import { useDismissibleMenu } from './useDismissibleMenu.mjs';
 
 export function Device({
   device,
@@ -45,7 +45,7 @@ export function Device({
   const [foldersOpen, setFoldersOpen] = useState(false);
   const panel = useRef();
   const foldersMenu = useRef();
-  useDismissableMenu(foldersMenu, foldersOpen, setFoldersOpen);
+  useDismissibleMenu(foldersMenu, foldersOpen, setFoldersOpen);
   useEffect(() => {
     if (open) return stripeSections(panel.current);
   }, [open]);

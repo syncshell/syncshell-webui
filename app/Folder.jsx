@@ -31,7 +31,7 @@ import { Field } from './Field.jsx';
 import { Versioning } from './Versioning.jsx';
 import { ItemsDialog } from './ItemsDialog.jsx';
 import { Icon } from './Icon.jsx';
-import { useDismissableMenu } from './useDismissableMenu.mjs';
+import { useDismissibleMenu } from './useDismissibleMenu.mjs';
 
 export function Folder({
   folder,
@@ -51,7 +51,7 @@ export function Folder({
   const [sharingOpen, setSharingOpen] = useState(false);
   const panel = useRef();
   const sharingMenu = useRef();
-  useDismissableMenu(sharingMenu, sharingOpen, setSharingOpen);
+  useDismissibleMenu(sharingMenu, sharingOpen, setSharingOpen);
   useEffect(() => {
     if (open) return stripeSections(panel.current);
   }, [open]);

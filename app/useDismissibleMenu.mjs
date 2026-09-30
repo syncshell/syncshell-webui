@@ -1,6 +1,6 @@
 import { useEffect } from 'preact/hooks';
 
-export function useDismissableMenu(ref, open, setOpen) {
+export function useDismissibleMenu(ref, open, setOpen) {
   useEffect(() => {
     if (!open) return;
     function pointerdown(event) {
