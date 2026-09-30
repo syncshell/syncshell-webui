@@ -98,7 +98,7 @@ export function IdentityControls({ device, api }) {
           {method === 'email' && (
             <>
               <h5>{t('Subject:')}</h5>
-              <pre class="port-share-text">{message.subject}</pre>
+              <pre class="share-text">{message.subject}</pre>
               <button
                 class="btn btn-default btn-sm"
                 onClick={() => copy(message.subject)}
@@ -108,7 +108,7 @@ export function IdentityControls({ device, api }) {
               <h5>{t('Body:')}</h5>
             </>
           )}
-          <pre class="port-share-text">{message.body}</pre>
+          <pre class="share-text">{message.body}</pre>
           <button
             class="btn btn-default btn-sm"
             onClick={() => copy(message.body)}

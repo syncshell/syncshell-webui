@@ -140,7 +140,7 @@ export function UsageReport({ api, session, state, consent = false, onClose }) {
             </>
           )}
           {report ? (
-            <pre class="port-share-text">{JSON.stringify(report, null, 2)}</pre>
+            <pre class="share-text">{JSON.stringify(report, null, 2)}</pre>
           ) : (
             !error && <p role="status">{t('Loading data...')}</p>
           )}
