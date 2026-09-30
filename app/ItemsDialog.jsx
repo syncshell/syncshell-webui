@@ -35,8 +35,8 @@ export function ItemsDialog({
         setItems(pageItems(kind, data));
         setError('');
       })
-      .catch((failure) => {
-        if (!controller.signal.aborted) setError(failure.message);
+      .catch((error) => {
+        if (!controller.signal.aborted) setError(error.message);
       })
       .finally(() => {
         if (!controller.signal.aborted) setLoading(false);
@@ -52,8 +52,8 @@ export function ItemsDialog({
         perpage,
       });
       setItems(pageItems('need', data));
-    } catch (failure) {
-      setError(failure.message);
+    } catch (error) {
+      setError(error.message);
     }
   }
   function renderItemPath(file) {

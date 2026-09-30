@@ -27,8 +27,8 @@ export function Logs({ api, onClose }) {
     api
       .get('system/loglevels', undefined, controller.signal)
       .then(setFacilities)
-      .catch((value) => {
-        if (!controller.signal.aborted) setError(value.message);
+      .catch((error) => {
+        if (!controller.signal.aborted) setError(error.message);
       });
     async function poll() {
       try {
@@ -44,8 +44,8 @@ export function Logs({ api, onClose }) {
             setError('');
           }
         }
-      } catch (value) {
-        if (!controller.signal.aborted) setError(value.message);
+      } catch (error) {
+        if (!controller.signal.aborted) setError(error.message);
       } finally {
         if (!controller.signal.aborted) timer = setTimeout(poll, 2000);
       }
@@ -69,8 +69,8 @@ export function Logs({ api, onClose }) {
       });
       setFacilities(await api.get('system/loglevels'));
       setError('');
-    } catch (value) {
-      setError(value.message);
+    } catch (error) {
+      setError(error.message);
     } finally {
       setBusy(false);
     }

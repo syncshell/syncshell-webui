@@ -33,8 +33,8 @@ export function ServiceDialog({ kind, state, session, onClose }) {
         state.config.gui.useTLS !== (location.protocol === 'https:')
       )
         location.protocol = state.config.gui.useTLS ? 'https:' : 'http:';
-    } catch (value) {
-      setError(value.message);
+    } catch (error) {
+      setError(error.message);
     }
   }
   function renderFooter() {

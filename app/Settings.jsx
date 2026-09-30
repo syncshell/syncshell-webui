@@ -58,8 +58,8 @@ export function Settings({ state, api, session, onClose, advanced = false }) {
       await session.saveConfig(config);
       onClose();
       if (initial.gui.theme !== config.gui.theme) location.reload();
-    } catch (value) {
-      setError(value.message);
+    } catch (error) {
+      setError(error.message);
     } finally {
       setBusy(false);
     }
@@ -80,8 +80,8 @@ export function Settings({ state, api, session, onClose, advanced = false }) {
         defaults: true,
         [kind]: await api.get('config/defaults/' + kind),
       });
-    } catch (value) {
-      setError(value.message);
+    } catch (error) {
+      setError(error.message);
     }
   }
   async function generateKey() {
@@ -90,8 +90,8 @@ export function Settings({ state, api, session, onClose, advanced = false }) {
         'gui.apiKey',
         (await api.get('svc/random/string', { length: 32 })).random,
       );
-    } catch (value) {
-      setError(value.message);
+    } catch (error) {
+      setError(error.message);
     }
   }
   function preview() {

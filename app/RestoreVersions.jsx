@@ -29,8 +29,8 @@ export function RestoreVersions({ api, folder, onClose }) {
     api
       .get('folder/versions', { folder: folder.id }, controller.signal)
       .then(setVersions)
-      .catch((value) => {
-        if (!controller.signal.aborted) setError(value.message);
+      .catch((error) => {
+        if (!controller.signal.aborted) setError(error.message);
       });
     return () => controller.abort();
   }, [api, folder.id]);
@@ -52,8 +52,8 @@ export function RestoreVersions({ api, folder, onClose }) {
         );
         setVersions(await api.get('folder/versions', { folder: folder.id }));
       }
-    } catch (value) {
-      setError(value.message);
+    } catch (error) {
+      setError(error.message);
     } finally {
       setBusy(false);
     }

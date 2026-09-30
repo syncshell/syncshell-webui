@@ -24,9 +24,9 @@ export function Login() {
         stayLoggedIn,
       });
       location.reload();
-    } catch (failure) {
+    } catch (error) {
       setError(
-        failure.status === 403
+        error.status === 403
           ? 'Incorrect user name or password.'
           : 'Login failed, see Syncthing logs for details.',
       );

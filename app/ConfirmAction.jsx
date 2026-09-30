@@ -29,8 +29,8 @@ export function ConfirmAction({
     try {
       await performManagement(action, session, api);
       onDone();
-    } catch (value) {
-      setError(value.message);
+    } catch (error) {
+      setError(error.message);
     } finally {
       setBusy(false);
     }

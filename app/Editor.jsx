@@ -105,8 +105,8 @@ export function Editor({ action, state, api, session, onClose, onSaved }) {
     api
       .get('system/browse', { current: draft.path }, controller.signal)
       .then(setDirectories)
-      .catch((value) => {
-        if (!controller.signal.aborted) setError(value.message);
+      .catch((error) => {
+        if (!controller.signal.aborted) setError(error.message);
       });
     return () => controller.abort();
   }, [api, kind, isNew, defaults, draft.path]);
@@ -135,7 +135,7 @@ export function Editor({ action, state, api, session, onClose, onSaved }) {
           setLoadedIgnores(true);
           if (data.error) setError(data.error);
         })
-        .catch((failure) => setError(failure.message));
+        .catch((error) => setError(error.message));
     }
   }, []);
   function tabDisabled(name) {
@@ -172,8 +172,8 @@ export function Editor({ action, state, api, session, onClose, onSaved }) {
       setIgnores(originalIgnores.current.join('\n'));
       setLoadedIgnores(true);
       if (data.error) setError(data.error);
-    } catch (failure) {
-      setError(failure.message);
+    } catch (error) {
+      setError(error.message);
     } finally {
       setBusy(false);
     }
@@ -266,8 +266,8 @@ export function Editor({ action, state, api, session, onClose, onSaved }) {
       saved.current = true;
       onSaved?.(cloneConfig(draft), ignoreLines(ignores));
       onClose();
-    } catch (failure) {
-      setError(failure.message);
+    } catch (error) {
+      setError(error.message);
     } finally {
       setBusy(false);
     }
@@ -283,8 +283,8 @@ export function Editor({ action, state, api, session, onClose, onSaved }) {
           { folder: draft.id },
         );
         await session.setPaused('folders', draft.id, !!draft.paused);
-      } catch (failure) {
-        session.reportError(failure);
+      } catch (error) {
+        session.reportError(error);
       }
     }
     onClose();

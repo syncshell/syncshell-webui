@@ -14,8 +14,8 @@ export function About({ api, version, onClose }) {
       api
         .get('system/paths', undefined, controller.signal)
         .then(setPaths)
-        .catch((value) => {
-          if (!controller.signal.aborted) setError(value.message);
+        .catch((error) => {
+          if (!controller.signal.aborted) setError(error.message);
         });
     return () => controller.abort();
   }, [api]);

@@ -20,8 +20,8 @@ export function UsageReport({ api, session, state, consent = false, onClose }) {
         setReport(value);
         setError('');
       })
-      .catch((value) => {
-        if (!controller.signal.aborted) setError(value.message);
+      .catch((error) => {
+        if (!controller.signal.aborted) setError(error.message);
       });
     return () => controller.abort();
   }, [api, version, diff, preview]);
@@ -30,8 +30,8 @@ export function UsageReport({ api, session, state, consent = false, onClose }) {
     try {
       await decideUsage(session, maximum, accepted);
       onClose();
-    } catch (value) {
-      setError(value.message);
+    } catch (error) {
+      setError(error.message);
     } finally {
       setBusy(false);
     }

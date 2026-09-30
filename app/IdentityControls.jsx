@@ -21,15 +21,15 @@ export function IdentityControls({ device, api }) {
         await navigator.clipboard.writeText(value.deviceID);
         setCopied(true);
       } else setMethod(action);
-    } catch (value) {
-      setError(value.message);
+    } catch (error) {
+      setError(error.message);
     }
   }
   async function copy(text) {
     try {
       await navigator.clipboard.writeText(text);
-    } catch (value) {
-      setError(value.message);
+    } catch (error) {
+      setError(error.message);
     }
   }
   return (

@@ -25,8 +25,8 @@ export function RemoteFiles({ api, folder, device, state, single }) {
         setFiles(data.files || []);
         setError('');
       })
-      .catch((failure) => {
-        if (!controller.signal.aborted) setError(failure.message);
+      .catch((error) => {
+        if (!controller.signal.aborted) setError(error.message);
       });
     return () => controller.abort();
   }, [api, folder.id, device.deviceID, page, perpage, revision]);
