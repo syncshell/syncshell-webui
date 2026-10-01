@@ -1,17 +1,6 @@
 import { useContext } from 'preact/hooks';
-import { FormFields } from '../../FormFields.jsx';
 import { LocaleContext } from '../../locale-context.jsx';
-
-function SettingsFields({ describedBy, draft, fields, onUpdate }) {
-  return (
-    <FormFields
-      describedBy={describedBy}
-      draft={draft}
-      fields={fields}
-      onChange={onUpdate}
-    />
-  );
-}
+import { SettingsFields } from './SettingsFields.jsx';
 
 export function GuiSettings({
   addressOverridden,
@@ -27,7 +16,7 @@ export function GuiSettings({
         describedBy={describedBy}
         draft={draft}
         fields={fields}
-        onUpdate={onUpdate}
+        onChange={onUpdate}
       />
       {addressOverridden && (
         <p class="text-warning">
@@ -46,7 +35,7 @@ export function ConnectionSettings({ describedBy, draft, fields, onUpdate }) {
       describedBy={describedBy}
       draft={draft}
       fields={fields}
-      onUpdate={onUpdate}
+      onChange={onUpdate}
     />
   );
 }

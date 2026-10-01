@@ -6,7 +6,6 @@ import { loadSettingsOptions } from './loadSettingsOptions.mjs';
 import { prepareSettingsForSave } from './prepareSettingsForSave.mjs';
 import { Dialog } from '../../Dialog.jsx';
 import { Editor } from '../../Editor.jsx';
-import { FormFields } from '../../FormFields.jsx';
 import { LocaleContext } from '../../locale-context.jsx';
 import { Tabs } from '../../Tabs.jsx';
 import { UsageReport } from '../reports/UsageReport.jsx';
@@ -16,6 +15,7 @@ import {
 } from './IgnoredSettings.jsx';
 import { GeneralSettings } from './GeneralSettings.jsx';
 import { ConnectionSettings, GuiSettings } from './StandardSettings.jsx';
+import { AdvancedConfigFields } from './AdvancedConfigFields.jsx';
 
 export function SettingsDialog({
   state,
@@ -163,7 +163,7 @@ export function SettingsDialog({
                   <details key={section.path} class="panel panel-default">
                     <summary class="panel-heading">{t(section.label)}</summary>
                     <div class="panel-body">
-                      <FormFields
+                      <AdvancedConfigFields
                         describedBy={error ? 'settings-error' : undefined}
                         draft={draft}
                         fields={section.fields}

@@ -1,11 +1,11 @@
-import { getValue, inputValue, changedValue } from '../client/edit.mjs';
+import { getValue, inputValue, changedValue } from '../../../client/edit.mjs';
 import {
   CheckboxFormControl,
   MultilineFormControl,
   NumberFormControl,
   SelectFormControl,
   TextFormControl,
-} from './FormControls.jsx';
+} from '../../FormControls.jsx';
 
 function FormControl({ describedBy, draft, field, onChange }) {
   const id = 'config-' + field.path;
@@ -76,7 +76,7 @@ function FormControl({ describedBy, draft, field, onChange }) {
   }
 }
 
-export function FormFields({ describedBy, draft, fields, onChange }) {
+export function SettingsFields({ describedBy, draft, fields, onChange }) {
   return fields.map((field) => (
     <div class="form-group" key={field.path}>
       <FormControl

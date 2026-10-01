@@ -1,6 +1,6 @@
 import { useContext } from 'preact/hooks';
-import { FormFields } from '../../FormFields.jsx';
 import { LocaleContext } from '../../locale-context.jsx';
+import { SettingsFields } from './SettingsFields.jsx';
 
 export function GeneralSettings({
   describedBy,
@@ -19,7 +19,7 @@ export function GeneralSettings({
   const { t } = useContext(LocaleContext);
   return (
     <>
-      <FormFields
+      <SettingsFields
         describedBy={describedBy}
         draft={draft}
         fields={fields}
