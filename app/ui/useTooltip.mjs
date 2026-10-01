@@ -1,6 +1,8 @@
+import { useEffect } from 'preact/hooks';
+
 let nextTooltip = 0;
 
-export function bindTooltip(trigger, tip) {
+function bindTooltip(trigger, tip) {
   let showTimer;
   let hideTimer;
   tip.id = 'syncshell-tooltip-' + ++nextTooltip;
@@ -77,4 +79,8 @@ export function bindTooltip(trigger, tip) {
     window.removeEventListener('resize', position);
     window.removeEventListener('scroll', position, true);
   };
+}
+
+export function useTooltip(trigger, tip) {
+  useEffect(() => bindTooltip(trigger.current, tip.current), []);
 }

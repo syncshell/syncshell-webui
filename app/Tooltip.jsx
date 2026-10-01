@@ -1,7 +1,7 @@
-import { useContext, useEffect, useRef } from 'preact/hooks';
-import { bindTooltip } from '../client/tooltip.mjs';
+import { useContext, useRef } from 'preact/hooks';
 import { LocaleContext } from './core/locale/LocaleContext.jsx';
 import { Icon } from './Icon.jsx';
+import { useTooltip } from './ui/useTooltip.mjs';
 
 export function Tooltip({
   icon = '',
@@ -17,7 +17,7 @@ export function Tooltip({
   const { t } = useContext(LocaleContext);
   const trigger = useRef();
   const tip = useRef();
-  useEffect(() => bindTooltip(trigger.current, tip.current), []);
+  useTooltip(trigger, tip);
   return (
     <>
       <span
