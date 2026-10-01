@@ -150,6 +150,7 @@ export const test = base.extend({
     const requestsToClose = [...pending];
     for (const request of requestsToClose) request.deliver(null);
     await Promise.all(requestsToClose.map((request) => request.done));
+    await page.unrouteAll({ behavior: 'ignoreErrors' });
   },
 });
 
