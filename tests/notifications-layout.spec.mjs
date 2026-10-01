@@ -160,6 +160,13 @@ test('notification cards form a responsive grid with aligned headers', async ({
     await page.setViewportSize({ width, height: 900 });
     await expectColumns(panels, columns);
     await expectAlignedHeaders(panels);
+    if (width === 829) {
+      expect(
+        await page
+          .locator('.notification-grid')
+          .evaluate((node) => Math.round(node.getBoundingClientRect().width)),
+      ).toBe(700);
+    }
   }
 
   await page.emulateMedia({ colorScheme: 'dark' });

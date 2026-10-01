@@ -43,6 +43,8 @@
   .notification-grid {
     display: grid;
     grid-template-columns: minmax(0, 1fr);
+    max-inline-size: 700px;
+    margin-inline: auto;
     gap: var(--space-6);
     align-items: start;
   }
@@ -110,6 +112,8 @@
   @media (min-width: 900px) {
     .notification-grid {
       grid-template-columns: repeat(2, minmax(0, 1fr));
+      max-inline-size: none;
+      margin-inline: 0;
     }
   }
 
