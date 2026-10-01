@@ -22,6 +22,12 @@ import { ConnectionDetails } from './ConnectionDetails.jsx';
 import { TransferRates } from './TransferRates.jsx';
 import './DeviceCard.css';
 
+const deviceFlags = [
+  { property: 'introducer', label: 'Introducer' },
+  { property: 'autoAcceptFolders', label: 'Auto Accept' },
+  { property: 'untrusted', label: 'Untrusted' },
+];
+
 export function DeviceCard({
   device,
   state,
@@ -196,12 +202,8 @@ export function DeviceCard({
                           {device.allowedNetworks.join(', ')}
                         </DeviceDefinitionRow>
                       )}
-                      {[
-                        ['introducer', 'Introducer'],
-                        ['autoAcceptFolders', 'Auto Accept'],
-                        ['untrusted', 'Untrusted'],
-                      ].map(
-                        ([property, label]) =>
+                      {deviceFlags.map(
+                        ({ property, label }) =>
                           device[property] && (
                             <DeviceDefinitionRow key={property} label={label}>
                               {t('Yes')}

@@ -5,15 +5,33 @@ import { MenuButton } from '../ui/MenuButton.jsx';
 import './MainNavigation.css';
 
 const helpLinks = [
-  ['Introduction', 'https://github.com/syncshell/syncshell-webui#readme'],
-  ['Home page', 'https://github.com/syncshell/syncshell-webui'],
-  ['Documentation', 'https://docs.syncthing.net/'],
-  ['Support', 'https://github.com/syncshell/syncshell-webui/issues'],
-  ['Changelog', 'https://github.com/syncshell/syncshell-webui/releases'],
-  ['Statistics', 'https://data.syncthing.net/'],
-  ['Bugs', 'https://github.com/syncshell/syncshell-webui/issues'],
-  ['Source Code', 'https://github.com/syncshell/syncshell-webui'],
-].map(([label, url]) => ({ label, url }));
+  {
+    label: 'Introduction',
+    url: 'https://github.com/syncshell/syncshell-webui#readme',
+  },
+  {
+    label: 'Home page',
+    url: 'https://github.com/syncshell/syncshell-webui',
+  },
+  { label: 'Documentation', url: 'https://docs.syncthing.net/' },
+  {
+    label: 'Support',
+    url: 'https://github.com/syncshell/syncshell-webui/issues',
+  },
+  {
+    label: 'Changelog',
+    url: 'https://github.com/syncshell/syncshell-webui/releases',
+  },
+  { label: 'Statistics', url: 'https://data.syncthing.net/' },
+  {
+    label: 'Bugs',
+    url: 'https://github.com/syncshell/syncshell-webui/issues',
+  },
+  {
+    label: 'Source Code',
+    url: 'https://github.com/syncshell/syncshell-webui',
+  },
+];
 
 export function MainNavigation({
   api,

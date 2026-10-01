@@ -1,46 +1,52 @@
 import { useLocale } from '../../core/locale/LocaleContext.jsx';
 
+const versioningFields = {
+  simple: [
+    { key: 'keep', label: 'Keep Versions', minimum: 1 },
+    { key: 'cleanoutDays', label: 'Clean out after', minimum: 0 },
+  ],
+  trashcan: [{ key: 'cleanoutDays', label: 'Clean out after', minimum: 0 }],
+  staggered: [
+    { key: 'maxAge', label: 'Maximum Age', minimum: 0, usesDays: true },
+  ],
+  external: [
+    { key: 'command', label: 'External Versioning Command', type: 'text' },
+  ],
+};
+
 export function FolderVersioningFields({ draft, dispatch }) {
   const { t } = useLocale();
   if (!draft.versioning.type) return null;
 
   const fields =
-    draft.versioning.type === 'simple'
-      ? [
-          ['keep', 'Keep Versions'],
-          ['cleanoutDays', 'Clean out after'],
-        ]
-      : draft.versioning.type === 'trashcan'
-        ? [['cleanoutDays', 'Clean out after']]
-        : draft.versioning.type === 'staggered'
-          ? [['maxAge', 'Maximum Age']]
-          : [['command', 'External Versioning Command']];
+    versioningFields[draft.versioning.type] || versioningFields.external;
 
-  return fields.map(([key, label]) => (
-    <div class="form-group" key={key}>
-      <label for={'version-' + key}>
-        {t(label)}
-        {key === 'maxAge' ? ' (' + t('days') + ')' : ''}
+  return fields.map((field) => (
+    <div class="form-group" key={field.key}>
+      <label for={'version-' + field.key}>
+        {t(field.label)}
+        {field.usesDays ? ' (' + t('days') + ')' : ''}
       </label>
       <input
-        id={'version-' + key}
+        id={'version-' + field.key}
         class="form-control"
-        type={key === 'command' ? 'text' : 'number'}
-        min={key === 'keep' ? 1 : 0}
+        type={field.type || 'number'}
+        min={field.minimum}
         required
         value={
-          key === 'maxAge'
-            ? Math.floor(Number(draft.versioning.params?.[key] || 0) / 86400)
-            : draft.versioning.params?.[key] || ''
+          field.usesDays
+            ? Math.floor(
+                Number(draft.versioning.params?.[field.key] || 0) / 86400,
+              )
+            : draft.versioning.params?.[field.key] || ''
         }
         onInput={(event) =>
           dispatch({
             type: 'set-folder-versioning-parameter',
-            key,
-            value:
-              key === 'maxAge'
-                ? String(Number(event.currentTarget.value) * 86400)
-                : event.currentTarget.value,
+            key: field.key,
+            value: field.usesDays
+              ? String(Number(event.currentTarget.value) * 86400)
+              : event.currentTarget.value,
           })
         }
       />
