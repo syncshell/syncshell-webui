@@ -1,4 +1,4 @@
-import { getValue } from '../app/core/config/configValues.mjs';
+import { getValue } from '../core/config/configValues.mjs';
 
 export function inputValue(draft, field) {
   const value = getValue(draft, field.path);

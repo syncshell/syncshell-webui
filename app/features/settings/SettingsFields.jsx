@@ -1,5 +1,5 @@
 import { getValue } from '../../core/config/configValues.mjs';
-import { inputValue, changedValue } from '../../../client/edit.mjs';
+import { inputValue, changedValue } from '../../ui/formValues.mjs';
 import {
   CheckboxFormControl,
   MultilineFormControl,
