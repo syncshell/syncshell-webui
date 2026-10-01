@@ -2,10 +2,10 @@ import assert from 'node:assert/strict';
 import { test } from 'node:test';
 import {
   createSession,
-  createInitialState,
   reduceFolderEvent,
   runReportedSessionAction,
 } from '../client/session.mjs';
+import { createInitialState } from '../client/session-state.mjs';
 
 async function createSessionFixture(testContext) {
   const calls = [];

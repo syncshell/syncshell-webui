@@ -1,0 +1,27 @@
+export function createInitialState() {
+  return {
+    online: false,
+    ready: false,
+    error: null,
+    config: { folders: [], devices: [], options: {}, gui: {} },
+    system: {},
+    version: {},
+    model: {},
+    scanProgress: {},
+    folderStats: {},
+    deviceStats: {},
+    connections: {},
+    connectionsTotal: {},
+    completion: {},
+    discoveryCache: {},
+    pendingDevices: {},
+    pendingFolders: {},
+    globalChanges: [],
+    errors: [],
+    seenError: '',
+    configInSync: true,
+    downloadProgress: {},
+    itemsRevision: {},
+    upgradeInfo: null,
+  };
+}

@@ -3,11 +3,8 @@ import { desktopActions } from '../client/desktop.mjs';
 import { render } from 'preact';
 import { useEffect, useState } from 'preact/hooks';
 import { createApi } from '../client/api.mjs';
-import {
-  createInitialState,
-  createSession,
-  runReportedSessionAction,
-} from '../client/session.mjs';
+import { createSession, runReportedSessionAction } from '../client/session.mjs';
+import { createInitialState } from '../client/session-state.mjs';
 import { loadEnglish, translator } from '../client/locale.mjs';
 import { deviceName, groupAndSortItems } from '../client/devices.mjs';
 import { UsageReport } from './UsageReport.jsx';

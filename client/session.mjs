@@ -4,6 +4,7 @@
 import { createEvents } from './events.mjs';
 import { transferProgress, endedTransfers } from './transfer.mjs';
 import { completionTotal, connectionRates } from './devices.mjs';
+import { createInitialState } from './session-state.mjs';
 
 export async function runReportedSessionAction(action, reportError) {
   try {
@@ -11,34 +12,6 @@ export async function runReportedSessionAction(action, reportError) {
   } catch (error) {
     reportError(error);
   }
-}
-
-export function createInitialState() {
-  return {
-    online: false,
-    ready: false,
-    error: null,
-    config: { folders: [], devices: [], options: {}, gui: {} },
-    system: {},
-    version: {},
-    model: {},
-    scanProgress: {},
-    folderStats: {},
-    deviceStats: {},
-    connections: {},
-    connectionsTotal: {},
-    completion: {},
-    discoveryCache: {},
-    pendingDevices: {},
-    pendingFolders: {},
-    globalChanges: [],
-    errors: [],
-    seenError: '',
-    configInSync: true,
-    downloadProgress: {},
-    itemsRevision: {},
-    upgradeInfo: null,
-  };
 }
 
 export function reduceFolderEvent(state, event) {
