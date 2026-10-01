@@ -31,7 +31,7 @@ import { Field } from './Field.jsx';
 import { Versioning } from './Versioning.jsx';
 import { ItemsDialog } from './ItemsDialog.jsx';
 import { Icon } from './Icon.jsx';
-import { useDismissibleMenu } from './useDismissibleMenu.mjs';
+import { MenuButton } from './MenuButton.jsx';
 import { runReportedSessionAction } from '../client/session.mjs';
 
 export function Folder({
@@ -49,10 +49,7 @@ export function Folder({
   const [open, setOpen] = useState(false);
   const [scanning, setScanning] = useState(false);
   const [itemsKind, setItemsKind] = useState('');
-  const [sharingOpen, setSharingOpen] = useState(false);
   const panel = useRef();
-  const sharingMenu = useRef();
-  useDismissibleMenu(sharingMenu, sharingOpen, setSharingOpen);
   useEffect(() => {
     if (open) return stripeSections(panel.current);
   }, [open]);
@@ -370,24 +367,22 @@ export function Folder({
                   {t(managementActions[type].title)}
                 </button>
               ))}
-              <div
-                ref={sharingMenu}
-                class={`dropdown folder-sharing pull-left ${sharingOpen ? 'open' : ''}`}
+              <MenuButton
+                className="folder-sharing pull-left"
+                buttonClass="btn btn-sm btn-default"
+                disabled={
+                  !folder.devices.some(
+                    (device) => device.deviceID !== state.system.myID,
+                  )
+                }
+                label={
+                  <>
+                    <Icon name="share" /> {t('Shared')} <span class="caret" />
+                  </>
+                }
               >
-                <button
-                  class="btn btn-sm btn-default dropdown-toggle"
-                  aria-expanded={sharingOpen}
-                  disabled={
-                    !folder.devices.some(
-                      (device) => device.deviceID !== state.system.myID,
-                    )
-                  }
-                  onClick={() => setSharingOpen(!sharingOpen)}
-                >
-                  <Icon name="share" /> {t('Shared')} <span class="caret" />
-                </button>
-                <ul class="dropdown-menu">
-                  {folder.devices
+                {({ close }) =>
+                  folder.devices
                     .filter((device) => device.deviceID !== state.system.myID)
                     .map((member) => {
                       const device = state.config.devices.find(
@@ -399,7 +394,7 @@ export function Folder({
                             href="#edit-device"
                             onClick={(event) => {
                               event.preventDefault();
-                              setSharingOpen(false);
+                              close();
                               if (device)
                                 onAction({ type: 'edit-device', device });
                             }}
@@ -418,9 +413,9 @@ export function Folder({
                           </a>
                         </li>
                       );
-                    })}
-                </ul>
-              </div>
+                    })
+                }
+              </MenuButton>
               <button
                 class="btn btn-sm btn-default"
                 onClick={() =>
