@@ -2,7 +2,7 @@ import { useContext, useEffect, useState } from 'preact/hooks';
 import { LocaleContext } from '../../locale-context.jsx';
 import { Pagination } from '../../Pagination.jsx';
 import { Dialog } from '../../Dialog.jsx';
-import { TransferProgress } from '../../TransferProgress.jsx';
+import { TransferProgress } from '../transfers/TransferProgress.jsx';
 import { needIcons } from '../../../client/transfer.mjs';
 import { Tooltip } from '../../Tooltip.jsx';
 import { itemViews, pageItems } from '../../../client/items.mjs';

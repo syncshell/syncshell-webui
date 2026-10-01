@@ -1,7 +1,8 @@
 import { useContext } from 'preact/hooks';
-import { LocaleContext } from './locale-context.jsx';
-import { transferSegments } from '../client/transfer.mjs';
-import { unitPrefixed } from '../client/format.mjs';
+import { unitPrefixed } from '../../../client/format.mjs';
+import { transferSegments } from '../../../client/transfer.mjs';
+import { LocaleContext } from '../../locale-context.jsx';
+
 export function TransferProgress({ progress, legend = false }) {
   const { t } = useContext(LocaleContext);
   return (
