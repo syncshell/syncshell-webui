@@ -27,7 +27,7 @@ import {
   prepareDeviceEditorAction,
   reduceDeviceDraft,
   saveDeviceEditor,
-} from '../client/device-editor.mjs';
+} from '../app/features/devices/device-editor.mjs';
 
 const folderContext = {
   isNew: false,

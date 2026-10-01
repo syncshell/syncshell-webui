@@ -19,7 +19,7 @@ import {
   deviceEditorFields,
   reduceDeviceDraft,
   saveDeviceEditor,
-} from '../client/device-editor.mjs';
+} from './features/devices/device-editor.mjs';
 import {
   folderEditorFieldState,
   folderEditorFields,

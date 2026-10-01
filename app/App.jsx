@@ -9,7 +9,7 @@ import { deviceName } from './features/devices/device-status.mjs';
 import { UsageReport } from './UsageReport.jsx';
 import { needsUsageConsent } from '../client/reports.mjs';
 import { prepareFolderEditorAction } from './features/folders/folder-editor.mjs';
-import { prepareDeviceEditorAction } from '../client/device-editor.mjs';
+import { prepareDeviceEditorAction } from './features/devices/device-editor.mjs';
 import { notices } from '../client/notices.mjs';
 import { FolderCard } from './features/folders/FolderCard.jsx';
 import { Device } from './Device.jsx';
