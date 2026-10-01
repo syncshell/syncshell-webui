@@ -35,6 +35,7 @@ import {
 } from './features/folders/folder-editor.mjs';
 import { Icon } from './Icon.jsx';
 import { Tabs } from './Tabs.jsx';
+import { FolderVersioningFields } from './features/folders/FolderVersioningFields.jsx';
 
 export function Editor({ action, state, api, session, onClose, onSaved }) {
   const { t } = useContext(LocaleContext);
@@ -714,53 +715,12 @@ export function Editor({ action, state, api, session, onClose, onSaved }) {
                     )}
                   </div>
                 ))}
-                {tab === 'File Versioning' &&
-                  draft.versioning.type &&
-                  (draft.versioning.type === 'simple'
-                    ? [
-                        ['keep', 'Keep Versions'],
-                        ['cleanoutDays', 'Clean out after'],
-                      ]
-                    : draft.versioning.type === 'trashcan'
-                      ? [['cleanoutDays', 'Clean out after']]
-                      : draft.versioning.type === 'staggered'
-                        ? [['maxAge', 'Maximum Age']]
-                        : [['command', 'External Versioning Command']]
-                  ).map(([key, label]) => (
-                    <div class="form-group" key={key}>
-                      <label for={'version-' + key}>
-                        {t(label)}
-                        {key === 'maxAge' ? ' (' + t('days') + ')' : ''}
-                      </label>
-                      <input
-                        id={'version-' + key}
-                        class="form-control"
-                        type={key === 'command' ? 'text' : 'number'}
-                        min={key === 'keep' ? 1 : 0}
-                        required
-                        value={
-                          key === 'maxAge'
-                            ? Math.floor(
-                                Number(draft.versioning.params?.[key] || 0) /
-                                  86400,
-                              )
-                            : draft.versioning.params?.[key] || ''
-                        }
-                        onInput={(event) =>
-                          dispatchFolder({
-                            type: 'set-folder-versioning-parameter',
-                            key,
-                            value:
-                              key === 'maxAge'
-                                ? String(
-                                    Number(event.currentTarget.value) * 86400,
-                                  )
-                                : event.currentTarget.value,
-                          })
-                        }
-                      />
-                    </div>
-                  ))}
+                {tab === 'File Versioning' && (
+                  <FolderVersioningFields
+                    draft={draft}
+                    dispatch={dispatchFolder}
+                  />
+                )}
                 {kind === 'folder' &&
                   tab === 'Advanced' &&
                   (draft.syncXattrs || draft.sendXattrs) && (
