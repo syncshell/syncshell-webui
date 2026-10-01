@@ -16,8 +16,8 @@
 }
 
 body {
-  color: {{foreground}} !important;
-  background-color: {{background}} !important;
+  color: {{foreground}};
+  background-color: {{background}};
 }
 
 a {
@@ -39,9 +39,9 @@ a:focus,
 .modal-footer,
 .dropdown-menu,
 .open > .dropdown-toggle {
-  color: {{foreground}} !important;
-  background-color: {{surface_dark}} !important;
-  border-color: {{muted}} !important;
+  color: {{foreground}};
+  background-color: {{surface_dark}};
+  border-color: {{muted}};
 }
 
 .nav-tabs > li:not(.active):not(.disabled) > a,
@@ -50,7 +50,7 @@ a:focus,
 .dropdown > a,
 .dropdown-menu > li > a,
 .hidden-xs > a {
-  color: {{foreground}} !important;
+  color: {{foreground}};
 }
 
 .dropdown-menu > li > a:hover,
@@ -60,37 +60,37 @@ a:focus,
 li.hidden-xs:hover,
 .navbar-link:hover,
 .navbar-link:focus {
-  color: {{foreground_light}} !important;
-  background-color: {{selection}} !important;
+  color: {{foreground_light}};
+  background-color: {{selection}};
 }
 
 .dropdown-menu > .active > a,
 .nav-tabs > li.active > a,
 .nav-tabs > li.active > a:hover,
 .nav-tabs > li.active > a:focus {
-  color: {{foreground_light}} !important;
-  background-color: {{selection}} !important;
-  border-color: {{muted}} !important;
+  color: {{foreground_light}};
+  background-color: {{selection}};
+  border-color: {{muted}};
 }
 
 .divider,
 .nav-tabs,
 .panel-group .panel-heading + .panel-collapse > .panel-body,
 .panel-group .panel-heading + .panel-collapse > .list-group {
-  border-color: {{muted}} !important;
+  border-color: {{muted}};
 }
 
 .divider,
 .nav-tabs {
-  background-color: {{muted}} !important;
+  background-color: {{muted}};
 }
 
 .panel,
 .modal-content,
 .popover {
-  color: {{foreground}} !important;
-  background-color: {{background}} !important;
-  border-color: {{muted}} !important;
+  color: {{foreground}};
+  background-color: {{background}};
+  border-color: {{muted}};
 }
 
 .panel-default > .panel-heading,
@@ -99,91 +99,91 @@ li.hidden-xs:hover,
 .form-control,
 .form-control[readonly="readonly"],
 .checkbox[disabled] {
-  color: {{foreground}} !important;
-  background-color: {{surface}} !important;
-  border-color: {{muted}} !important;
+  color: {{foreground}};
+  background-color: {{surface}};
+  border-color: {{muted}};
 }
 
 .section-stripe,
 .table-striped > tbody > tr:nth-of-type(odd) {
-  background-color: {{surface_dark}} !important;
+  background-color: {{surface_dark}};
 }
 
 .help-block,
 .checkbox[disabled] *,
 .checkbox[disabled] .help-block {
-  color: {{foreground_dark}} !important;
+  color: {{foreground_dark}};
 }
 
 .btn-default,
 .pagination > li > a,
 .pagination > li > span {
-  color: {{foreground}} !important;
-  background-color: {{surface}} !important;
-  border-color: {{muted}} !important;
+  color: {{foreground}};
+  background-color: {{surface}};
+  border-color: {{muted}};
 }
 
 .btn-default:hover,
 .btn-default:focus,
 .pagination > li > a:hover,
 .pagination > li > a:focus {
-  color: {{foreground_light}} !important;
-  background-color: {{selection}} !important;
+  color: {{foreground_light}};
+  background-color: {{selection}};
 }
 
 .btn-primary,
 .panel-progress,
 .progress-bar {
-  background-color: {{accent}} !important;
+  background-color: {{accent}};
 }
 
 .btn-success,
 .progress-bar-success {
-  background-color: {{green}} !important;
+  background-color: {{green}};
 }
 
 .btn-info,
 .progress-bar-info {
-  background-color: {{magenta}} !important;
+  background-color: {{magenta}};
 }
 
 .btn-warning,
 .progress-bar-warning {
-  background-color: {{yellow}} !important;
+  background-color: {{yellow}};
 }
 
 .btn-danger,
 .progress-bar-danger,
 .alert-danger {
-  background-color: {{red}} !important;
+  background-color: {{red}};
 }
 
 .alert-info {
-  color: {{background}} !important;
-  background-color: {{cyan}} !important;
+  color: {{background}};
+  background-color: {{cyan}};
 }
 
 .alert-warning,
 .panel-warning > .panel-heading {
-  color: {{background}} !important;
-  background-color: {{yellow}} !important;
+  color: {{background}};
+  background-color: {{yellow}};
 }
 
 .text-success {
-  color: {{green}} !important;
+  color: {{green}};
 }
 
 .text-warning {
-  color: {{orange}} !important;
+  color: {{orange}};
 }
 
 .folder-change-time,
 .review-rechecking {
-  color: {{yellow}} !important;
+  color: {{yellow}};
 }
 
 .text-danger {
-  color: {{red}} !important;
+  color: {{red}};
 }
 
 .identicon rect {
