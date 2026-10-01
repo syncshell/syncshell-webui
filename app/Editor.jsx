@@ -3,16 +3,7 @@ import { LocaleContext } from './core/locale/LocaleContext.jsx';
 import { Dialog } from './Dialog.jsx';
 import { ConfirmManagementAction } from './features/management/ConfirmManagementAction.jsx';
 import { cloneConfig, ignoreLines } from '../client/edit.mjs';
-import { deviceFieldHelp } from './features/devices/DeviceDefinitionRow.jsx';
 import { folderFieldHelp } from './features/folders/FolderDefinitionRow.jsx';
-import { ShareDeviceIdentity } from './features/devices/ShareDeviceIdentity.jsx';
-import { DeviceSharingFields } from './features/devices/DeviceSharingFields.jsx';
-import {
-  deviceEditorFieldState,
-  deviceEditorFields,
-  reduceDeviceDraft,
-  saveDeviceEditor,
-} from './features/devices/device-editor.mjs';
 import {
   folderEditorFieldState,
   folderEditorFields,
@@ -33,11 +24,9 @@ import { EditorField } from './EditorField.jsx';
 
 export function Editor({ action, state, api, session, onClose, onSaved }) {
   const { t } = useContext(LocaleContext);
-  const kind = action.type.includes('device') ? 'device' : 'folder';
-  const activeFieldHelp = kind === 'folder' ? folderFieldHelp : deviceFieldHelp;
   const defaults = !!action.defaults;
-  const isNew = action.type.startsWith('add');
-  const [draft, setDraft] = useState(() => cloneConfig(action[kind]));
+  const isNew = action.type === 'add-folder';
+  const [draft, setDraft] = useState(() => cloneConfig(action.folder));
   const [tab, setTab] = useState(
     action.tab === 'sharing'
       ? 'Sharing'
@@ -67,24 +56,13 @@ export function Editor({ action, state, api, session, onClose, onSaved }) {
       ]),
     ),
   );
-  const [shares, setShares] = useState(() =>
-    Object.fromEntries(
-      state.config.folders.map((folder) => {
-        const member = folder.devices.find(
-          (device) => device.deviceID === draft.deviceID,
-        );
-        return [
-          folder.id,
-          { selected: !!member, password: member?.encryptionPassword || '' },
-        ];
-      }),
-    ),
-  );
-  const tabs = (
-    kind === 'folder'
-      ? ['General', 'Sharing', 'File Versioning', 'Ignore Patterns', 'Advanced']
-      : ['General', 'Sharing', 'Advanced']
-  ).filter((name) => !defaults || name !== 'Sharing');
+  const tabs = [
+    'General',
+    'Sharing',
+    'File Versioning',
+    'Ignore Patterns',
+    'Advanced',
+  ].filter((name) => !defaults || name !== 'Sharing');
   const tabItems = tabs.map((name) => ({
     id: name,
     tabId: 'editor-' + name.toLowerCase().replaceAll(' ', '-') + '-tab',
@@ -92,28 +70,19 @@ export function Editor({ action, state, api, session, onClose, onSaved }) {
     label: t(name),
     disabled: tabDisabled(name),
   }));
-  const describedFields =
-    kind === 'device' ? deviceEditorFields(tab) : folderEditorFields(tab);
-  const fields = describedFields
-    .map((field) =>
-      kind === 'device'
-        ? deviceEditorFieldState(field, draft, state.system.myID)
-        : folderEditorFieldState(field, draft, { isNew, defaults }),
-    )
+  const fields = folderEditorFields(tab)
+    .map((field) => folderEditorFieldState(field, draft, { isNew, defaults }))
     .filter(
       (field) =>
         !field.hidden &&
         (!defaults || !['id', 'deviceID'].includes(field.path)),
     );
   const title = defaults
-    ? 'Edit ' + (kind === 'folder' ? 'Folder' : 'Device') + ' Defaults'
-    : (isNew ? 'Add ' : 'Edit ') + (kind === 'folder' ? 'Folder' : 'Device');
-  const overlap =
-    kind === 'folder'
-      ? overlappingPath(draft, state.config, state.system)
-      : null;
+    ? 'Edit Folder Defaults'
+    : (isNew ? 'Add ' : 'Edit ') + 'Folder';
+  const overlap = overlappingPath(draft, state.config, state.system);
   useEffect(() => {
-    if (kind !== 'folder' || (!isNew && !defaults) || !draft.path) return;
+    if ((!isNew && !defaults) || !draft.path) return;
     const controller = new AbortController();
     api
       .get('system/browse', {
@@ -125,9 +94,9 @@ export function Editor({ action, state, api, session, onClose, onSaved }) {
         if (!controller.signal.aborted) setError(error.message);
       });
     return () => controller.abort();
-  }, [api, kind, isNew, defaults, draft.path]);
+  }, [api, isNew, defaults, draft.path]);
   useEffect(() => {
-    if (kind === 'folder' && isNew && state.config.defaults.folder.path)
+    if (isNew && state.config.defaults.folder.path)
       setDraft((previous) => ({
         ...previous,
         path: folderPath(
@@ -136,13 +105,13 @@ export function Editor({ action, state, api, session, onClose, onSaved }) {
           state.system.pathSeparator,
         ),
       }));
-    if (defaults && kind === 'folder') {
+    if (defaults) {
       originalIgnores.current = state.config.defaults.ignores.lines;
       setIgnores(originalIgnores.current.join('\n'));
       setLoadedIgnores(true);
       return;
     }
-    if (kind === 'folder' && !isNew && draft.type !== 'receiveencrypted') {
+    if (!isNew && draft.type !== 'receiveencrypted') {
       api
         .get('db/ignores', { query: { folder: draft.id } })
         .then((data) => {
@@ -157,18 +126,13 @@ export function Editor({ action, state, api, session, onClose, onSaved }) {
   function tabDisabled(name) {
     return (
       (savingAddedIgnores && name !== 'Ignore Patterns') ||
-      (kind === 'folder' &&
-        draft.type === 'receiveencrypted' &&
-        name === 'Ignore Patterns')
+      (draft.type === 'receiveencrypted' && name === 'Ignore Patterns')
     );
   }
   function updateField(field, value) {
     if (field.path === 'path') autoPath.current = false;
-    setDraft((previous) => {
-      if (kind === 'device') {
-        return reduceDeviceDraft(previous, { type: field.action, value });
-      }
-      return reduceFolderDraft(
+    setDraft((previous) =>
+      reduceFolderDraft(
         previous,
         { type: field.action, value },
         {
@@ -178,8 +142,8 @@ export function Editor({ action, state, api, session, onClose, onSaved }) {
           config: state.config,
           system: state.system,
         },
-      );
-    });
+      ),
+    );
   }
   function dispatchFolder(action) {
     setDraft((previous) =>
@@ -262,22 +226,6 @@ export function Editor({ action, state, api, session, onClose, onSaved }) {
           ),
     }));
   }
-  function shareFolder(id, property, value) {
-    setShares((shares) => ({
-      ...shares,
-      [id]: { ...shares[id], [property]: value },
-    }));
-  }
-  function selectDeviceFolders(selected) {
-    setShares((previous) =>
-      Object.fromEntries(
-        Object.entries(previous).map(([id, share]) => [
-          id,
-          { ...share, selected },
-        ]),
-      ),
-    );
-  }
   function saveDraft(options = {}) {
     const request = {
       session,
@@ -285,12 +233,9 @@ export function Editor({ action, state, api, session, onClose, onSaved }) {
       state,
       draft,
       isNew,
-      shares,
       ...options,
     };
-    return kind === 'device'
-      ? saveDeviceEditor(request)
-      : saveFolderEditor(request);
+    return saveFolderEditor(request);
   }
   async function save() {
     if (!form.current.reportValidity()) return;
@@ -309,12 +254,7 @@ export function Editor({ action, state, api, session, onClose, onSaved }) {
           query: { folder: draft.id },
         });
         await session.setPaused('folders', draft.id, !!draft.paused);
-      } else if (
-        kind === 'folder' &&
-        isNew &&
-        addIgnores &&
-        draft.type !== 'receiveencrypted'
-      ) {
+      } else if (isNew && addIgnores && draft.type !== 'receiveencrypted') {
         await saveDraft({
           draft: { ...cloneConfig(draft), paused: true },
         });
@@ -322,11 +262,7 @@ export function Editor({ action, state, api, session, onClose, onSaved }) {
         await loadAddedIgnores();
         return;
       } else {
-        if (
-          kind === 'folder' &&
-          loadedIgnores &&
-          ignores !== originalIgnores.current.join('\n')
-        )
+        if (loadedIgnores && ignores !== originalIgnores.current.join('\n'))
           await api.post('db/ignores', {
             body: { ignore: ignoreLines(ignores) },
             query: { folder: draft.id },
@@ -360,18 +296,15 @@ export function Editor({ action, state, api, session, onClose, onSaved }) {
   }
   const footer = (
     <>
-      {!defaults &&
-        !isNew &&
-        savePhase === newFolderSavePhases.editing &&
-        draft.deviceID !== state.system.myID && (
-          <button
-            class="btn btn-warning btn-sm pull-left"
-            disabled={busy}
-            onClick={() => setRemoving(true)}
-          >
-            {t('Remove')}
-          </button>
-        )}
+      {!defaults && !isNew && savePhase === newFolderSavePhases.editing && (
+        <button
+          class="btn btn-warning btn-sm pull-left"
+          disabled={busy}
+          onClick={() => setRemoving(true)}
+        >
+          {t('Remove')}
+        </button>
+      )}
       <button
         class="btn btn-primary btn-sm"
         disabled={busy || (savingAddedIgnores && !addedIgnoresReady)}
@@ -418,9 +351,7 @@ export function Editor({ action, state, api, session, onClose, onSaved }) {
           <datalist id="editor-groups">
             {[
               ...new Set(
-                state.config[kind === 'folder' ? 'folders' : 'devices']
-                  .map((item) => item.group)
-                  .filter(Boolean),
+                state.config.folders.map((item) => item.group).filter(Boolean),
               ),
             ].map((group) => (
               <option key={group} value={group} />
@@ -434,7 +365,7 @@ export function Editor({ action, state, api, session, onClose, onSaved }) {
               'editor-' + tab.toLowerCase().replaceAll(' ', '-') + '-tab'
             }
           >
-            {tab === 'Sharing' && kind === 'folder' ? (
+            {tab === 'Sharing' ? (
               <FolderSharingFields
                 folder={draft}
                 devices={state.config.devices}
@@ -445,16 +376,6 @@ export function Editor({ action, state, api, session, onClose, onSaved }) {
                 onSelectAll={selectFolderDevices}
                 onSelected={shareDevice}
                 onPassword={sharePassword}
-              />
-            ) : tab === 'Sharing' ? (
-              <DeviceSharingFields
-                device={draft}
-                folders={state.config.folders}
-                pendingFolders={state.pendingFolders}
-                completion={state.completion}
-                shares={shares}
-                onSelectAll={selectDeviceFolders}
-                onChange={shareFolder}
               />
             ) : tab === 'Ignore Patterns' ? (
               <FolderIgnorePatterns
@@ -472,15 +393,12 @@ export function Editor({ action, state, api, session, onClose, onSaved }) {
               />
             ) : (
               <>
-                {kind === 'device' && tab === 'General' && !defaults && (
-                  <ShareDeviceIdentity device={draft} api={api} />
-                )}
                 {fields.map((field) => (
                   <div class="form-group" key={field.path}>
                     <EditorField
                       field={field}
                       draft={draft}
-                      help={activeFieldHelp[field.label]}
+                      help={folderFieldHelp[field.label]}
                       hasError={Boolean(error)}
                       isNew={isNew}
                       defaults={defaults}
@@ -506,8 +424,7 @@ export function Editor({ action, state, api, session, onClose, onSaved }) {
                     dispatch={dispatchFolder}
                   />
                 )}
-                {kind === 'folder' &&
-                  tab === 'Advanced' &&
+                {tab === 'Advanced' &&
                   (draft.syncXattrs || draft.sendXattrs) && (
                     <FolderExtendedAttributes
                       draft={draft}
@@ -521,7 +438,7 @@ export function Editor({ action, state, api, session, onClose, onSaved }) {
       </Dialog>
       {removing && (
         <ConfirmManagementAction
-          action={{ type: 'remove-' + kind, [kind]: draft }}
+          action={{ type: 'remove-folder', folder: draft }}
           api={api}
           session={session}
           devices={state.config.devices}
