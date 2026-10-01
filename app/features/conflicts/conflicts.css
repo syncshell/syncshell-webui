@@ -2,9 +2,6 @@
   max-width: 1500px;
   --review-action-width: 230px;
 }
-html:lang(de) .conflict-review {
-  --review-action-width: 300px;
-}
 .review-tools {
   display: flex;
   flex-wrap: wrap;
@@ -21,8 +18,6 @@ html:lang(de) .conflict-review {
 }
 .review-message {
   font-size: 14px;
-}
-.review-message {
   overflow-wrap: anywhere;
 }
 .review-message:empty {
