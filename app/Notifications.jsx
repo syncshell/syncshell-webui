@@ -2,7 +2,7 @@ import { useContext } from 'preact/hooks';
 import { LocaleContext } from './locale-context.jsx';
 import { noticeAction } from '../client/notices.mjs';
 import { timestamp } from '../client/format.mjs';
-import { Identicon } from './Identicon.jsx';
+import { DeviceIdenticon } from './features/devices/DeviceIdenticon.jsx';
 import { Icon } from './Icon.jsx';
 import { runReportedSessionAction } from '../client/session.mjs';
 
@@ -41,7 +41,7 @@ export function Notifications({ cards, session, onAction }) {
             <div class="panel-heading">
               <h3 class="panel-title">
                 {card.kind === 'device' ? (
-                  <Identicon id={card.device} />
+                  <DeviceIdenticon id={card.device} />
                 ) : (
                   <span class="panel-icon">
                     <Icon

@@ -1,5 +1,5 @@
-import { identiconRects } from './features/devices/identicon.mjs';
-export function Identicon({ id }) {
+import { identiconRects } from './identicon.mjs';
+export function DeviceIdenticon({ id }) {
   return (
     <span class="panel-icon">
       <svg class="identicon" viewBox="0 0 5 5" aria-hidden="true">

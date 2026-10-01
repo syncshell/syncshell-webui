@@ -2,7 +2,7 @@ import { useContext } from 'preact/hooks';
 import { connectionIcons } from '../../../client/connections.mjs';
 import { unitPrefixed } from '../../../client/format.mjs';
 import { Icon } from '../../Icon.jsx';
-import { Identicon } from '../../Identicon.jsx';
+import { DeviceIdenticon } from './DeviceIdenticon.jsx';
 import { LocaleContext } from '../../locale-context.jsx';
 import {
   deviceColor,
@@ -31,7 +31,7 @@ export function DeviceHeader({
         />
       )}
       <span class="panel-title device-title">
-        <Identicon id={device.deviceID} />
+        <DeviceIdenticon id={device.deviceID} />
         {!isLocalDevice && (
           <span
             class={`panel-status pull-right text-${deviceColor(device, state)}`}
