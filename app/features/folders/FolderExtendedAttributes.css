@@ -2,8 +2,8 @@
   .xattr-rule {
     display: flex;
     align-items: center;
-    gap: 8px;
-    margin-bottom: 8px;
+    gap: var(--space-3);
+    margin-bottom: var(--space-3);
   }
 
   .xattr-rule .form-control {

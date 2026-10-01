@@ -26,7 +26,7 @@
   .dialog.expandable .modal-header {
     display: flex;
     align-items: center;
-    gap: 12px;
+    gap: var(--space-4);
   }
 
   .dialog.expandable .modal-title {

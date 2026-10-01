@@ -4,7 +4,7 @@
     inset: auto;
     margin: 0;
     border: 0;
-    max-width: calc(100vw - 16px);
+    max-width: calc(100vw - var(--space-5));
     background: transparent;
     overflow: visible;
   }

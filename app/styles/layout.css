@@ -2,13 +2,13 @@
   .dashboard-primary.active {
     max-width: 1395px;
     grid-template-columns: minmax(0, 1fr) minmax(0, 2fr);
-    column-gap: 24px;
+    column-gap: var(--space-7);
   }
 
   .dashboard-devices {
     display: grid;
     grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-    column-gap: 24px;
+    column-gap: var(--space-7);
     align-items: start;
   }
 
@@ -20,7 +20,7 @@
 .dashboard-heading {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: var(--space-4);
 }
 
 .dashboard-heading h3 {
