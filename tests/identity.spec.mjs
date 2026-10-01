@@ -1,13 +1,8 @@
 import { test, expect } from '@playwright/test';
 
-test('identity links encode text and About lists attribution and paths', async ({
+test('identity sharing links encode the device ID as literal text', async ({
   page,
 }) => {
-  const pathsResponse = page.waitForResponse(
-    (response) =>
-      new URL(response.url()).pathname === '/rest/system/paths' &&
-      response.ok(),
-  );
   await page.goto('/');
   await expect(page.locator('.dashboard-folders .panel-heading')).toBeVisible();
   await page.getByRole('link', { name: /Actions/ }).click();
@@ -45,6 +40,18 @@ test('identity links encode text and About lists attribution and paths', async (
   expect(smsURL.searchParams.get('body')).toContain(id.replaceAll('-', ''));
   await sms.getByRole('button', { name: 'Cancel', exact: true }).click();
   await identity.getByRole('button', { name: /Close/ }).click();
+});
+
+test('About lists attribution, licenses, and daemon paths', async ({
+  page,
+}) => {
+  const pathsResponse = page.waitForResponse(
+    (response) =>
+      new URL(response.url()).pathname === '/rest/system/paths' &&
+      response.ok(),
+  );
+  await page.goto('/');
+  await expect(page.locator('.dashboard-folders .panel-heading')).toBeVisible();
   await page.getByRole('link', { name: /Help/ }).click();
   await page.getByRole('link', { name: 'About', exact: true }).click();
   const about = page.getByRole('dialog', { name: 'About', exact: true });
