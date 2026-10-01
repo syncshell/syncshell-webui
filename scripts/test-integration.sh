@@ -46,10 +46,7 @@ start_fixture() {
 
 run_acceptance_tests() {
 	npm run test:browser
-	node --test tests/live-auth.mjs
-	node --test tests/live-config.mjs
-	node --test tests/live-versions.mjs
-	node --test tests/installed.mjs
+	node --test tests/live-acceptance.mjs
 }
 
 trap cleanup EXIT
