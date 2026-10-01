@@ -19,6 +19,29 @@ async function expectColumns(panels, count) {
   }
 }
 
+async function expectAlignedHeaders(panels) {
+  const headers = await panels.locator('.panel-title').evaluateAll((nodes) =>
+    nodes.map((node) => {
+      const icon = node.querySelector('.panel-icon').getBoundingClientRect();
+      const title = node
+        .querySelector('.notification-title-text')
+        .getBoundingClientRect();
+      return {
+        iconRight: icon.right,
+        iconTop: icon.top,
+        titleLeft: title.left,
+        titleTop: title.top,
+        titleWidth: title.width,
+      };
+    }),
+  );
+  for (const header of headers) {
+    expect(Math.abs(header.iconTop - header.titleTop)).toBeLessThan(4);
+    expect(header.titleLeft).toBeGreaterThan(header.iconRight);
+    expect(header.titleWidth).toBeGreaterThan(0);
+  }
+}
+
 test('notification cards form a responsive grid with aligned headers', async ({
   page,
   syncthing,
@@ -122,27 +145,7 @@ test('notification cards form a responsive grid with aligned headers', async ({
     'Filesystem Watcher Errors',
   ]);
 
-  const headers = await panels.locator('.panel-title').evaluateAll((nodes) =>
-    nodes.map((node) => {
-      const icon = node.querySelector('.panel-icon').getBoundingClientRect();
-      const title = node
-        .querySelector('.notification-title-text')
-        .getBoundingClientRect();
-      return {
-        iconRight: icon.right,
-        iconTop: icon.top,
-        titleLeft: title.left,
-        titleTop: title.top,
-        titleWidth: title.width,
-      };
-    }),
-  );
-  for (const header of headers) {
-    expect(Math.abs(header.iconTop - header.titleTop)).toBeLessThan(4);
-    expect(header.titleLeft).toBeGreaterThan(header.iconRight);
-    expect(header.titleWidth).toBeGreaterThan(0);
-  }
-
+  await expectAlignedHeaders(panels);
   await expectColumns(panels, 4);
   await expect(page.locator('.notification-grid')).toHaveScreenshot(
     'notifications-light-desktop.png',
@@ -156,6 +159,7 @@ test('notification cards form a responsive grid with aligned headers', async ({
   ]) {
     await page.setViewportSize({ width, height: 900 });
     await expectColumns(panels, columns);
+    await expectAlignedHeaders(panels);
   }
 
   await page.emulateMedia({ colorScheme: 'dark' });
