@@ -1,0 +1,38 @@
+@layer components {
+  :is(.folder-details, .device-details) > summary {
+    display: list-item;
+    list-style-position: inside;
+    cursor: pointer;
+    padding: 10px 0;
+  }
+
+  :is(.folder-details, .device-details) > table {
+    margin-bottom: 0;
+    table-layout: fixed;
+    font-size: var(--text-body);
+  }
+
+  :is(.folder-details, .device-details) > table th {
+    width: auto;
+    max-width: 75%;
+    white-space: normal;
+    overflow-wrap: anywhere;
+    hyphens: auto;
+  }
+
+  :is(.folder-details, .device-details) > table > tbody > tr {
+    display: flex;
+  }
+
+  :is(.folder-details, .device-details) > table > tbody > tr > th {
+    padding-inline-start: var(--space-6);
+  }
+
+  :is(.folder-details, .device-details) > table td {
+    flex: 1;
+    min-width: 0;
+    max-width: none;
+    white-space: normal;
+    overflow-wrap: anywhere;
+  }
+}

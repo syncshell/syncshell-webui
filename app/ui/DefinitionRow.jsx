@@ -2,6 +2,7 @@ import { useContext } from 'preact/hooks';
 import { unitPrefixed } from '../../client/format.mjs';
 import { LocaleContext } from '../core/locale/LocaleContext.jsx';
 import { Tooltip } from './Tooltip.jsx';
+import './DefinitionRow.css';
 
 export function DefinitionRow({
   label,
