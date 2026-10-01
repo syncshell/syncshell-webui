@@ -7,13 +7,11 @@ import {
   deviceStatus,
   deviceLabels,
   deviceIcons,
-  deviceColor,
   lastSeenDays,
 } from './device-status.mjs';
 import {
   connectionType,
   connectionLabels,
-  connectionIcons,
   addressError,
   remoteGui,
   serviceHealth,
@@ -29,10 +27,10 @@ import { stripeSections } from '../../../client/stripes.mjs';
 import { Field } from '../../Field.jsx';
 import { Counts } from '../../Counts.jsx';
 import { Tooltip } from '../../Tooltip.jsx';
-import { Identicon } from '../../Identicon.jsx';
 import { Icon } from '../../Icon.jsx';
 import { MenuButton } from '../../MenuButton.jsx';
 import { runReportedSessionAction } from '../../../client/session.mjs';
+import { DeviceHeader } from './DeviceHeader.jsx';
 
 export function DeviceCard({
   device,
@@ -82,48 +80,16 @@ export function DeviceCard({
   };
   return (
     <div class="panel panel-default">
-      <button
-        class="btn panel-heading"
-        aria-expanded={open}
-        onClick={() => setOpen(!open)}
-      >
-        {!isLocalDevice && status === 'syncing' && (
-          <span
-            class="panel-progress"
-            style={{ width: completion._total + '%' }}
-          />
-        )}
-        <span class="panel-title device-title">
-          <Identicon id={device.deviceID} />
-          {!isLocalDevice && (
-            <span
-              class={`panel-status pull-right text-${deviceColor(device, state)}`}
-            >
-              <span class="hidden-xs">{t(deviceLabels[status])}</span>
-              {status === 'syncing' &&
-                ` (${completion._total}%, ${unitPrefixed(completion._needBytes, true)}B)`}
-              <Icon
-                name={deviceIcons[status]}
-                class="visible-xs icon-fixed"
-                label={t(deviceLabels[status])}
-              />
-              <span class="inline-icon">
-                <span
-                  class={`reception reception-theme ${connectionIcons[type] || ''}`}
-                />
-              </span>
-            </span>
-          )}
-          <span class="panel-title-text">
-            <span class="device-name" title={deviceName(device)}>
-              {deviceName(device)}
-            </span>
-            <small class="device-role text-success">
-              ({t(isLocalDevice ? 'This Device' : 'Remote')})
-            </small>
-          </span>
-        </span>
-      </button>
+      <DeviceHeader
+        completion={completion}
+        device={device}
+        isLocalDevice={isLocalDevice}
+        open={open}
+        state={state}
+        status={status}
+        type={type}
+        onToggle={() => setOpen(!open)}
+      />
       {open && (
         <div class="panel-collapse" ref={panel}>
           <div class="panel-body less-padding">
