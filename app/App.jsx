@@ -3,7 +3,7 @@ import { useEffect, useState } from 'preact/hooks';
 import { createApi } from '../client/api.mjs';
 import { runReportedSessionAction } from '../client/session.mjs';
 import { useSyncthingSession } from '../client/use-syncthing-session.mjs';
-import { loadEnglish, translator } from '../client/locale.mjs';
+import { loadEnglishCatalog, translator } from '../client/locale.mjs';
 import { groupAndSortItems } from '../client/grouping.mjs';
 import { deviceName } from './features/devices/device-status.mjs';
 import { UsageReport } from './features/reports/UsageReport.jsx';
@@ -79,7 +79,7 @@ export function App() {
     if (device) openAction({ type: 'edit-device', device });
   }, [state.ready, state.config.devices]);
   useEffect(() => {
-    loadEnglish()
+    loadEnglishCatalog()
       .then(setLocale)
       .catch((error) => session.reportError(error));
     try {

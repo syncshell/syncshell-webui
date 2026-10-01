@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
-import { loadEnglish, translator } from '../client/locale.mjs';
+import { loadEnglishCatalog, translator } from '../client/locale.mjs';
 
 test('English text resolves nested keys and keeps substituted values literal', () => {
   const t = translator({
@@ -26,7 +26,7 @@ test('English text resolves nested keys and keeps substituted values literal', (
 
 test('the interface loads only the English catalog', async () => {
   const requests = [];
-  const locale = await loadEnglish({
+  const locale = await loadEnglishCatalog({
     pageUrl: 'https://localhost/sync/?lang=de',
     fetch: async (url) => {
       requests.push(url.href);
@@ -41,7 +41,7 @@ test('the interface loads only the English catalog', async () => {
 
 test('a missing English catalog reports a clear loading error', async () => {
   await assert.rejects(
-    loadEnglish({
+    loadEnglishCatalog({
       pageUrl: 'https://localhost/',
       fetch: async () => new Response('', { status: 404 }),
     }),

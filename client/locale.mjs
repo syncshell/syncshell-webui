@@ -16,6 +16,7 @@ export function translator(messages) {
         );
       text = typeof value === 'string' ? value : (key ?? '');
     }
+    // Syncthing strings use both catalog and source placeholder forms.
     return text.replace(
       /{{\s*(\w+)\s*}}|{%\s*(\w+)\s*%}/g,
       (_, catalogName, sourceName) => values[catalogName || sourceName] ?? '',
@@ -23,7 +24,7 @@ export function translator(messages) {
   };
 }
 
-export async function loadEnglish({
+export async function loadEnglishCatalog({
   pageUrl = location.href,
   fetch: fetcher = globalThis.fetch,
 } = {}) {
