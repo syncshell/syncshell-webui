@@ -47,6 +47,19 @@ export function UsageReport({ api, session, state, consent = false, onClose }) {
     setReportPhase('loading');
     setPreview(true);
   }
+  function reportOutput() {
+    switch (reportPhase) {
+      case 'ready':
+        return <pre class="share-text">{JSON.stringify(report, null, 2)}</pre>;
+      case 'loading':
+        return <p role="status">{t('Loading data...')}</p>;
+      case 'idle':
+      case 'error':
+        return null;
+      default:
+        throw new Error(`Unknown usage report phase: ${reportPhase}`);
+    }
+  }
   return (
     <Dialog
       title={
@@ -150,11 +163,7 @@ export function UsageReport({ api, session, state, consent = false, onClose }) {
               )}
             </>
           )}
-          {reportPhase === 'ready' ? (
-            <pre class="share-text">{JSON.stringify(report, null, 2)}</pre>
-          ) : reportPhase === 'loading' ? (
-            <p role="status">{t('Loading data...')}</p>
-          ) : null}
+          {reportOutput()}
         </>
       )}
       {error && (
