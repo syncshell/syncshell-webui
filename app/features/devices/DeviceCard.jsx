@@ -6,21 +6,13 @@ import {
   deviceStatus,
   deviceLabels,
   deviceIcons,
-  lastSeenDays,
 } from './device-status.mjs';
-import {
-  connectionType,
-  connectionLabels,
-  addressError,
-  remoteGui,
-  serviceHealth,
-} from '../../../client/connections.mjs';
+import { connectionType, remoteGui } from '../../../client/connections.mjs';
 import { localStateTotal } from '../folders/folder-status.mjs';
 import {
   unitPrefixed,
   compactNumber,
   duration,
-  timestamp,
 } from '../../../client/format.mjs';
 import { stripeSections } from '../../../client/stripes.mjs';
 import { Field } from '../../Field.jsx';
@@ -28,6 +20,7 @@ import { Counts } from '../../Counts.jsx';
 import { Tooltip } from '../../Tooltip.jsx';
 import { DeviceHeader } from './DeviceHeader.jsx';
 import { DeviceActions } from './DeviceActions.jsx';
+import { ConnectionDetails } from './ConnectionDetails.jsx';
 
 export function DeviceCard({
   device,
@@ -53,20 +46,8 @@ export function DeviceCard({
     : sharedFolders(state.config, device.deviceID);
   const status = deviceStatus(device, state);
   const type = connectionType(conn);
-  const age = lastSeenDays(state.deviceStats[device.deviceID]?.lastSeen);
   const totals = localStateTotal(state.model);
-  const listeners = serviceHealth(state.system.connectionServiceStatus);
-  const discovery = serviceHealth(state.system.discoveryStatus);
   const gui = remoteGui(device, conn);
-  const addresses = [
-    ...(device.addresses || []).map((address) => ({
-      address,
-      source: 'Configured',
-    })),
-    ...(state.discoveryCache[device.deviceID]?.addresses || []).map(
-      (address) => ({ address, source: 'Discovered' }),
-    ),
-  ];
   const openAction = (type, extra = {}) => onAction({ type, device, ...extra });
   const rate = (bytes) =>
     unitPrefixed(usesMetricRates ? bytes * 8 : bytes, !usesMetricRates) +
@@ -205,123 +186,14 @@ export function DeviceCard({
                 </table>
               </details>
             )}
-            <details class="device-details" open>
-              <summary>{t('Connectivity')}</summary>
-              <table class="table table-condensed table-auto">
-                <tbody>
-                  {isLocalDevice ? (
-                    <>
-                      <Field label="Listeners">
-                        <a
-                          href="#listeners"
-                          class={`text-${listeners.color}`}
-                          onClick={(event) => link(event, 'listeners')}
-                        >
-                          {listeners.running}/{listeners.total}
-                        </a>
-                      </Field>
-                      {state.system.discoveryEnabled && (
-                        <Field label="Discovery">
-                          <a
-                            href="#discovery"
-                            class={`text-${discovery.color}`}
-                            onClick={(event) => link(event, 'discovery')}
-                          >
-                            {discovery.running}/{discovery.total}
-                          </a>
-                        </Field>
-                      )}
-                    </>
-                  ) : (
-                    <>
-                      <Field label="Address">
-                        {conn.connected
-                          ? conn.address
-                          : addresses.map((item, index) => (
-                              <span class="remote-address" key={index}>
-                                <span
-                                  class="folder-text"
-                                  title={t(item.source) + ': ' + item.address}
-                                >
-                                  {item.address}
-                                </span>
-                                {state.system.lastDialStatus?.[item.address]
-                                  ?.error &&
-                                  !device.paused && (
-                                    <small
-                                      class="text-danger"
-                                      title={
-                                        state.system.lastDialStatus[
-                                          item.address
-                                        ].error
-                                      }
-                                    >
-                                      {addressError(
-                                        state.system.lastDialStatus[
-                                          item.address
-                                        ],
-                                      )}
-                                    </small>
-                                  )}
-                              </span>
-                            ))}
-                      </Field>
-                      {!conn.connected ? (
-                        <Field label="Last seen">
-                          {!age ? (
-                            t('Never')
-                          ) : (
-                            <>
-                              {timestamp(
-                                state.deviceStats[device.deviceID].lastSeen,
-                              )}
-                              {age >= 7 && (
-                                <>
-                                  <br />
-                                  <i
-                                    class={
-                                      age >= 365
-                                        ? 'text-danger'
-                                        : age >= 30
-                                          ? 'text-warning'
-                                          : ''
-                                    }
-                                  >
-                                    {t(
-                                      age >= 365
-                                        ? 'More than a year ago'
-                                        : age >= 30
-                                          ? 'More than a month ago'
-                                          : 'More than a week ago',
-                                    )}
-                                  </i>
-                                </>
-                              )}
-                            </>
-                          )}
-                        </Field>
-                      ) : (
-                        <>
-                          <Field
-                            label="Connection Type"
-                            icon="signal"
-                            help="Transport and network used to reach this device. A relay forwards traffic when a direct connection is unavailable."
-                          >
-                            {t(connectionLabels[type] || 'Disconnected')}
-                          </Field>
-                          <Field label="Number of Connections">
-                            1
-                            {conn.secondary?.length
-                              ? ' + ' + conn.secondary.length
-                              : ''}
-                          </Field>
-                        </>
-                      )}
-                    </>
-                  )}
-                </tbody>
-              </table>
-            </details>
+            <ConnectionDetails
+              connection={conn}
+              device={device}
+              isLocalDevice={isLocalDevice}
+              state={state}
+              type={type}
+              onAction={onAction}
+            />
             <details class="device-details">
               <summary>{t('Device information')}</summary>
               <table class="table table-condensed table-auto">
