@@ -4,7 +4,7 @@ import { fieldHelp } from '../client/field-help.mjs';
 import { unitPrefixed } from '../client/format.mjs';
 import { Tooltip } from './Tooltip.jsx';
 
-export function Field({
+export function DefinitionRow({
   label,
   rowClass = '',
   icon = '',

@@ -15,7 +15,7 @@ import {
   duration,
 } from '../../../client/format.mjs';
 import { stripeSections } from '../../../client/stripes.mjs';
-import { Field } from '../../Field.jsx';
+import { DefinitionRow } from '../../DefinitionRow.jsx';
 import { FolderCounts } from '../folders/FolderCounts.jsx';
 import { Tooltip } from '../../Tooltip.jsx';
 import { DeviceHeader } from './DeviceHeader.jsx';
@@ -72,9 +72,12 @@ export function DeviceCard({
             {!isLocalDevice && (
               <table class="table table-condensed visible-xs remote-status">
                 <tbody>
-                  <Field label="Device Status" icon={deviceIcons[status]}>
+                  <DefinitionRow
+                    label="Device Status"
+                    icon={deviceIcons[status]}
+                  >
                     {t(deviceLabels[status])}
-                  </Field>
+                  </DefinitionRow>
                 </tbody>
               </table>
             )}
@@ -89,7 +92,7 @@ export function DeviceCard({
                     {!isLocalDevice &&
                       !conn.connected &&
                       folders.length > 0 && (
-                        <Field label="Sync Status">
+                        <DefinitionRow label="Sync Status">
                           {completion._total === 100
                             ? t('Up to Date')
                             : completion._total < 100
@@ -98,7 +101,7 @@ export function DeviceCard({
                                 completion._total +
                                 '%)'
                               : ''}
-                        </Field>
+                        </DefinitionRow>
                       )}
                     {(isLocalDevice || conn.connected) && (
                       <TransferRates
@@ -111,7 +114,7 @@ export function DeviceCard({
                       />
                     )}
                     {isLocalDevice && (
-                      <Field label="Local State (Total)">
+                      <DefinitionRow label="Local State (Total)">
                         <FolderCounts
                           prefix="local"
                           info={{
@@ -120,10 +123,10 @@ export function DeviceCard({
                             localBytes: totals.bytes,
                           }}
                         />
-                      </Field>
+                      </DefinitionRow>
                     )}
                     {!isLocalDevice && completion._needItems > 0 && (
-                      <Field label="Out of Sync Items">
+                      <DefinitionRow label="Out of Sync Items">
                         <a
                           href="#remote-needed"
                           onClick={(event) => link(event, 'remote-needed')}
@@ -136,7 +139,7 @@ export function DeviceCard({
                           {compactNumber(completion._needItems)} {t('items')}, ~
                           {unitPrefixed(completion._needBytes, true)}B
                         </a>
-                      </Field>
+                      </DefinitionRow>
                     )}
                   </tbody>
                 </table>
@@ -156,32 +159,34 @@ export function DeviceCard({
                 <tbody>
                   {isLocalDevice ? (
                     <>
-                      <Field label="Uptime">
+                      <DefinitionRow label="Uptime">
                         {duration(state.system.uptime, 'm')}
-                      </Field>
-                      <Field
+                      </DefinitionRow>
+                      <DefinitionRow
                         label="Version"
                         help="Version and platform of the Syncthing service running on this device."
                       >
                         {state.version.version} ({state.version.os}{' '}
                         {state.version.arch})
-                      </Field>
+                      </DefinitionRow>
                     </>
                   ) : (
                     <>
                       {conn.clientVersion && (
-                        <Field label="Version">{conn.clientVersion}</Field>
+                        <DefinitionRow label="Version">
+                          {conn.clientVersion}
+                        </DefinitionRow>
                       )}
                       {device.introducedBy && (
-                        <Field label="Introduced By">
+                        <DefinitionRow label="Introduced By">
                           {deviceName(
                             state.config.devices.find(
                               (item) => item.deviceID === device.introducedBy,
                             ),
                           ) || device.introducedBy.slice(0, 7)}
-                        </Field>
+                        </DefinitionRow>
                       )}
-                      <Field label="Compression">
+                      <DefinitionRow label="Compression">
                         {t(
                           {
                             always: 'All Data',
@@ -189,11 +194,11 @@ export function DeviceCard({
                             never: 'Off',
                           }[device.compression] || '',
                         )}
-                      </Field>
+                      </DefinitionRow>
                       {device.allowedNetworks?.length > 0 && (
-                        <Field label="Allowed Networks">
+                        <DefinitionRow label="Allowed Networks">
                           {device.allowedNetworks.join(', ')}
-                        </Field>
+                        </DefinitionRow>
                       )}
                       {[
                         ['introducer', 'Introducer'],
@@ -202,9 +207,9 @@ export function DeviceCard({
                       ].map(
                         ([property, label]) =>
                           device[property] && (
-                            <Field key={property} label={label}>
+                            <DefinitionRow key={property} label={label}>
                               {t('Yes')}
-                            </Field>
+                            </DefinitionRow>
                           ),
                       )}
                     </>

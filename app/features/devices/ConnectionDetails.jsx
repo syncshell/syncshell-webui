@@ -5,7 +5,7 @@ import {
   serviceHealth,
 } from '../../../client/connections.mjs';
 import { timestamp } from '../../../client/format.mjs';
-import { Field } from '../../Field.jsx';
+import { DefinitionRow } from '../../DefinitionRow.jsx';
 import { LocaleContext } from '../../locale-context.jsx';
 import { lastSeenDays } from './device-status.mjs';
 
@@ -41,7 +41,7 @@ export function ConnectionDetails({
         <tbody>
           {isLocalDevice ? (
             <>
-              <Field label="Listeners">
+              <DefinitionRow label="Listeners">
                 <a
                   href="#listeners"
                   class={`text-${listeners.color}`}
@@ -49,9 +49,9 @@ export function ConnectionDetails({
                 >
                   {listeners.running}/{listeners.total}
                 </a>
-              </Field>
+              </DefinitionRow>
               {state.system.discoveryEnabled && (
-                <Field label="Discovery">
+                <DefinitionRow label="Discovery">
                   <a
                     href="#discovery"
                     class={`text-${discovery.color}`}
@@ -59,12 +59,12 @@ export function ConnectionDetails({
                   >
                     {discovery.running}/{discovery.total}
                   </a>
-                </Field>
+                </DefinitionRow>
               )}
             </>
           ) : (
             <>
-              <Field label="Address">
+              <DefinitionRow label="Address">
                 {connection.connected
                   ? connection.address
                   : addresses.map((item, index) => (
@@ -90,9 +90,9 @@ export function ConnectionDetails({
                           )}
                       </span>
                     ))}
-              </Field>
+              </DefinitionRow>
               {!connection.connected ? (
-                <Field label="Last seen">
+                <DefinitionRow label="Last seen">
                   {!age ? (
                     t('Never')
                   ) : (
@@ -122,22 +122,22 @@ export function ConnectionDetails({
                       )}
                     </>
                   )}
-                </Field>
+                </DefinitionRow>
               ) : (
                 <>
-                  <Field
+                  <DefinitionRow
                     label="Connection Type"
                     icon="signal"
                     help="Transport and network used to reach this device. A relay forwards traffic when a direct connection is unavailable."
                   >
                     {t(connectionLabels[type] || 'Disconnected')}
-                  </Field>
-                  <Field label="Number of Connections">
+                  </DefinitionRow>
+                  <DefinitionRow label="Number of Connections">
                     1
                     {connection.secondary?.length
                       ? ' + ' + connection.secondary.length
                       : ''}
-                  </Field>
+                  </DefinitionRow>
                 </>
               )}
             </>

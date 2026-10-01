@@ -1,6 +1,6 @@
 import { useContext } from 'preact/hooks';
 import { unitPrefixed } from '../../../client/format.mjs';
-import { Field } from '../../Field.jsx';
+import { DefinitionRow } from '../../DefinitionRow.jsx';
 import { LocaleContext } from '../../locale-context.jsx';
 
 export function TransferRates({
@@ -19,7 +19,7 @@ export function TransferRates({
     const limits = isLocalDevice ? options : device;
     const limit = limits[direction === 'in' ? 'maxRecvKbps' : 'maxSendKbps'];
     return (
-      <Field
+      <DefinitionRow
         key={direction}
         label={direction === 'in' ? 'Download Rate' : 'Upload Rate'}
         icon={direction === 'in' ? 'download' : 'upload'}
@@ -54,7 +54,7 @@ export function TransferRates({
             </small>
           )}
         </a>
-      </Field>
+      </DefinitionRow>
     );
   });
 }
