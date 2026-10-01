@@ -7,8 +7,8 @@ import {
   upgradeMode,
   ignoredFolders,
   unignore,
-  buildAdvancedConfigSections,
 } from './settings.mjs';
+import { buildAdvancedConfigSections } from './advancedConfigFields.mjs';
 import { loadSettingsOptions } from './loadSettingsOptions.mjs';
 import { prepareSettingsForSave } from './prepareSettingsForSave.mjs';
 import { Dialog } from '../../Dialog.jsx';
