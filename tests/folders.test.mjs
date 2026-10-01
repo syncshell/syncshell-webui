@@ -138,6 +138,11 @@ test('compact counts truncate at k, M and B boundaries', () => {
     assert.equal(compactNumber(input), output);
   }
   for (const [input, output] of [
+    [undefined, '0 '],
+    [NaN, '0 '],
+    ['not-a-number', '0 '],
+    [Infinity, '∞ Ti'],
+    [-Infinity, '-∞ '],
     [0, '0 '],
     [1023, '1,023 '],
     [1024, '1,024 '],
