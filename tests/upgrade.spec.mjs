@@ -25,3 +25,21 @@ test('upgrade confirmation reports API failures without claiming a restart', asy
   ).toContainText('test upgrade unavailable');
   expect(writes).toBe(1);
 });
+
+test('major upgrades warn about incompatible changes', async ({
+  page,
+  syncthing,
+}) => {
+  syncthing.configure();
+  await page.route('**/rest/system/upgrade', (route) =>
+    route.fulfill({
+      json: { newer: false, majorNewer: true, latest: 'v3.0.0' },
+    }),
+  );
+  await page.goto('/');
+  await page.getByRole('link', { name: /Actions/ }).click();
+  await page.getByRole('link', { name: 'Upgrade v3.0.0', exact: true }).click();
+  await expect(
+    page.getByRole('dialog', { name: 'Major Upgrade', exact: true }),
+  ).toContainText('may not be compatible');
+});
