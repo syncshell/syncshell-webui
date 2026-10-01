@@ -25,7 +25,7 @@ export function createSession(
 ) {
   let state = createInitialState();
   let controller;
-  let interval;
+  let refreshInterval;
   let hydrating;
   let previousConnectionTime = 0;
 
@@ -54,7 +54,7 @@ export function createSession(
     return api.get(path, query, controller.signal);
   }
 
-  async function folderStats() {
+  async function refreshFolderStats() {
     const stats = await read('stats/folder');
     update({ ...state, folderStats: stats });
   }
@@ -84,7 +84,7 @@ export function createSession(
     );
   }
 
-  async function refreshPending() {
+  async function refreshPendingOffers() {
     const [pendingDevices, pendingFolders] = await Promise.all([
       read('cluster/pending/devices'),
       read('cluster/pending/folders'),
@@ -101,7 +101,7 @@ export function createSession(
     if (changes) update({ ...state, globalChanges: changes.slice().reverse() });
   }
 
-  async function refresh() {
+  async function refreshSessionOverview() {
     const [system, connections, errors, discovery] = await Promise.all([
       read('system/status'),
       read('system/connections'),
@@ -117,7 +117,7 @@ export function createSession(
     });
   }
 
-  async function refreshModels(config) {
+  async function refreshFolderModels(config) {
     await Promise.all(
       config.folders
         .filter((folder) => !folder.paused)
@@ -164,7 +164,7 @@ export function createSession(
     );
   }
 
-  async function hydrate() {
+  async function hydrateSession() {
     const [
       config,
       system,
@@ -223,7 +223,7 @@ export function createSession(
       pendingFolders: pendingFolders || {},
       errors: errors?.errors || [],
     });
-    await refreshModels(config);
+    await refreshFolderModels(config);
     update({ ...state, ready: true });
     refreshGlobalChanges().catch(fail);
     read('system/upgrade')
@@ -241,14 +241,14 @@ export function createSession(
           .catch(fail);
         break;
       case 'DeviceConnected':
-        refresh().catch(fail);
+        refreshSessionOverview().catch(fail);
         break;
       case 'PendingDevicesChanged':
       case 'PendingFoldersChanged':
-        refreshPending().catch(fail);
+        refreshPendingOffers().catch(fail);
         break;
       case 'ConfigSaved':
-        refreshModels(event.data).catch(fail);
+        refreshFolderModels(event.data).catch(fail);
         read('config/insync')
           .then((value) =>
             update({ ...state, configInSync: value.configInSync }),
@@ -256,30 +256,38 @@ export function createSession(
           .catch(fail);
         break;
       case 'LocalIndexUpdated':
-        folderStats().catch(fail);
+        refreshFolderStats().catch(fail);
         refreshGlobalChanges().catch(fail);
         break;
       case 'StateChanged':
         if (event.data.from === 'scanning' && event.data.to === 'idle') {
-          folderStats().catch(fail);
+          refreshFolderStats().catch(fail);
           refreshGlobalChanges().catch(fail);
         }
         break;
     }
   }
 
+  function startHydration() {
+    if (state.online || hydrating) return;
+    hydrating = hydrateSession()
+      .catch(fail)
+      .finally(() => {
+        hydrating = undefined;
+      });
+  }
+
+  function startPeriodicRefresh() {
+    refreshInterval = setInterval(
+      () => refreshSessionOverview().catch(fail),
+      refreshMs,
+    );
+  }
+
   const events = createEventStream(api, {
     retryMs,
     onAuthExpired,
-    onOnline() {
-      if (!state.online && !hydrating) {
-        hydrating = hydrate()
-          .catch(fail)
-          .finally(() => {
-            hydrating = undefined;
-          });
-      }
-    },
+    onOnline: startHydration,
     onOffline(error) {
       update({ ...state, online: false, error });
     },
@@ -292,13 +300,13 @@ export function createSession(
   function start() {
     if (controller && !controller.signal.aborted) return;
     controller = new AbortController();
-    interval = setInterval(() => refresh().catch(fail), refreshMs);
+    startPeriodicRefresh();
     events.start();
   }
 
   async function stop() {
     controller?.abort();
-    clearInterval(interval);
+    clearInterval(refreshInterval);
     await events.stop();
   }
 
@@ -370,7 +378,7 @@ export function createSession(
         { device, folder },
         controller.signal,
       );
-      await refreshPending();
+      await refreshPendingOffers();
     } catch (error) {
       rethrowCommandError(error);
     }
@@ -418,7 +426,7 @@ export function createSession(
     start,
     stop,
     rescan,
-    refresh,
+    refresh: refreshSessionOverview,
     refreshGlobalChanges,
     reportError: fail,
     saveConfig,
