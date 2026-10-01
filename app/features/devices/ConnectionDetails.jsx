@@ -1,10 +1,7 @@
 import { useContext } from 'preact/hooks';
-import {
-  addressError,
-  connectionLabels,
-  serviceHealth,
-} from '../../../client/connections.mjs';
+import { addressError, connectionLabels } from './connections.mjs';
 import { timestamp } from '../../../client/format.mjs';
+import { serviceHealth } from '../system/serviceHealth.mjs';
 import { DeviceDefinitionRow } from './DeviceDefinitionRow.jsx';
 import { LocaleContext } from '../../core/locale/LocaleContext.jsx';
 import { lastSeenDays } from './device-status.mjs';

@@ -1,10 +1,7 @@
 // Copyright (C) 2026 The Syncshell Authors.
 // SPDX-License-Identifier: MPL-2.0
 
-import {
-  completionTotal,
-  connectionRates,
-} from '../../../client/connections.mjs';
+import { completionTotal, connectionRates } from './connectionState.mjs';
 import { createEventStream as defaultEventStream } from './createEventStream.mjs';
 import { createInitialState, reduceDaemonEvent } from './sessionState.mjs';
 

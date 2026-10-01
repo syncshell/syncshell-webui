@@ -1,5 +1,5 @@
 import { useContext } from 'preact/hooks';
-import { connectionIcons } from '../../../client/connections.mjs';
+import { connectionIcons } from './connections.mjs';
 import { unitPrefixed } from '../../../client/format.mjs';
 import { Icon } from '../../Icon.jsx';
 import { DeviceIdenticon } from './DeviceIdenticon.jsx';

@@ -7,7 +7,7 @@ import {
   deviceLabels,
   deviceIcons,
 } from './device-status.mjs';
-import { connectionType, remoteGui } from '../../../client/connections.mjs';
+import { connectionType, remoteGui } from './connections.mjs';
 import { localStateTotal } from '../folders/folder-status.mjs';
 import {
   unitPrefixed,
