@@ -24,10 +24,8 @@ test('device actions open identification and settings dialogs', async ({
   await local.getByRole('button', { name: 'Settings', exact: true }).click();
   const settings = page.getByRole('dialog', { name: 'Settings', exact: true });
   await expect(
-    settings
-      .getByRole('tab', { name: 'General', exact: true })
-      .locator('xpath=..'),
-  ).toHaveClass(/active/);
+    settings.getByRole('tab', { name: 'General', exact: true }),
+  ).toHaveAttribute('aria-selected', 'true');
   await settings.getByRole('button', { name: 'Close', exact: true }).click();
 });
 
@@ -41,20 +39,15 @@ test('folder menus open editors and dismiss outside', async ({
   const local = page.locator('.dashboard-devices > .panel');
   const localFolders = local.getByRole('button', { name: /Folders/ });
   await localFolders.click();
-  await expect(localFolders.locator('xpath=..')).toHaveClass(/open/);
+  await expect(localFolders).toHaveAttribute('aria-expanded', 'true');
   await page.locator('.dashboard-heading h3').click();
-  await expect(localFolders.locator('xpath=..')).not.toHaveClass(/open/);
+  await expect(localFolders).toHaveAttribute('aria-expanded', 'false');
   await localFolders.click();
-  await localFolders
-    .locator('xpath=..')
-    .getByRole('link', { name: 'Folder under test' })
-    .click();
+  await local.getByRole('link', { name: 'Folder under test' }).click();
   const editor = page.getByRole('dialog', { name: 'Edit Folder', exact: true });
   await expect(
-    editor
-      .getByRole('tab', { name: 'General', exact: true })
-      .locator('xpath=..'),
-  ).toHaveClass(/active/);
+    editor.getByRole('tab', { name: 'General', exact: true }),
+  ).toHaveAttribute('aria-selected', 'true');
   await editor.getByRole('button', { name: 'Cancel', exact: true }).click();
 
   const folderHeading = page
@@ -64,14 +57,14 @@ test('folder menus open editors and dismiss outside', async ({
   const shared = page.getByRole('button', { name: /Shared/ }).first();
   await shared.click();
   await page.locator('.dashboard-heading h3').click();
-  await expect(shared.locator('xpath=..')).not.toHaveClass(/open/);
+  await expect(shared).toHaveAttribute('aria-expanded', 'false');
 
   const remote = page.locator('.dashboard-remotes .panel').first();
   await remote.locator('.panel-heading').click();
   const remoteFolders = remote.getByRole('button', { name: /Folders/ });
   await remoteFolders.click();
   await page.locator('.dashboard-folders > h3').click();
-  await expect(remoteFolders.locator('xpath=..')).not.toHaveClass(/open/);
+  await expect(remoteFolders).toHaveAttribute('aria-expanded', 'false');
 });
 
 test('pausing the local device pauses every folder', async ({

@@ -9,14 +9,12 @@ test('Escape closes a folder menu and returns focus to its trigger', async ({
 
   const localDevice = page.locator('.dashboard-devices > .panel');
   const trigger = localDevice.getByRole('button', { name: /Folders/ });
-  const menu = trigger.locator('xpath=..');
+  const menu = localDevice.locator('.device-folders .dropdown-menu');
   await expect(trigger).toBeVisible();
   await trigger.click();
   await expect(trigger).toHaveAttribute('aria-expanded', 'true');
-  await expect(menu).toHaveClass(/\bopen\b/);
-  await expect(menu.locator('.dropdown-menu')).toHaveScreenshot(
-    'folder-menu.png',
-  );
+  await expect(menu).toBeVisible();
+  await expect(menu).toHaveScreenshot('folder-menu.png');
 
   const item = menu.getByRole('link', {
     name: 'Folder under test',
@@ -27,6 +25,6 @@ test('Escape closes a folder menu and returns focus to its trigger', async ({
   await page.keyboard.press('Escape');
 
   await expect(trigger).toHaveAttribute('aria-expanded', 'false');
-  await expect(menu).not.toHaveClass(/\bopen\b/);
+  await expect(menu).toBeHidden();
   await expect(trigger).toBeFocused();
 });
