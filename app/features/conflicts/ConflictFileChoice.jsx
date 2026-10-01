@@ -1,5 +1,5 @@
 import { useContext } from 'preact/hooks';
-import { Icon } from '../../Icon.jsx';
+import { Icon } from '../../ui/Icon.jsx';
 import { LocaleContext } from '../../core/locale/LocaleContext.jsx';
 import { Tooltip } from '../../ui/Tooltip.jsx';
 

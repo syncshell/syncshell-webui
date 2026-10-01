@@ -1,6 +1,6 @@
 import { useContext } from 'preact/hooks';
 import { unitPrefixed, timestamp } from '../../../client/format.mjs';
-import { Icon } from '../../Icon.jsx';
+import { Icon } from '../../ui/Icon.jsx';
 import { LocaleContext } from '../../core/locale/LocaleContext.jsx';
 import { ConflictFileChoice } from './ConflictFileChoice.jsx';
 import { parentPath } from './conflictFilename.mjs';

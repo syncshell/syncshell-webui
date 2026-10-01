@@ -4,7 +4,7 @@ import {
   createTextMessageShare,
 } from '../../../client/identity.mjs';
 import { Dialog } from '../../ui/Dialog.jsx';
-import { Icon } from '../../Icon.jsx';
+import { Icon } from '../../ui/Icon.jsx';
 import { LocaleContext } from '../../core/locale/LocaleContext.jsx';
 
 const shareBuilders = {

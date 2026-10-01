@@ -3,7 +3,7 @@ import { useContext, useState } from 'preact/hooks';
 import { LocaleContext } from '../../core/locale/LocaleContext.jsx';
 import './conflicts.css';
 import { desktopHelp } from '../../../client/desktop.mjs';
-import { Icon } from '../../Icon.jsx';
+import { Icon } from '../../ui/Icon.jsx';
 import { ConflictRenameDialog } from './ConflictRenameDialog.jsx';
 import { useConflictGroups } from './useConflictGroups.mjs';
 

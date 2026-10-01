@@ -1,6 +1,6 @@
 import syncshellMark from '../assets/status-default.svg?url';
 import { useContext } from 'preact/hooks';
-import { Icon } from './Icon.jsx';
+import { Icon } from './ui/Icon.jsx';
 import { LocaleContext } from './core/locale/LocaleContext.jsx';
 import { MenuButton } from './ui/MenuButton.jsx';
 

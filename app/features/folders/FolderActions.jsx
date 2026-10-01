@@ -1,6 +1,6 @@
 import { useContext } from 'preact/hooks';
 import { managementActions } from '../management/management.mjs';
-import { Icon } from '../../Icon.jsx';
+import { Icon } from '../../ui/Icon.jsx';
 import { LocaleContext } from '../../core/locale/LocaleContext.jsx';
 import { MenuButton } from '../../ui/MenuButton.jsx';
 import { ShareStatus } from '../sharing/ShareStatus.jsx';

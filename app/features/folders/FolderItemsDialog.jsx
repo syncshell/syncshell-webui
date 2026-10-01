@@ -6,7 +6,7 @@ import { TransferProgress } from '../transfers/TransferProgress.jsx';
 import { Tooltip } from '../../ui/Tooltip.jsx';
 import { itemViews, needIcons, pageItems } from './folder-items.mjs';
 import { unitPrefixed } from '../../../client/format.mjs';
-import { Icon } from '../../Icon.jsx';
+import { Icon } from '../../ui/Icon.jsx';
 
 export function FolderItemsDialog({
   api,

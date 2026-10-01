@@ -1,7 +1,7 @@
 import { useContext } from 'preact/hooks';
 import { connectionIcons } from './connections.mjs';
 import { unitPrefixed } from '../../../client/format.mjs';
-import { Icon } from '../../Icon.jsx';
+import { Icon } from '../../ui/Icon.jsx';
 import { DeviceIdenticon } from './DeviceIdenticon.jsx';
 import { LocaleContext } from '../../core/locale/LocaleContext.jsx';
 import {

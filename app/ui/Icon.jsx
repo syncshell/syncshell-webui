@@ -142,6 +142,9 @@ const icons = {
   zap: Zap,
 };
 
+/** @typedef {keyof typeof icons} IconName */
+
+/** @param {{name: IconName, class?: string, label?: string}} props */
 export function Icon({ name, class: className = '', label, ...props }) {
   const Component = icons[name];
   if (!Component) throw new Error(`Unknown Syncshell icon: ${name}`);

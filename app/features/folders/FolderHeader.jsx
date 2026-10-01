@@ -1,6 +1,6 @@
 import { useContext } from 'preact/hooks';
 import { unitPrefixed } from '../../../client/format.mjs';
-import { Icon } from '../../Icon.jsx';
+import { Icon } from '../../ui/Icon.jsx';
 import { LocaleContext } from '../../core/locale/LocaleContext.jsx';
 import { folderClass, folderStatusIcon } from './folder-status.mjs';
 

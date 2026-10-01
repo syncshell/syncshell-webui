@@ -18,7 +18,7 @@ import { Notifications } from './features/notifications/Notifications.jsx';
 import { DialogHost } from './DialogHost.jsx';
 import { Conflicts } from './features/conflicts/Conflicts.jsx';
 import { LocaleContext } from './core/locale/LocaleContext.jsx';
-import { Icon } from './Icon.jsx';
+import { Icon } from './ui/Icon.jsx';
 import { DashboardTabs } from './DashboardTabs.jsx';
 import { MainNavigation } from './MainNavigation.jsx';
 const desktop = desktopActions();

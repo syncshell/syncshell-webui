@@ -9,7 +9,7 @@ import {
   restoreVersionSelection,
 } from './versions.mjs';
 import { timestamp, unitPrefixed } from '../../../client/format.mjs';
-import { Icon } from '../../Icon.jsx';
+import { Icon } from '../../ui/Icon.jsx';
 
 export function RestoreVersionsDialog({ api, folder, onClose }) {
   const { t } = useContext(LocaleContext);

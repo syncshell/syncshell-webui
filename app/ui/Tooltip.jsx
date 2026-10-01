@@ -1,6 +1,6 @@
 import { useContext, useRef } from 'preact/hooks';
 import { LocaleContext } from '../core/locale/LocaleContext.jsx';
-import { Icon } from '../Icon.jsx';
+import { Icon } from './Icon.jsx';
 import { useTooltip } from './useTooltip.mjs';
 
 export function Tooltip({
