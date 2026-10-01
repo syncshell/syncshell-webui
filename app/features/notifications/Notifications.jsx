@@ -3,6 +3,7 @@ import { runReportedSessionAction } from '../../core/session/createSession.mjs';
 import { LocaleContext } from '../../core/locale/LocaleContext.jsx';
 import { NotificationCard } from './NotificationCard.jsx';
 import { noticeAction } from './notices.mjs';
+import './Notifications.css';
 
 export function Notifications({ cards, session, onAction }) {
   const { t } = useContext(LocaleContext);
