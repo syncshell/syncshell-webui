@@ -1,10 +1,11 @@
 import { useContext, useEffect, useRef, useState } from 'preact/hooks';
-import { cloneConfig, ignoreLines } from '../../../client/edit.mjs';
+import { ignoreLines } from '../../../client/edit.mjs';
 import { Dialog } from '../../Dialog.jsx';
 import { EditorField } from '../../EditorField.jsx';
 import { Icon } from '../../Icon.jsx';
 import { Tabs } from '../../Tabs.jsx';
 import { LocaleContext } from '../../core/locale/LocaleContext.jsx';
+import { cloneConfig } from '../../core/config/configValues.mjs';
 import { ConfirmManagementAction } from '../management/ConfirmManagementAction.jsx';
 import { folderFieldHelp } from './FolderDefinitionRow.jsx';
 import {

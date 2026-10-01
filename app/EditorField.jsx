@@ -1,6 +1,7 @@
 import { useContext } from 'preact/hooks';
 import { LocaleContext } from './core/locale/LocaleContext.jsx';
-import { changedValue, getValue, inputValue } from '../client/edit.mjs';
+import { getValue } from './core/config/configValues.mjs';
+import { changedValue, inputValue } from '../client/edit.mjs';
 import { Tooltip } from './Tooltip.jsx';
 
 export function EditorField({

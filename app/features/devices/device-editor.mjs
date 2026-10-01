@@ -1,4 +1,4 @@
-import { cloneConfig, setValue } from '../../../client/edit.mjs';
+import { cloneConfig, setValue } from '../../core/config/configValues.mjs';
 
 const field = (action, path, label, type = 'text', options) => ({
   action,

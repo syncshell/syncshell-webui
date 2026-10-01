@@ -1,13 +1,11 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
 import {
-  changedValue,
   cloneConfig,
   getValue,
-  ignoreLines,
-  inputValue,
   setValue,
-} from '../client/edit.mjs';
+} from '../app/core/config/configValues.mjs';
+import { changedValue, ignoreLines, inputValue } from '../client/edit.mjs';
 import {
   folderEditorFieldState,
   folderPath,

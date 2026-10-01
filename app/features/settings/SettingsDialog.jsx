@@ -1,5 +1,5 @@
 import { useContext, useEffect, useRef, useState } from 'preact/hooks';
-import { cloneConfig, setValue } from '../../../client/edit.mjs';
+import { cloneConfig, setValue } from '../../core/config/configValues.mjs';
 import { settingsTabs, settingsFields, upgradeMode } from './settings.mjs';
 import { buildAdvancedConfigSections } from './advancedConfigFields.mjs';
 import { loadSettingsOptions } from './loadSettingsOptions.mjs';

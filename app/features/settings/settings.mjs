@@ -1,4 +1,4 @@
-import { cloneConfig } from '../../../client/edit.mjs';
+import { cloneConfig } from '../../core/config/configValues.mjs';
 import { isUnixAddress } from './settings-address.mjs';
 
 export const settingsTabs = [
