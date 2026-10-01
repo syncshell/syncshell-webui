@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'preact/hooks';
-import { createSession } from './session.mjs';
-import { createInitialState } from '../app/core/session/sessionState.mjs';
+import { createSession } from './createSession.mjs';
+import { createInitialState } from './sessionState.mjs';
 
 export function useSyncthingSession(
   api,

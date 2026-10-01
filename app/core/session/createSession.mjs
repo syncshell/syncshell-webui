@@ -1,12 +1,12 @@
 // Copyright (C) 2026 The Syncshell Authors.
 // SPDX-License-Identifier: MPL-2.0
 
-import { createEventStream as defaultEventStream } from '../app/core/session/createEventStream.mjs';
-import { completionTotal, connectionRates } from './connections.mjs';
 import {
-  createInitialState,
-  reduceDaemonEvent,
-} from '../app/core/session/sessionState.mjs';
+  completionTotal,
+  connectionRates,
+} from '../../../client/connections.mjs';
+import { createEventStream as defaultEventStream } from './createEventStream.mjs';
+import { createInitialState, reduceDaemonEvent } from './sessionState.mjs';
 
 export async function runReportedSessionAction(action, reportError) {
   try {

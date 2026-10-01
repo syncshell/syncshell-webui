@@ -1,6 +1,9 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
-import { createSession, runReportedSessionAction } from '../client/session.mjs';
+import {
+  createSession,
+  runReportedSessionAction,
+} from '../app/core/session/createSession.mjs';
 import {
   createInitialState,
   reduceDaemonEvent,

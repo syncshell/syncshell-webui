@@ -1,8 +1,8 @@
 import { desktopActions } from '../client/desktop.mjs';
 import { useEffect, useState } from 'preact/hooks';
 import { createSyncthingApi } from './core/http/syncthingApi.mjs';
-import { runReportedSessionAction } from '../client/session.mjs';
-import { useSyncthingSession } from '../client/use-syncthing-session.mjs';
+import { runReportedSessionAction } from './core/session/createSession.mjs';
+import { useSyncthingSession } from './core/session/useSyncthingSession.mjs';
 import { loadEnglishCatalog, translator } from './core/locale/translate.mjs';
 import { groupAndSortItems } from '../client/grouping.mjs';
 import { deviceName } from './features/devices/device-status.mjs';

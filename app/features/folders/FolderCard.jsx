@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'preact/hooks';
-import { runReportedSessionAction } from '../../../client/session.mjs';
+import { runReportedSessionAction } from '../../core/session/createSession.mjs';
 import { stripeSections } from '../../../client/stripes.mjs';
 import { FolderActions } from './FolderActions.jsx';
 import { FolderDetails } from './FolderDetails.jsx';
