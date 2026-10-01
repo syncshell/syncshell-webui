@@ -118,7 +118,7 @@ test('logs render literal text, update logging levels and cancel polling on clos
     dialog.getByRole('textbox', { name: 'Log', exact: true }),
   ).toHaveValue(/literal <script> & log entry/);
   await dialog
-    .getByRole('link', { name: 'Debugging Facilities', exact: true })
+    .getByRole('tab', { name: 'Debugging Facilities', exact: true })
     .click();
   await dialog
     .getByRole('combobox', { name: 'api', exact: true })

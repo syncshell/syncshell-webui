@@ -1,6 +1,7 @@
 import { useContext, useEffect, useRef, useState } from 'preact/hooks';
 import { LocaleContext } from './locale-context.jsx';
 import { Dialog } from './Dialog.jsx';
+import { Tabs } from './Tabs.jsx';
 export function Logs({ api, onClose }) {
   const { t } = useContext(LocaleContext);
   const area = useRef();
@@ -11,6 +12,12 @@ export function Logs({ api, onClose }) {
   const [error, setError] = useState('');
   const [busy, setBusy] = useState(false);
   const [paused, setPaused] = useState(false);
+  const tabItems = ['Log', 'Debugging Facilities'].map((name) => ({
+    id: name,
+    tabId: 'logs-' + name.toLowerCase().replaceAll(' ', '-') + '-tab',
+    panelId: 'logs-panel',
+    label: t(name),
+  }));
   const content = entries
     .map(
       (entry) =>
@@ -77,94 +84,88 @@ export function Logs({ api, onClose }) {
   }
   return (
     <Dialog title="Logs" large icon="wrench" onClose={onClose}>
-      <ul class="nav nav-tabs">
-        {['Log', 'Debugging Facilities'].map((name) => (
-          <li key={name} class={tab === name ? 'active' : ''}>
-            <a
-              href={'#logs-' + name}
-              onClick={(event) => {
-                event.preventDefault();
-                setTab(name);
+      <Tabs activeId={tab} items={tabItems} onSelect={setTab} />
+      <div
+        id="logs-panel"
+        role="tabpanel"
+        aria-labelledby={
+          'logs-' + tab.toLowerCase().replaceAll(' ', '-') + '-tab'
+        }
+      >
+        {error && (
+          <p class="text-danger" role="alert">
+            {error}
+          </p>
+        )}
+        {tab === 'Log' ? (
+          <>
+            <textarea
+              ref={area}
+              class="form-control text-monospace"
+              aria-label={t('Log')}
+              rows="20"
+              readOnly
+              value={content}
+              onScroll={() => {
+                const element = area.current;
+                pausedRef.current =
+                  element.scrollHeight >
+                  element.scrollTop + element.clientHeight + 1;
+                setPaused(pausedRef.current);
               }}
-            >
-              {t(name)}
-            </a>
-          </li>
-        ))}
-      </ul>
-      {error && (
-        <p class="text-danger" role="alert">
-          {error}
-        </p>
-      )}
-      {tab === 'Log' ? (
-        <>
-          <textarea
-            ref={area}
-            class="form-control text-monospace"
-            aria-label={t('Log')}
-            rows="20"
-            readOnly
-            value={content}
-            onScroll={() => {
-              const element = area.current;
-              pausedRef.current =
-                element.scrollHeight >
-                element.scrollTop + element.clientHeight + 1;
-              setPaused(pausedRef.current);
-            }}
-          />
-          {paused && (
-            <button
-              class="btn btn-link"
-              onClick={() => {
-                pausedRef.current = false;
-                setPaused(false);
-                area.current.scrollTop = area.current.scrollHeight;
-              }}
-            >
-              {t('Log tailing paused. Scroll to the bottom to continue.')}
-            </button>
-          )}
-        </>
-      ) : (
-        <>
-          <p>{t('Available debug logging facilities:')}</p>
-          <table class="table table-striped">
-            <tbody>
-              {Object.entries(facilities.levels).map(([key, value]) => (
-                <tr key={key}>
-                  <td>
-                    {facilities.packages[key]} (<code>{key}</code>)
-                  </td>
-                  <td>
-                    <select
-                      class="form-control"
-                      aria-label={key}
-                      disabled={busy}
-                      value={value}
-                      onChange={(event) =>
-                        setLoggingLevel(key, event.currentTarget.value)
-                      }
-                    >
-                      {[
-                        ['DEBUG', 'Debug'],
-                        ['INFO', 'Info'],
-                        ['WARN', 'Warning'],
-                        ['ERROR', 'Error'],
-                      ].map(([level, label]) => (
-                        <option key={level} value={level}>
-                          {t(label)}
-                        </option>
-                      ))}
-                    </select>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </>
-      )}
+            />
+            {paused && (
+              <button
+                class="btn btn-link"
+                onClick={() => {
+                  pausedRef.current = false;
+                  setPaused(false);
+                  area.current.scrollTop = area.current.scrollHeight;
+                }}
+              >
+                {t('Log tailing paused. Scroll to the bottom to continue.')}
+              </button>
+            )}
+          </>
+        ) : (
+          <>
+            <p>{t('Available debug logging facilities:')}</p>
+            <table class="table table-striped">
+              <tbody>
+                {Object.entries(facilities.levels).map(([key, value]) => (
+                  <tr key={key}>
+                    <td>
+                      {facilities.packages[key]} (<code>{key}</code>)
+                    </td>
+                    <td>
+                      <select
+                        class="form-control"
+                        aria-label={key}
+                        disabled={busy}
+                        value={value}
+                        onChange={(event) =>
+                          setLoggingLevel(key, event.currentTarget.value)
+                        }
+                      >
+                        {[
+                          ['DEBUG', 'Debug'],
+                          ['INFO', 'Info'],
+                          ['WARN', 'Warning'],
+                          ['ERROR', 'Error'],
+                        ].map(([level, label]) => (
+                          <option key={level} value={level}>
+                            {t(label)}
+                          </option>
+                        ))}
+                      </select>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </>
+        )}
+      </div>
     </Dialog>
   );
 }
