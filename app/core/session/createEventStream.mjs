@@ -1,7 +1,7 @@
 // Copyright (C) 2014 The Syncthing Authors.
 // SPDX-License-Identifier: MPL-2.0
 
-export function createEvents(
+export function createEventStream(
   api,
   {
     onEvent,

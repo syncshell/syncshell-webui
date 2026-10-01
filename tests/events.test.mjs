@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
-import { createEvents } from '../client/events.mjs';
+import { createEventStream } from '../app/core/session/createEventStream.mjs';
 
 test('cursor advances after startup and survives a reconnect', async () => {
   const script = [
@@ -46,7 +46,7 @@ test('cursor advances after startup and survives a reconnect', async () => {
       return item.data;
     },
   };
-  const events = createEvents(api, {
+  const events = createEventStream(api, {
     retryMs: 0,
     onOnline: () => seen.push({ type: 'UIOnline' }),
     onOffline: () => seen.push({ type: 'UIOffline' }),
@@ -63,7 +63,7 @@ test('empty 200 recovers, start is idempotent, and stop cancels retry', async ()
   const failed = new Promise((resolve) => {
     offline = resolve;
   });
-  const events = createEvents(
+  const events = createEventStream(
     {
       async get() {
         calls++;
@@ -89,7 +89,7 @@ test('unmount aborts the active request and prevents later callbacks', async () 
     entered = resolve;
   });
   let signal;
-  const events = createEvents(
+  const events = createEventStream(
     {
       get(_, { signal: requestSignal }) {
         signal = requestSignal;

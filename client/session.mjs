@@ -1,7 +1,7 @@
 // Copyright (C) 2026 The Syncshell Authors.
 // SPDX-License-Identifier: MPL-2.0
 
-import { createEvents } from './events.mjs';
+import { createEventStream as defaultEventStream } from '../app/core/session/createEventStream.mjs';
 import { completionTotal, connectionRates } from './connections.mjs';
 import { createInitialState, reduceDaemonEvent } from './session-state.mjs';
 
@@ -20,7 +20,7 @@ export function createSession(
     onAuthExpired,
     refreshMs = 10000,
     retryMs = 1000,
-    createEventStream = createEvents,
+    createEventStream = defaultEventStream,
   } = {},
 ) {
   let state = createInitialState();
