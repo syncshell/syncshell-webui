@@ -4,13 +4,13 @@ import { timestamp } from '../../../client/format.mjs';
 import {
   settingsTabs,
   settingsFields,
-  prepareSettingsForSave,
   upgradeMode,
   ignoredFolders,
   unignore,
   loadSettings,
   buildAdvancedConfigSections,
 } from './settings.mjs';
+import { prepareSettingsForSave } from './prepareSettingsForSave.mjs';
 import { Dialog } from '../../Dialog.jsx';
 import { Editor } from '../../Editor.jsx';
 import { FormFields } from '../../FormFields.jsx';
