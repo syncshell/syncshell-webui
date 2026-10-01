@@ -9,6 +9,7 @@ import { ServiceHealthDialog } from './features/system/ServiceHealthDialog.jsx';
 import { RecentChangesDialog } from './features/system/RecentChangesDialog.jsx';
 import { DeviceIdentificationDialog } from './features/devices/DeviceIdentificationDialog.jsx';
 import { RemoteNeededDialog } from './features/devices/RemoteNeededDialog.jsx';
+import { DeviceEditor } from './features/devices/DeviceEditor.jsx';
 
 /**
  * @typedef (
@@ -55,6 +56,15 @@ export function DialogHost({ action, state, api, session, onClose }) {
       );
     case 'add-device':
     case 'edit-device':
+      return (
+        <DeviceEditor
+          action={action}
+          state={state}
+          api={api}
+          session={session}
+          onClose={onClose}
+        />
+      );
     case 'add-folder':
     case 'edit-folder':
       return (
