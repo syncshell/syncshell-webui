@@ -1,3 +1,6 @@
+import { completionTotal } from './devices.mjs';
+import { endedTransfers, transferProgress } from './transfer.mjs';
+
 export function createInitialState() {
   return {
     online: false,
@@ -77,5 +80,54 @@ export function reduceFolderEvent(state, event) {
       };
     default:
       return state;
+  }
+}
+
+export function reduceDaemonEvent(state, event) {
+  const next = reduceFolderEvent(state, event);
+  const data = event.data;
+
+  switch (event.type) {
+    case 'DownloadProgress': {
+      const progress = transferProgress(data);
+      const itemsRevision = { ...next.itemsRevision };
+      for (const folder of endedTransfers(next.downloadProgress, progress))
+        itemsRevision[folder] = (itemsRevision[folder] || 0) + 1;
+      return { ...next, downloadProgress: progress, itemsRevision };
+    }
+    case 'FolderErrors':
+    case 'LocalIndexUpdated':
+    case 'RemoteIndexUpdated':
+      return {
+        ...next,
+        itemsRevision: {
+          ...next.itemsRevision,
+          [data.folder]: (next.itemsRevision[data.folder] || 0) + 1,
+        },
+      };
+    case 'FolderCompletion':
+      return {
+        ...next,
+        completion: {
+          ...next.completion,
+          [data.device]: completionTotal({
+            ...next.completion[data.device],
+            [data.folder]: data,
+          }),
+        },
+      };
+    case 'DeviceDisconnected':
+      if (!next.connections[data.id]) return next;
+      return {
+        ...next,
+        connections: {
+          ...next.connections,
+          [data.id]: { ...next.connections[data.id], connected: false },
+        },
+      };
+    case 'ConfigSaved':
+      return { ...next, config: data };
+    default:
+      return next;
   }
 }

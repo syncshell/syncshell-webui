@@ -2,9 +2,8 @@
 // SPDX-License-Identifier: MPL-2.0
 
 import { createEvents } from './events.mjs';
-import { transferProgress, endedTransfers } from './transfer.mjs';
 import { completionTotal, connectionRates } from './devices.mjs';
-import { createInitialState, reduceFolderEvent } from './session-state.mjs';
+import { createInitialState, reduceDaemonEvent } from './session-state.mjs';
 
 export async function runReportedSessionAction(action, reportError) {
   try {
@@ -250,53 +249,8 @@ export function createSession(
       update({ ...state, online: false, error });
     },
     onEvent(event) {
-      update(reduceFolderEvent(state, event));
-      const data = event.data;
-      if (event.type === 'DownloadProgress') {
-        const progress = transferProgress(data),
-          revision = { ...state.itemsRevision };
-        for (const folder of endedTransfers(state.downloadProgress, progress))
-          revision[folder] = (revision[folder] || 0) + 1;
-        update({
-          ...state,
-          downloadProgress: progress,
-          itemsRevision: revision,
-        });
-      }
-      if (
-        ['LocalIndexUpdated', 'RemoteIndexUpdated', 'FolderErrors'].includes(
-          event.type,
-        )
-      ) {
-        update({
-          ...state,
-          itemsRevision: {
-            ...state.itemsRevision,
-            [data.folder]: (state.itemsRevision[data.folder] || 0) + 1,
-          },
-        });
-      }
-      if (event.type === 'FolderCompletion') {
-        update({
-          ...state,
-          completion: {
-            ...state.completion,
-            [data.device]: completionTotal({
-              ...state.completion[data.device],
-              [data.folder]: data,
-            }),
-          },
-        });
-      }
+      update(reduceDaemonEvent(state, event));
       if (event.type === 'DeviceDisconnected') {
-        if (state.connections[data.id])
-          update({
-            ...state,
-            connections: {
-              ...state.connections,
-              [data.id]: { ...state.connections[data.id], connected: false },
-            },
-          });
         read('stats/device')
           .then((deviceStats) => update({ ...state, deviceStats }))
           .catch(fail);
@@ -310,7 +264,6 @@ export function createSession(
       }
 
       if (event.type === 'ConfigSaved') {
-        update({ ...state, config: event.data });
         refreshModels(event.data).catch(fail);
         read('config/insync')
           .then((value) =>

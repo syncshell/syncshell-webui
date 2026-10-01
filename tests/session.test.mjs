@@ -3,6 +3,7 @@ import { test } from 'node:test';
 import { createSession, runReportedSessionAction } from '../client/session.mjs';
 import {
   createInitialState,
+  reduceDaemonEvent,
   reduceFolderEvent,
 } from '../client/session-state.mjs';
 
@@ -168,6 +169,60 @@ test('folder events leave other folders unchanged and clear obsolete scan data',
     }),
     scanning,
   );
+});
+
+test('daemon event reduction updates transfers, revisions and connections', () => {
+  const original = {
+    ...createInitialState(),
+    connections: { peer: { connected: true, type: 'tcp-server' } },
+    downloadProgress: {
+      photos: { 'done.jpg': { bytesTotal: 100, bytesDone: 90 } },
+    },
+  };
+  const progress = reduceDaemonEvent(original, {
+    type: 'DownloadProgress',
+    data: {},
+  });
+  assert.deepEqual(progress.downloadProgress, {});
+  assert.equal(progress.itemsRevision.photos, 1);
+
+  const indexed = reduceDaemonEvent(progress, {
+    type: 'RemoteIndexUpdated',
+    data: { folder: 'photos' },
+  });
+  assert.equal(indexed.itemsRevision.photos, 2);
+
+  const disconnected = reduceDaemonEvent(indexed, {
+    type: 'DeviceDisconnected',
+    data: { id: 'peer' },
+  });
+  assert.equal(disconnected.connections.peer.connected, false);
+  assert.equal(disconnected.connections.peer.type, 'tcp-server');
+  assert.equal(original.connections.peer.connected, true);
+});
+
+test('daemon event reduction updates completion and saved configuration', () => {
+  const original = createInitialState();
+  const completion = reduceDaemonEvent(original, {
+    type: 'FolderCompletion',
+    data: {
+      folder: 'photos',
+      device: 'peer',
+      globalBytes: 1000,
+      needBytes: 250,
+      needItems: 2,
+      needDeletes: 0,
+    },
+  });
+  assert.equal(completion.completion.peer._total, 75);
+  assert.equal(completion.completion.peer._needItems, 2);
+
+  const config = { folders: [], devices: [], options: {}, gui: {} };
+  const saved = reduceDaemonEvent(completion, {
+    type: 'ConfigSaved',
+    data: config,
+  });
+  assert.equal(saved.config, config);
 });
 
 test('session hydrates, scans only the selected directory and cancels on disposal', async () => {
