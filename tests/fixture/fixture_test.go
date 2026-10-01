@@ -2,7 +2,6 @@ package main
 
 import (
 	"encoding/xml"
-	"strings"
 	"testing"
 )
 
@@ -23,16 +22,40 @@ func TestFixtureConfigIsolatesGeneratedDefaults(t *testing.T) {
 			Theme   string `xml:"theme"`
 		} `xml:"gui"`
 		Options struct {
-			Unrelated string `xml:"unrelated"`
+			ListenAddress         string `xml:"listenAddress"`
+			GlobalAnnounceEnabled bool   `xml:"globalAnnounceEnabled"`
+			LocalAnnounceEnabled  bool   `xml:"localAnnounceEnabled"`
+			RelaysEnabled         bool   `xml:"relaysEnabled"`
+			NATEnabled            bool   `xml:"natEnabled"`
+			StartBrowser          bool   `xml:"startBrowser"`
+			URAccepted            int    `xml:"urAccepted"`
+			Unrelated             string `xml:"unrelated"`
 		} `xml:"options"`
 	}
 	if err := xml.Unmarshal(result, &config); err != nil {
 		t.Fatal(err)
 	}
-	if len(config.Folders) != 0 || config.Device.ID != "self" || config.GUI.Address != "127.0.0.1:18401" || config.GUI.Key != "fixture-key" || config.GUI.Theme != "syncshell-modern" || config.Options.Unrelated != "retain" {
-		t.Fatal("fixture changed unrelated configuration or retained the generated folder")
-	}
-	if strings.Contains(string(result), ">true<") || !strings.Contains(string(result), "<urAccepted>-1</urAccepted>") {
-		t.Fatal("fixture retained external discovery or reporting")
-	}
+	t.Run("removes generated folders", func(t *testing.T) {
+		if len(config.Folders) != 0 {
+			t.Fatalf("got %d generated folders", len(config.Folders))
+		}
+	})
+	t.Run("preserves device and unrelated values", func(t *testing.T) {
+		if config.Device.ID != "self" || config.GUI.Key != "fixture-key" || config.Options.Unrelated != "retain" {
+			t.Fatal("fixture changed preserved configuration")
+		}
+	})
+	t.Run("sets isolated GUI and networking values", func(t *testing.T) {
+		if config.GUI.Address != "127.0.0.1:18401" || config.GUI.Theme != "syncshell-modern" {
+			t.Fatal("fixture did not set the isolated GUI")
+		}
+		if config.Options.ListenAddress != "tcp://127.0.0.1:18411" || config.Options.GlobalAnnounceEnabled || config.Options.LocalAnnounceEnabled || config.Options.RelaysEnabled || config.Options.NATEnabled {
+			t.Fatal("fixture retained external networking")
+		}
+	})
+	t.Run("disables browser launch and usage reporting", func(t *testing.T) {
+		if config.Options.StartBrowser || config.Options.URAccepted != -1 {
+			t.Fatal("fixture retained browser launch or usage reporting")
+		}
+	})
 }
