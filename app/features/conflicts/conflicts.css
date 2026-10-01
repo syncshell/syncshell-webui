@@ -18,7 +18,7 @@
     flex: 0 1 320px;
   }
   .review-message {
-    font-size: 14px;
+    font-size: var(--text-body);
     overflow-wrap: anywhere;
   }
   .review-message:empty {
@@ -40,7 +40,7 @@
     min-width: 0;
     padding: var(--space-2) var(--space-4);
     border-top: 0;
-    font-size: 14px;
+    font-size: var(--text-body);
   }
   .review-path {
     display: block;
@@ -53,7 +53,7 @@
   .review-cell-label {
     display: block;
     margin-bottom: var(--space-3);
-    font-size: 14px;
+    font-size: var(--text-body);
     font-weight: normal;
   }
   .review-file {
@@ -76,7 +76,7 @@
   .review-file-meta {
     display: block;
     margin: 2px 0 0;
-    font-size: 12px;
+    font-size: var(--text-small);
   }
   .review-version {
     width: 100%;
@@ -97,7 +97,7 @@
     min-width: 0;
   }
   .conflict-review .btn {
-    font-size: 12px;
+    font-size: var(--text-small);
     padding: 5px var(--space-2);
     white-space: normal;
     overflow-wrap: anywhere;
@@ -109,7 +109,7 @@
   .conflict-review .review-recheck {
     min-height: 33px;
     padding: var(--space-1) 10px;
-    font-size: 14px;
+    font-size: var(--text-body);
     line-height: 20px;
   }
   @media (max-width: 1050px) {
@@ -154,7 +154,7 @@
   .review-table > thead > .review-column-headings > th {
     min-width: 0;
     padding: var(--space-4);
-    font-size: 14px;
+    font-size: var(--text-body);
   }
   .review-mobile-label,
   .review-table .review-current > .review-cell-label {
