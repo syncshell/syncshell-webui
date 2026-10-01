@@ -1,10 +1,12 @@
-.xattr-rule {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  margin-bottom: 8px;
-}
+@layer features {
+  .xattr-rule {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 8px;
+  }
 
-.xattr-rule .form-control {
-  min-width: 0;
+  .xattr-rule .form-control {
+    min-width: 0;
+  }
 }

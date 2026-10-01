@@ -1,4 +1,6 @@
-.about-paths code {
-  white-space: normal;
-  overflow-wrap: anywhere;
+@layer features {
+  .about-paths code {
+    white-space: normal;
+    overflow-wrap: anywhere;
+  }
 }

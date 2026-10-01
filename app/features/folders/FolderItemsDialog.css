@@ -1,5 +1,7 @@
-.folder-items-table .folder-text {
-  display: inline-block;
-  max-width: calc(100% - 36px);
-  vertical-align: middle;
+@layer features {
+  .folder-items-table .folder-text {
+    display: inline-block;
+    max-width: calc(100% - 36px);
+    vertical-align: middle;
+  }
 }
