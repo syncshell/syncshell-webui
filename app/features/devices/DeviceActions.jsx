@@ -2,8 +2,7 @@ import { useContext } from 'preact/hooks';
 import { runReportedSessionAction } from '../../../client/session.mjs';
 import { Icon } from '../../Icon.jsx';
 import { LocaleContext } from '../../locale-context.jsx';
-import { MenuButton } from '../../MenuButton.jsx';
-import { ShareStatus } from '../../ShareStatus.jsx';
+import { DeviceFoldersMenu } from './DeviceFoldersMenu.jsx';
 
 export function DeviceActions({
   device,
@@ -28,57 +27,13 @@ export function DeviceActions({
         <Icon name="qrcode" />
         &nbsp;{t('Identification')}
       </button>
-      {folders.length > 0 && (
-        <MenuButton
-          placement="dropup"
-          className="folder-sharing device-folders"
-          buttonClass="btn btn-sm btn-default"
-          label={
-            <>
-              <Icon name="folder" />
-              &nbsp;{t('Folders')} <span class="caret" />
-            </>
-          }
-        >
-          {({ close }) =>
-            folders.map((folder) => (
-              <li key={folder.id}>
-                <a
-                  href={isLocalDevice ? '#folder' : '#folder-sharing'}
-                  onClick={(event) => {
-                    event.preventDefault();
-                    close();
-                    onAction({
-                      type: 'edit-folder',
-                      folder,
-                      ...(isLocalDevice ? {} : { tab: 'sharing' }),
-                    });
-                  }}
-                >
-                  {folder.label || folder.id}
-                  {!isLocalDevice && (
-                    <>
-                      {' '}
-                      <ShareStatus
-                        encrypted={
-                          folder.type === 'receiveencrypted' ||
-                          !!folder.devices.find(
-                            (member) => member.deviceID === device.deviceID,
-                          )?.encryptionPassword
-                        }
-                        remoteState={
-                          state.completion[device.deviceID]?.[folder.id]
-                            ?.remoteState
-                        }
-                      />
-                    </>
-                  )}
-                </a>
-              </li>
-            ))
-          }
-        </MenuButton>
-      )}
+      <DeviceFoldersMenu
+        device={device}
+        folders={folders}
+        isLocalDevice={isLocalDevice}
+        state={state}
+        onAction={onAction}
+      />
       <span class="pull-right">
         {isLocalDevice ? (
           state.config.folders.length > 0 && (
