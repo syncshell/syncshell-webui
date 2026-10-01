@@ -310,14 +310,6 @@ export function createSession(
     await events.stop();
   }
 
-  async function rescan(folder, sub) {
-    try {
-      await api.post('db/scan', undefined, { folder, sub }, controller.signal);
-    } catch (error) {
-      rethrowCommandError(error);
-    }
-  }
-
   async function saveConfig(config) {
     try {
       await api.put('config', config, controller.signal);
@@ -356,6 +348,39 @@ export function createSession(
     });
   }
 
+  async function ignorePending(device, folder, pending) {
+    await changeConfig((config) => {
+      if (folder) {
+        const target = config.devices.find((item) => item.deviceID === device);
+        target.ignoredFolders = [
+          ...(target.ignoredFolders || []).filter((item) => item.id !== folder),
+          { id: folder, label: pending.label, time: new Date().toISOString() },
+        ];
+      } else {
+        config.remoteIgnoredDevices = [
+          ...(config.remoteIgnoredDevices || []).filter(
+            (item) => item.deviceID !== device,
+          ),
+          {
+            deviceID: device,
+            name: pending.name,
+            address: pending.address,
+            time: new Date().toISOString(),
+          },
+        ];
+      }
+    });
+    await dismissPending(device, folder);
+  }
+
+  async function rescan(folder, sub) {
+    try {
+      await api.post('db/scan', undefined, { folder, sub }, controller.signal);
+    } catch (error) {
+      rethrowCommandError(error);
+    }
+  }
+
   async function clearErrors() {
     const seenError = state.errors.at(-1)?.when || state.seenError;
     try {
@@ -384,31 +409,6 @@ export function createSession(
     }
   }
 
-  async function ignorePending(device, folder, pending) {
-    await changeConfig((config) => {
-      if (folder) {
-        const target = config.devices.find((item) => item.deviceID === device);
-        target.ignoredFolders = [
-          ...(target.ignoredFolders || []).filter((item) => item.id !== folder),
-          { id: folder, label: pending.label, time: new Date().toISOString() },
-        ];
-      } else {
-        config.remoteIgnoredDevices = [
-          ...(config.remoteIgnoredDevices || []).filter(
-            (item) => item.deviceID !== device,
-          ),
-          {
-            deviceID: device,
-            name: pending.name,
-            address: pending.address,
-            time: new Date().toISOString(),
-          },
-        ];
-      }
-    });
-    await dismissPending(device, folder);
-  }
-
   async function systemAction(action) {
     try {
       await api.post(
@@ -422,20 +422,27 @@ export function createSession(
     }
   }
 
-  return {
-    start,
-    stop,
-    rescan,
-    refresh: refreshSessionOverview,
-    refreshGlobalChanges,
-    reportError: fail,
+  const configCommands = {
     saveConfig,
     changeConfig,
     setPaused,
     dismissNotification,
+    ignorePending,
+  };
+  const systemCommands = {
+    rescan,
     clearErrors,
     dismissPending,
-    ignorePending,
     systemAction,
+  };
+
+  return {
+    start,
+    stop,
+    refresh: refreshSessionOverview,
+    refreshGlobalChanges,
+    reportError: fail,
+    ...configCommands,
+    ...systemCommands,
   };
 }
