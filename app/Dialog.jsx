@@ -15,11 +15,21 @@ export function Dialog({
 }) {
   const { t } = useContext(LocaleContext);
   const dialog = useRef();
+  const returnFocus = useRef();
   const [full, setFull] = useState(false);
   useEffect(() => {
     const node = dialog.current;
+    returnFocus.current = document.activeElement;
     node.showModal();
-    return () => node.close();
+    const initialFocus = node.querySelector(
+      '[autofocus], button:not([disabled]), a[href]:not([aria-disabled="true"]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])',
+    );
+    (initialFocus || node).focus();
+    return () => {
+      if (node.open) node.close();
+      const target = returnFocus.current;
+      if (target?.isConnected) target.focus();
+    };
   }, []);
   return (
     <dialog
@@ -49,6 +59,7 @@ export function Dialog({
           {expandable && (
             <div class="modal-header-actions">
               <button
+                type="button"
                 class="btn btn-default btn-sm"
                 onClick={() => setFull(!full)}
               >
@@ -56,6 +67,7 @@ export function Dialog({
                 &nbsp;{t(full ? 'Back' : 'Full View')}
               </button>
               <button
+                type="button"
                 class="btn btn-default btn-sm"
                 onClick={() => dialog.current.close()}
               >
@@ -70,6 +82,7 @@ export function Dialog({
           <div class="modal-footer">
             {footer || (
               <button
+                type="button"
                 class="btn btn-default btn-sm"
                 onClick={() => dialog.current.close()}
               >

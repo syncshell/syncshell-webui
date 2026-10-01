@@ -30,3 +30,30 @@ test('dialogs take initial focus and return it after Escape', async ({
   await expect(dialog).toHaveCount(0);
   await expect(opener).toBeFocused();
 });
+
+test('nested dialogs return focus to their parent dialog', async ({ page }) => {
+  await folderFixture(page);
+  await page.goto('/');
+
+  await page.getByRole('link', { name: /Actions/ }).click();
+  await page.getByRole('link', { name: 'Settings', exact: true }).click();
+  const settings = page.getByRole('dialog', { name: 'Settings', exact: true });
+  const opener = settings.getByRole('button', {
+    name: 'Edit Folder Defaults',
+    exact: true,
+  });
+  await opener.click();
+
+  const editor = page.getByRole('dialog', {
+    name: 'Edit Folder Defaults',
+    exact: true,
+  });
+  await expect(editor).toBeVisible();
+  await expect(
+    editor.getByRole('tab', { name: 'General', exact: true }),
+  ).toBeFocused();
+
+  await page.keyboard.press('Escape');
+  await expect(editor).toHaveCount(0);
+  await expect(opener).toBeFocused();
+});
