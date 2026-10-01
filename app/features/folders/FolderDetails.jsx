@@ -10,8 +10,8 @@ import { Field } from '../../Field.jsx';
 import { Icon } from '../../Icon.jsx';
 import { LocaleContext } from '../../locale-context.jsx';
 import { Tooltip } from '../../Tooltip.jsx';
-import { Versioning } from '../../Versioning.jsx';
 import { FolderCounts } from './FolderCounts.jsx';
+import { FolderVersioningSummary } from './FolderVersioningSummary.jsx';
 import {
   folderStateClass,
   folderStateDetails,
@@ -222,7 +222,7 @@ export function FolderDetails({
             </Field>
             {folder.versioning?.type && (
               <Field label="File Versioning">
-                <Versioning config={folder.versioning} />
+                <FolderVersioningSummary config={folder.versioning} />
               </Field>
             )}
             {folder.ignorePerms && (
