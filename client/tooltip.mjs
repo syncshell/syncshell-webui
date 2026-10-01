@@ -1,7 +1,8 @@
 let nextTooltip = 0;
 
 export function bindTooltip(trigger, tip) {
-  let timer;
+  let showTimer;
+  let hideTimer;
   tip.id = 'syncshell-tooltip-' + ++nextTooltip;
   function position() {
     if (!tip.matches(':popover-open')) return;
@@ -22,26 +23,39 @@ export function bindTooltip(trigger, tip) {
       ) + 'px';
   }
   function show() {
-    clearTimeout(timer);
-    timer = setTimeout(() => {
+    clearTimeout(hideTimer);
+    clearTimeout(showTimer);
+    if (tip.matches(':popover-open')) return;
+    showTimer = setTimeout(() => {
       tip.showPopover();
       trigger.setAttribute('aria-describedby', tip.id);
       position();
     }, 400);
   }
   function hide() {
-    clearTimeout(timer);
-    tip.hidePopover();
+    clearTimeout(showTimer);
+    clearTimeout(hideTimer);
+    if (tip.matches(':popover-open')) tip.hidePopover();
     trigger.removeAttribute('aria-describedby');
+  }
+  function scheduleHide() {
+    clearTimeout(showTimer);
+    clearTimeout(hideTimer);
+    hideTimer = setTimeout(hide, 100);
+  }
+  function keepOpen() {
+    clearTimeout(hideTimer);
   }
   function key(event) {
     if (event.key === 'Escape') hide();
   }
   trigger.addEventListener('mouseenter', show);
-  trigger.addEventListener('mouseleave', hide);
+  trigger.addEventListener('mouseleave', scheduleHide);
   trigger.addEventListener('focus', show);
   trigger.addEventListener('blur', hide);
-  trigger.addEventListener('keydown', key);
+  tip.addEventListener('mouseenter', keepOpen);
+  tip.addEventListener('mouseleave', scheduleHide);
+  document.addEventListener('keydown', key);
   window.addEventListener('resize', position);
   window.addEventListener('scroll', position, true);
   const observer = new MutationObserver(position);
@@ -51,13 +65,15 @@ export function bindTooltip(trigger, tip) {
     subtree: true,
   });
   return () => {
-    clearTimeout(timer);
+    hide();
     observer.disconnect();
     trigger.removeEventListener('mouseenter', show);
-    trigger.removeEventListener('mouseleave', hide);
+    trigger.removeEventListener('mouseleave', scheduleHide);
     trigger.removeEventListener('focus', show);
     trigger.removeEventListener('blur', hide);
-    trigger.removeEventListener('keydown', key);
+    tip.removeEventListener('mouseenter', keepOpen);
+    tip.removeEventListener('mouseleave', scheduleHide);
+    document.removeEventListener('keydown', key);
     window.removeEventListener('resize', position);
     window.removeEventListener('scroll', position, true);
   };
