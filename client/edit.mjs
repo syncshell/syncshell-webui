@@ -1,5 +1,3 @@
-import { deviceEditorFields } from './device-editor.mjs';
-
 export const cloneConfig = (value) => JSON.parse(JSON.stringify(value));
 export const getValue = (object, path) =>
   path.split('.').reduce((value, key) => value?.[key], object);
@@ -31,7 +29,6 @@ const field = (path, label, type = 'text', options) => ({
   options,
 });
 export function editorFields(kind, tab, config, myID) {
-  if (kind === 'device') return deviceEditorFields(tab);
   if (kind === 'folder') {
     if (tab === 'General')
       return [

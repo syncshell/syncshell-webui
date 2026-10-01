@@ -1,4 +1,8 @@
 import { setValue } from './edit.mjs';
+import {
+  deviceEditorFieldState,
+  updateDeviceEditor,
+} from './device-editor.mjs';
 export function folderPath(base, name, separator = '/') {
   return base ? base.replace(/[\\/]+$/, '') + separator + name : '';
 }
@@ -8,11 +12,8 @@ export function updateEditor(
   value,
   { kind, isNew, defaults, autoPath, config, system },
 ) {
+  if (kind === 'device') return updateDeviceEditor(draft, path, value);
   const next = setValue(draft, path, value);
-  if (kind === 'device' && path === 'untrusted' && value) {
-    next.introducer = false;
-    next.autoAcceptFolders = false;
-  }
   if (kind === 'folder') {
     if (path === 'type') {
       next.fsWatcherEnabled = value !== 'receiveencrypted';
@@ -52,14 +53,8 @@ export function editorFieldState(
   draft,
   { kind, isNew, defaults, myID },
 ) {
+  if (kind === 'device') return deviceEditorFieldState(field, draft, myID);
   const value = { ...field };
-  if (kind === 'device') {
-    value.disabled =
-      (['introducer', 'autoAcceptFolders'].includes(field.path) &&
-        draft.untrusted) ||
-      (field.path === 'addresses' && draft.deviceID === myID);
-    return value;
-  }
   if (
     field.path.startsWith('versioning.') &&
     field.path !== 'versioning.type' &&

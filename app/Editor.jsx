@@ -25,6 +25,7 @@ import { Tooltip } from './Tooltip.jsx';
 import { IdentityControls } from './IdentityControls.jsx';
 import { SharingEntry } from './SharingEntry.jsx';
 import { deviceName } from '../client/devices.mjs';
+import { deviceEditorFields } from '../client/device-editor.mjs';
 import { Icon } from './Icon.jsx';
 
 export function Editor({ action, state, api, session, onClose, onSaved }) {
@@ -78,7 +79,11 @@ export function Editor({ action, state, api, session, onClose, onSaved }) {
       ? ['General', 'Sharing', 'File Versioning', 'Ignore Patterns', 'Advanced']
       : ['General', 'Sharing', 'Advanced']
   ).filter((name) => !defaults || name !== 'Sharing');
-  const fields = editorFields(kind, tab, state.config, state.system.myID)
+  const describedFields =
+    kind === 'device'
+      ? deviceEditorFields(tab)
+      : editorFields(kind, tab, state.config, state.system.myID);
+  const fields = describedFields
     .map((field) =>
       editorFieldState(field, draft, {
         kind,

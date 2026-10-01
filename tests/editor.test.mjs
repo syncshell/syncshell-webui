@@ -19,6 +19,10 @@ import {
   xattrDefault,
   xattrHint,
 } from '../client/editor-behavior.mjs';
+import {
+  deviceEditorFieldState,
+  updateDeviceEditor,
+} from '../client/device-editor.mjs';
 
 const folderContext = {
   kind: 'folder',
@@ -532,9 +536,7 @@ test('enabling device trust restrictions disables incompatible options', () => {
     introducer: true,
     autoAcceptFolders: true,
   };
-  const updated = updateEditor(original, 'untrusted', true, {
-    kind: 'device',
-  });
+  const updated = updateDeviceEditor(original, 'untrusted', true);
 
   assert.deepEqual(updated, {
     deviceID: 'peer',
@@ -544,15 +546,11 @@ test('enabling device trust restrictions disables incompatible options', () => {
   });
   assert.equal(original.untrusted, false);
   assert.equal(
-    editorFieldState({ path: 'introducer' }, updated, {
-      kind: 'device',
-    }).disabled,
+    deviceEditorFieldState({ path: 'introducer' }, updated).disabled,
     true,
   );
   assert.equal(
-    editorFieldState({ path: 'autoAcceptFolders' }, updated, {
-      kind: 'device',
-    }).disabled,
+    deviceEditorFieldState({ path: 'autoAcceptFolders' }, updated).disabled,
     true,
   );
 });
@@ -561,25 +559,11 @@ test('the local device address field is read only', () => {
   const field = { path: 'addresses' };
 
   assert.equal(
-    editorFieldState(
-      field,
-      { deviceID: 'local' },
-      {
-        kind: 'device',
-        myID: 'local',
-      },
-    ).disabled,
+    deviceEditorFieldState(field, { deviceID: 'local' }, 'local').disabled,
     true,
   );
   assert.equal(
-    editorFieldState(
-      field,
-      { deviceID: 'peer' },
-      {
-        kind: 'device',
-        myID: 'local',
-      },
-    ).disabled,
+    deviceEditorFieldState(field, { deviceID: 'peer' }, 'local').disabled,
     false,
   );
 });
