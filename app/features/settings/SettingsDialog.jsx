@@ -111,6 +111,52 @@ export function SettingsDialog({
   function preview() {
     setReport(true);
   }
+  function standardPanel() {
+    switch (tab) {
+      case 'Ignored Devices':
+        return <IgnoredDevicesSettings config={draft} onChange={setDraft} />;
+      case 'Ignored Folders':
+        return <IgnoredFoldersSettings config={draft} onChange={setDraft} />;
+      case 'General':
+        return (
+          <GeneralSettings
+            describedBy={error ? 'settings-error' : undefined}
+            draft={draft}
+            fields={fields}
+            mode={mode}
+            options={options}
+            system={state.system}
+            version={state.version}
+            onDefaults={defaults}
+            onGenerateKey={generateKey}
+            onMode={setMode}
+            onPreview={preview}
+            onUpdate={update}
+          />
+        );
+      case 'GUI':
+        return (
+          <GuiSettings
+            addressOverridden={state.system.guiAddressOverridden}
+            describedBy={error ? 'settings-error' : undefined}
+            draft={draft}
+            fields={fields}
+            onUpdate={update}
+          />
+        );
+      case 'Connections':
+        return (
+          <ConnectionSettings
+            describedBy={error ? 'settings-error' : undefined}
+            draft={draft}
+            fields={fields}
+            onUpdate={update}
+          />
+        );
+      default:
+        throw new Error(`Unknown settings tab: ${tab}`);
+    }
+  }
   return (
     <>
       <Dialog
@@ -187,47 +233,7 @@ export function SettingsDialog({
                     '-tab'
                   }
                 >
-                  {tab === 'Ignored Devices' ? (
-                    <IgnoredDevicesSettings
-                      config={draft}
-                      onChange={setDraft}
-                    />
-                  ) : tab === 'Ignored Folders' ? (
-                    <IgnoredFoldersSettings
-                      config={draft}
-                      onChange={setDraft}
-                    />
-                  ) : tab === 'General' ? (
-                    <GeneralSettings
-                      describedBy={error ? 'settings-error' : undefined}
-                      draft={draft}
-                      fields={fields}
-                      mode={mode}
-                      options={options}
-                      system={state.system}
-                      version={state.version}
-                      onDefaults={defaults}
-                      onGenerateKey={generateKey}
-                      onMode={setMode}
-                      onPreview={preview}
-                      onUpdate={update}
-                    />
-                  ) : tab === 'GUI' ? (
-                    <GuiSettings
-                      addressOverridden={state.system.guiAddressOverridden}
-                      describedBy={error ? 'settings-error' : undefined}
-                      draft={draft}
-                      fields={fields}
-                      onUpdate={update}
-                    />
-                  ) : (
-                    <ConnectionSettings
-                      describedBy={error ? 'settings-error' : undefined}
-                      draft={draft}
-                      fields={fields}
-                      onUpdate={update}
-                    />
-                  )}
+                  {standardPanel()}
                 </div>
               </>
             )}
