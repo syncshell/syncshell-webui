@@ -84,7 +84,23 @@ test('remote needed details page through paths with device metadata', async ({
       },
     });
   });
+  const configResponse = page.waitForResponse(
+    (response) =>
+      new URL(response.url()).pathname === '/rest/config' && response.ok(),
+  );
+  const statusResponse = page.waitForResponse(
+    (response) =>
+      new URL(response.url()).pathname === '/rest/system/status' &&
+      response.ok(),
+  );
   await page.goto('/');
+  const [config, status] = await Promise.all([
+    configResponse.then((response) => response.json()),
+    statusResponse.then((response) => response.json()),
+  ]);
+  const expectedDevice = config.devices.find(
+    (device) => device.deviceID !== status.myID,
+  ).deviceID;
   await page.locator('.dashboard-remotes .panel-heading').first().click();
   await page.locator('.dashboard-remotes a[href="#remote-needed"]').click();
   const dialog = page.getByRole('dialog');
@@ -93,5 +109,5 @@ test('remote needed details page through paths with device metadata', async ({
   await dialog.getByRole('link', { name: '2', exact: true }).click();
   await expect.poll(() => reads.map((read) => read.page)).toEqual([1, 2]);
   expect(reads[0].folder).toBe('test-folder');
-  expect(reads[0].device).toBeTruthy();
+  expect(reads[0].device).toBe(expectedDevice);
 });

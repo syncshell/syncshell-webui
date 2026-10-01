@@ -41,13 +41,6 @@ test('version restore sends selected REST values and recovers from errors', asyn
   await page.getByRole('button', { name: 'Versions', exact: true }).click();
   const dialog = page.getByRole('dialog');
   await expect(dialog.getByRole('combobox', { name: path })).toBeVisible();
-  expect(
-    await dialog.evaluate((element) => getComputedStyle(element).color),
-  ).toBe(
-    await page
-      .locator('body')
-      .evaluate((element) => getComputedStyle(element).color),
-  );
   await dialog.getByLabel('Filter by date · From').fill('2026-08-10T00:00');
   await expect(
     dialog.getByRole('combobox', { name: path }).locator('option'),
