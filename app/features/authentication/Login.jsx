@@ -1,5 +1,5 @@
-import { LocaleContext } from './locale-context.jsx';
 import { useContext, useEffect, useRef, useState } from 'preact/hooks';
+import { LocaleContext } from '../../locale-context.jsx';
 
 export function Login({ api }) {
   const { t } = useContext(LocaleContext);

@@ -13,7 +13,7 @@ import { prepareDeviceEditorAction } from './features/devices/device-editor.mjs'
 import { notices } from './features/notifications/notices.mjs';
 import { FolderCard } from './features/folders/FolderCard.jsx';
 import { DeviceCard } from './features/devices/DeviceCard.jsx';
-import { Login } from './Login.jsx';
+import { Login } from './features/authentication/Login.jsx';
 import { Notifications } from './features/notifications/Notifications.jsx';
 import { DialogHost } from './DialogHost.jsx';
 import { Conflicts } from './Conflicts.jsx';
