@@ -34,6 +34,7 @@ import {
 import { Icon } from './Icon.jsx';
 import { Tabs } from './Tabs.jsx';
 import { FolderExtendedAttributes } from './features/folders/FolderExtendedAttributes.jsx';
+import { FolderIgnorePatterns } from './features/folders/FolderIgnorePatterns.jsx';
 import { FolderVersioningFields } from './features/folders/FolderVersioningFields.jsx';
 
 export function Editor({ action, state, api, session, onClose, onSaved }) {
@@ -532,66 +533,19 @@ export function Editor({ action, state, api, session, onClose, onSaved }) {
                     ))}
               </>
             ) : tab === 'Ignore Patterns' ? (
-              <>
-                <p class="help-block">
-                  {t('Enter ignore patterns, one per line.')}{' '}
-                  <a
-                    href="https://docs.syncthing.net/users/ignoring.html"
-                    target="_blank"
-                    rel="noreferrer"
-                  >
-                    {t('full documentation')}
-                  </a>
-                </p>
-                {savingAddedIgnores && (
-                  <>
-                    <p>
-                      {t('Set Ignores on Added Folder')} ·{' '}
-                      {draft.label || draft.id}
-                    </p>
-                    {!addedIgnoresReady && (
-                      <button
-                        type="button"
-                        class="btn btn-default"
-                        disabled={busy}
-                        onClick={loadAddedIgnores}
-                      >
-                        {t('Retry')}
-                      </button>
-                    )}
-                  </>
-                )}
-                {isNew && !savingAddedIgnores ? (
-                  <>
-                    <label>
-                      <input
-                        type="checkbox"
-                        checked={addIgnores}
-                        onChange={(event) =>
-                          setAddIgnores(event.currentTarget.checked)
-                        }
-                      />{' '}
-                      {t('Add Ignore Patterns')}
-                    </label>
-                    <p>
-                      {t(
-                        'Patterns are applied before the folder starts synchronizing.',
-                      )}
-                    </p>
-                  </>
-                ) : (
-                  <textarea
-                    class="form-control"
-                    rows="12"
-                    aria-label={t('Ignore Patterns')}
-                    value={ignores}
-                    disabled={
-                      draft.type === 'receiveencrypted' || !loadedIgnores
-                    }
-                    onInput={(event) => setIgnores(event.currentTarget.value)}
-                  />
-                )}
-              </>
+              <FolderIgnorePatterns
+                folder={draft}
+                isNew={isNew}
+                savingAddedIgnores={savingAddedIgnores}
+                addedIgnoresReady={addedIgnoresReady}
+                busy={busy}
+                addIgnores={addIgnores}
+                ignores={ignores}
+                loadedIgnores={loadedIgnores}
+                onRetry={loadAddedIgnores}
+                onToggleAdd={setAddIgnores}
+                onInput={setIgnores}
+              />
             ) : (
               <>
                 {kind === 'device' && tab === 'General' && !defaults && (
