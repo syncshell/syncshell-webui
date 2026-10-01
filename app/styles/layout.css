@@ -1,7 +1,41 @@
+.navbar > .container,
+.container.content {
+  width: auto;
+  margin-inline: var(--space-7);
+  padding-inline: 0;
+}
+
+.dashboard-tabs {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.dashboard-tabs > li > a {
+  display: flex;
+  align-items: center;
+  font-size: var(--text-heading);
+}
+
+.dashboard-folders,
+.dashboard-devices {
+  min-width: 0;
+}
+
+@media (min-width: 1000px) {
+  .dashboard-primary.active {
+    display: grid;
+    grid-template-columns: minmax(320px, 3fr) minmax(0, 5fr);
+    gap: var(--space-7);
+    align-items: start;
+  }
+}
+
 @media (min-width: 1400px) {
   .dashboard-primary.active {
     max-inline-size: var(--content-max-inline-size);
-    grid-template-columns: minmax(0, 1fr) minmax(0, 2fr);
+    grid-template-columns:
+      minmax(320px, calc((100% - 48px) * 0.25))
+      minmax(320px, calc((100% - 48px) * 0.25));
     column-gap: var(--space-7);
   }
 
