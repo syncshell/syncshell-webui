@@ -1,3 +1,5 @@
+import { execFileSync } from 'node:child_process';
+import { createHash } from 'node:crypto';
 import {
   cp,
   mkdir,
@@ -7,40 +9,45 @@ import {
   rm,
   writeFile,
 } from 'node:fs/promises';
-import { resolve, relative } from 'node:path';
 import { tmpdir } from 'node:os';
-import { execFileSync } from 'node:child_process';
-import { createHash } from 'node:crypto';
+import { relative, resolve } from 'node:path';
 
 const root = resolve(import.meta.dirname, '..');
-const version = process.argv[2];
-if (!/^\d+\.\d+\.\d+(?:-[a-zA-Z0-9.-]+)?$/.test(version || '')) {
-  throw new Error('Usage: npm run release -- X.Y.Z [output-directory]');
-}
-const metadata = JSON.parse(await readFile(resolve(root, 'package.json')));
-if (metadata.version !== version)
-  throw new Error('Version must match package.json');
-const source = execFileSync('git', ['rev-parse', 'HEAD'], {
-  cwd: root,
-  encoding: 'utf8',
-}).trim();
-if (
-  execFileSync('git', ['status', '--porcelain', '--untracked-files=normal'], {
+
+function git(args) {
+  return execFileSync('git', args, {
     cwd: root,
     encoding: 'utf8',
-  }).trim()
-)
-  throw new Error('Commit source changes before packaging');
-const epoch = execFileSync('git', ['show', '-s', '--format=%ct', 'HEAD'], {
-  cwd: root,
-  encoding: 'utf8',
-}).trim();
-const output = resolve(process.argv[3] || resolve(root, 'release'));
-await mkdir(output, { recursive: true });
-const temporary = await mkdtemp(resolve(tmpdir(), 'syncshell-webui-release-'));
-const name = `syncshell-webui-v${version}`;
-const bundle = resolve(temporary, name);
-try {
+  }).trim();
+}
+
+async function validateRelease(version) {
+  if (!/^\d+\.\d+\.\d+(?:-[a-zA-Z0-9.-]+)?$/.test(version || '')) {
+    throw new Error('Usage: npm run release -- X.Y.Z [output-directory]');
+  }
+  const metadata = JSON.parse(await readFile(resolve(root, 'package.json')));
+  if (metadata.version !== version)
+    throw new Error('Version must match package.json');
+  if (git(['status', '--porcelain', '--untracked-files=normal']))
+    throw new Error('Commit source changes before packaging');
+  return {
+    epoch: git(['show', '-s', '--format=%ct', 'HEAD']),
+    source: git(['rev-parse', 'HEAD']),
+  };
+}
+
+async function collectFiles(directory) {
+  const files = [];
+  for (const entry of await readdir(directory, { withFileTypes: true })) {
+    const path = resolve(directory, entry.name);
+    if (entry.isDirectory()) files.push(...(await collectFiles(path)));
+    else if (entry.isFile()) files.push(path);
+    else throw new Error('Release contains a nonregular asset: ' + path);
+  }
+  return files;
+}
+
+async function buildBundle(bundle, version, source) {
   execFileSync('npm', ['run', 'build'], { cwd: root, stdio: 'inherit' });
   await cp(resolve(root, 'dist'), resolve(bundle, 'gui/syncshell-modern'), {
     recursive: true,
@@ -63,18 +70,11 @@ try {
       2,
     ) + '\n',
   );
-  async function files(directory) {
-    const result = [];
-    for (const entry of await readdir(directory, { withFileTypes: true })) {
-      const path = resolve(directory, entry.name);
-      if (entry.isDirectory()) result.push(...(await files(path)));
-      else if (entry.isFile()) result.push(path);
-      else throw new Error('Release contains a nonregular asset: ' + path);
-    }
-    return result;
-  }
+}
+
+async function writeBundleChecksums(bundle) {
   const sums = [];
-  for (const path of (await files(bundle)).sort()) {
+  for (const path of (await collectFiles(bundle)).sort()) {
     sums.push(
       createHash('sha256')
         .update(await readFile(path))
@@ -84,6 +84,9 @@ try {
     );
   }
   await writeFile(resolve(bundle, 'SHA256SUMS'), sums.join('\n') + '\n');
+}
+
+async function createArchive({ epoch, name, output, temporary }) {
   const archive = resolve(output, name + '.tar.gz');
   execFileSync('tar', [
     '--sort=name',
@@ -101,7 +104,32 @@ try {
     .update(await readFile(archive))
     .digest('hex');
   await writeFile(archive + '.sha256', `${digest}  ${name}.tar.gz\n`);
-  console.log(archive + '\n' + digest);
-} finally {
-  await rm(temporary, { recursive: true, force: true });
+  return { archive, digest };
 }
+
+async function packageRelease(version, output) {
+  const { epoch, source } = await validateRelease(version);
+  await mkdir(output, { recursive: true });
+  const temporary = await mkdtemp(
+    resolve(tmpdir(), 'syncshell-webui-release-'),
+  );
+  const name = `syncshell-webui-v${version}`;
+  const bundle = resolve(temporary, name);
+  try {
+    await buildBundle(bundle, version, source);
+    await writeBundleChecksums(bundle);
+    return await createArchive({
+      epoch,
+      name,
+      output,
+      temporary,
+    });
+  } finally {
+    await rm(temporary, { recursive: true, force: true });
+  }
+}
+
+const version = process.argv[2];
+const output = resolve(process.argv[3] || resolve(root, 'release'));
+const { archive, digest } = await packageRelease(version, output);
+console.log(archive + '\n' + digest);
