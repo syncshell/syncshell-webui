@@ -11,6 +11,7 @@ import {
   progressPercentage,
   syncPercentage,
 } from './folder-status.mjs';
+import './FolderCard.css';
 
 export function FolderCard({
   folder,

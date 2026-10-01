@@ -1,0 +1,19 @@
+@layer features {
+  .folder-details > table > tbody > .folder-state-detail > th {
+    padding-inline-start: 32px;
+  }
+
+  .folder-state-summary th > a {
+    margin-inline-start: 0.4em;
+  }
+
+  .folder-change {
+    display: flex;
+    gap: 0.3em;
+  }
+
+  .folder-change .folder-tail {
+    min-width: 0;
+    flex: 1;
+  }
+}
