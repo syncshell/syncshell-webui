@@ -21,6 +21,7 @@ import { Tooltip } from '../../Tooltip.jsx';
 import { DeviceHeader } from './DeviceHeader.jsx';
 import { DeviceActions } from './DeviceActions.jsx';
 import { ConnectionDetails } from './ConnectionDetails.jsx';
+import { TransferRates } from './TransferRates.jsx';
 
 export function DeviceCard({
   device,
@@ -49,9 +50,6 @@ export function DeviceCard({
   const totals = localStateTotal(state.model);
   const gui = remoteGui(device, conn);
   const openAction = (type, extra = {}) => onAction({ type, device, ...extra });
-  const rate = (bytes) =>
-    unitPrefixed(usesMetricRates ? bytes * 8 : bytes, !usesMetricRates) +
-    (usesMetricRates ? 'bps' : 'B/s');
   const link = (event, action) => {
     event.preventDefault();
     openAction(action);
@@ -102,58 +100,16 @@ export function DeviceCard({
                               : ''}
                         </Field>
                       )}
-                    {(isLocalDevice || conn.connected) &&
-                      ['in', 'out'].map((direction) => (
-                        <Field
-                          key={direction}
-                          label={
-                            direction === 'in' ? 'Download Rate' : 'Upload Rate'
-                          }
-                          icon={direction === 'in' ? 'download' : 'upload'}
-                          help={
-                            direction === 'in'
-                              ? isLocalDevice
-                                ? 'Incoming traffic across all connected devices. Click the rate to switch between bytes and bits per second. A configured limit appears below.'
-                                : 'Data received by this machine from this remote device. Click the rate to switch between bytes and bits per second.'
-                              : isLocalDevice
-                                ? 'Outgoing traffic across all connected devices. Click the rate to switch between bytes and bits per second. A configured limit appears below.'
-                                : 'Data sent by this machine to this remote device. Click the rate to switch between bytes and bits per second.'
-                          }
-                          totalBytes={conn[direction + 'BytesTotal']}
-                        >
-                          <a
-                            href="#units"
-                            onClick={(event) => {
-                              event.preventDefault();
-                              toggleUnits();
-                            }}
-                          >
-                            {rate(conn[direction + 'bps'] || 0)}
-                            {(isLocalDevice ? state.config.options : device)[
-                              direction === 'in' ? 'maxRecvKbps' : 'maxSendKbps'
-                            ] > 0 && (
-                              <small>
-                                <br />
-                                <i class="text-muted">
-                                  {t('Limit')}:{' '}
-                                  {rate(
-                                    (isLocalDevice
-                                      ? state.config.options
-                                      : device)[
-                                      direction === 'in'
-                                        ? 'maxRecvKbps'
-                                        : 'maxSendKbps'
-                                    ] * 1024,
-                                  )}
-                                  {isLocalDevice &&
-                                    state.config.options.limitBandwidthInLan &&
-                                    ` (${t('Applied to LAN')})`}
-                                </i>
-                              </small>
-                            )}
-                          </a>
-                        </Field>
-                      ))}
+                    {(isLocalDevice || conn.connected) && (
+                      <TransferRates
+                        connection={conn}
+                        device={device}
+                        isLocalDevice={isLocalDevice}
+                        options={state.config.options}
+                        usesMetricRates={usesMetricRates}
+                        onToggleUnits={toggleUnits}
+                      />
+                    )}
                     {isLocalDevice && (
                       <Field label="Local State (Total)">
                         <Counts
