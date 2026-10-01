@@ -264,22 +264,6 @@ button.panel-heading {
   width: 100%;
 }
 
-/*
- * Restore Versions tweaks
- */
-
-/* Ignore fixed height when manually resized. */
-
-/* Remove table outline as rows have own focus style already. */
-
-/* Align dropdown with title first line. */
-
-/* Reduce space between toggle and menu on mobile. */
-
-/* Change direction to remain on screen on mobile. */
-
-/* Ensure maximum space for filtering and date range. */
-
 @media (max-width: 768px) {
   /* Layout after the normal contents, as this is when the footer switches
     to a vertical layout. */
