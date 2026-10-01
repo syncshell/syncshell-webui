@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: MPL-2.0
 
 import { createEvents } from './events.mjs';
-import { completionTotal, connectionRates } from './devices.mjs';
+import { completionTotal, connectionRates } from './connections.mjs';
 import { createInitialState, reduceDaemonEvent } from './session-state.mjs';
 
 export async function runReportedSessionAction(action, reportError) {

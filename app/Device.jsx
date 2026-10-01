@@ -17,7 +17,7 @@ import {
   addressError,
   remoteGui,
   serviceHealth,
-} from '../client/devices.mjs';
+} from '../client/connections.mjs';
 import { localStateTotal } from './features/folders/folder-status.mjs';
 import {
   unitPrefixed,

@@ -1,5 +1,5 @@
 import { useContext } from 'preact/hooks';
-import { serviceHealth } from '../client/devices.mjs';
+import { serviceHealth } from '../client/connections.mjs';
 import { Dialog } from './Dialog.jsx';
 import { LocaleContext } from './locale-context.jsx';
 

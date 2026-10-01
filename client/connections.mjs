@@ -1,6 +1,8 @@
 // Copyright (C) 2014 The Syncthing Authors.
 // SPDX-License-Identifier: MPL-2.0
 
+// Session connection metrics and device-facing connection selectors.
+
 import { timestamp } from './format.mjs';
 
 export function completionTotal(folders = {}) {
