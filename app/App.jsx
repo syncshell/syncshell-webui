@@ -12,7 +12,7 @@ import { prepareFolderEditorAction } from './features/folders/folder-editor.mjs'
 import { prepareDeviceEditorAction } from './features/devices/device-editor.mjs';
 import { notices } from '../client/notices.mjs';
 import { FolderCard } from './features/folders/FolderCard.jsx';
-import { Device } from './Device.jsx';
+import { DeviceCard } from './features/devices/DeviceCard.jsx';
 import { Login } from './Login.jsx';
 import { Notifications } from './Notifications.jsx';
 import { DialogHost } from './DialogHost.jsx';
@@ -235,7 +235,7 @@ export function App() {
                       </button>
                     </div>
                     {self && (
-                      <Device
+                      <DeviceCard
                         device={self}
                         state={state}
                         session={session}
@@ -258,7 +258,7 @@ export function App() {
                           )}
                           <div class="panel-group">
                             {devices.map((device) => (
-                              <Device
+                              <DeviceCard
                                 key={device.deviceID}
                                 device={device}
                                 state={state}

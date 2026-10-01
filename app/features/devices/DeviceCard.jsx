@@ -1,6 +1,6 @@
-import { ShareStatus } from './ShareStatus.jsx';
+import { ShareStatus } from '../../ShareStatus.jsx';
 import { useContext, useEffect, useRef, useState } from 'preact/hooks';
-import { LocaleContext } from './locale-context.jsx';
+import { LocaleContext } from '../../locale-context.jsx';
 import {
   deviceName,
   sharedFolders,
@@ -9,7 +9,7 @@ import {
   deviceIcons,
   deviceColor,
   lastSeenDays,
-} from './features/devices/device-status.mjs';
+} from './device-status.mjs';
 import {
   connectionType,
   connectionLabels,
@@ -17,24 +17,24 @@ import {
   addressError,
   remoteGui,
   serviceHealth,
-} from '../client/connections.mjs';
-import { localStateTotal } from './features/folders/folder-status.mjs';
+} from '../../../client/connections.mjs';
+import { localStateTotal } from '../folders/folder-status.mjs';
 import {
   unitPrefixed,
   compactNumber,
   duration,
   timestamp,
-} from '../client/format.mjs';
-import { stripeSections } from '../client/stripes.mjs';
-import { Field } from './Field.jsx';
-import { Counts } from './Counts.jsx';
-import { Tooltip } from './Tooltip.jsx';
-import { Identicon } from './Identicon.jsx';
-import { Icon } from './Icon.jsx';
-import { MenuButton } from './MenuButton.jsx';
-import { runReportedSessionAction } from '../client/session.mjs';
+} from '../../../client/format.mjs';
+import { stripeSections } from '../../../client/stripes.mjs';
+import { Field } from '../../Field.jsx';
+import { Counts } from '../../Counts.jsx';
+import { Tooltip } from '../../Tooltip.jsx';
+import { Identicon } from '../../Identicon.jsx';
+import { Icon } from '../../Icon.jsx';
+import { MenuButton } from '../../MenuButton.jsx';
+import { runReportedSessionAction } from '../../../client/session.mjs';
 
-export function Device({
+export function DeviceCard({
   device,
   state,
   session,
