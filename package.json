@@ -9,6 +9,8 @@
     "format": "prettier --write . --ignore-unknown",
     "format:check": "prettier --check . --ignore-unknown",
     "lint": "eslint .",
+    "shell:format": "shfmt -w scripts/*.sh",
+    "shell:lint": "shellcheck scripts/*.sh",
     "test": "node --test tests/*.test.mjs",
     "test:browser": "playwright test --config tests/playwright.config.mjs",
     "test:integration": "bash scripts/test-integration.sh",
