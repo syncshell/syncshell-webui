@@ -24,7 +24,9 @@ export function ShareDeviceIdentity({ device, api }) {
   async function runIdentityAction(action) {
     setError('');
     try {
-      const result = await api.get('svc/deviceid', { id: device.deviceID });
+      const result = await api.get('svc/deviceid', {
+        query: { id: device.deviceID },
+      });
       if (result.error) throw new Error(result.error);
       const value = { ...device, deviceID: result.id };
       setValidated(value);

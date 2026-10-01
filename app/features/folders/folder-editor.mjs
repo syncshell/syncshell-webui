@@ -163,7 +163,7 @@ export async function prepareFolderEditorAction(api, state, request) {
   const random =
     typeof request.folder === 'string'
       ? null
-      : (await api.get('svc/random/string', { length: 10 })).random;
+      : (await api.get('svc/random/string', { query: { length: 10 } })).random;
   let folder = {
     ...defaults,
     id:

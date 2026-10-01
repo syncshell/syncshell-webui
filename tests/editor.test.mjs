@@ -87,7 +87,7 @@ function createSaveFixture({
   const calls = [];
   let savedConfig;
   const api = {
-    async get(path, query) {
+    async get(path, { query } = {}) {
       calls.push({ path, query });
       if (path !== 'svc/deviceid')
         throw new Error(`Unexpected request: ${path}`);
@@ -268,7 +268,7 @@ test('new folder ignore persistence exposes loading and retry phases', () => {
 test('new editor actions prepare domain defaults without changing requests', async () => {
   const requests = [];
   const api = {
-    async get(path, query) {
+    async get(path, { query } = {}) {
       requests.push({ path, query });
       if (path === 'config/defaults/device') return { addresses: ['dynamic'] };
       if (path === 'config/defaults/folder') {

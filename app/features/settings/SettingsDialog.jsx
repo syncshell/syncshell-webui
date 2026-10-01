@@ -100,7 +100,7 @@ export function SettingsDialog({
     try {
       update(
         'gui.apiKey',
-        (await api.get('svc/random/string', { length: 32 })).random,
+        (await api.get('svc/random/string', { query: { length: 32 } })).random,
       );
     } catch (error) {
       setError(error.message);

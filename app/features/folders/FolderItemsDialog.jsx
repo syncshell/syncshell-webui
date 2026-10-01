@@ -30,7 +30,10 @@ export function FolderItemsDialog({
     const controller = new AbortController();
     setLoading(true);
     api
-      .get(view.route, { folder: folder.id, page, perpage }, controller.signal)
+      .get(view.route, {
+        query: { folder: folder.id, page, perpage },
+        signal: controller.signal,
+      })
       .then((data) => {
         setItems(pageItems(kind, data));
         setError('');
@@ -45,11 +48,8 @@ export function FolderItemsDialog({
   }, [api, folder.id, kind, page, perpage, revision, total, view.route]);
   async function prioritize(file) {
     try {
-      const data = await api.post('db/prio', undefined, {
-        folder: folder.id,
-        file,
-        page,
-        perpage,
+      const data = await api.post('db/prio', {
+        query: { folder: folder.id, file, page, perpage },
       });
       setItems(pageItems('need', data));
     } catch (error) {

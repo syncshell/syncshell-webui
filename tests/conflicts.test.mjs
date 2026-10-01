@@ -31,7 +31,7 @@ function createConflictApi({ trees = {}, records = {} } = {}) {
   const calls = [];
   return {
     calls,
-    async get(path, query, signal) {
+    async get(path, { query, signal } = {}) {
       calls.push({ method: 'GET', path, query, signal });
       const value =
         path === 'db/browse'
@@ -44,7 +44,7 @@ function createConflictApi({ trees = {}, records = {} } = {}) {
         );
       return value;
     },
-    async post(path, body, query, signal) {
+    async post(path, { body, query, signal } = {}) {
       calls.push({ method: 'POST', path, body, query, signal });
     },
   };

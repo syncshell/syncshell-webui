@@ -115,7 +115,9 @@ export async function saveDeviceEditor({
     });
   }
 
-  const checked = await api.get('svc/deviceid', { id: value.deviceID });
+  const checked = await api.get('svc/deviceid', {
+    query: { id: value.deviceID },
+  });
   if (checked.error) throw new Error(checked.error);
   value.deviceID = checked.id || value.deviceID;
   if (

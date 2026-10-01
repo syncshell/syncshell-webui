@@ -16,11 +16,10 @@ export function useLogTail(api) {
     async function poll() {
       try {
         if (!pausedRef.current) {
-          const data = await api.get(
-            'system/log',
-            { since },
-            controller.signal,
-          );
+          const data = await api.get('system/log', {
+            query: { since },
+            signal: controller.signal,
+          });
           if (!pausedRef.current && !controller.signal.aborted) {
             setEntries((previous) => [...previous, ...(data.messages || [])]);
             since = data.messages?.at(-1)?.when || since;

@@ -154,7 +154,7 @@ export function MainNavigation({
                         href="#logout"
                         onClick={async (event) => {
                           event.preventDefault();
-                          await api.post('noauth/auth/logout', {});
+                          await api.post('noauth/auth/logout', { body: {} });
                           location.reload();
                         }}
                       >

@@ -45,11 +45,11 @@ export function removeDevice(session, deviceId) {
 }
 
 export function overrideFolder(api, folderId) {
-  return api.post('db/override', undefined, { folder: folderId });
+  return api.post('db/override', { query: { folder: folderId } });
 }
 
 export function revertFolder(api, folderId) {
-  return api.post('db/revert', undefined, { folder: folderId });
+  return api.post('db/revert', { query: { folder: folderId } });
 }
 
 export function performManagement(action, session, api) {

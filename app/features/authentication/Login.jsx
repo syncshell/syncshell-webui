@@ -18,9 +18,11 @@ export function Login({ api }) {
     setError('');
     try {
       await api.post('noauth/auth/password', {
-        username: username.trim(),
-        password,
-        stayLoggedIn,
+        body: {
+          username: username.trim(),
+          password,
+          stayLoggedIn,
+        },
       });
       location.reload();
     } catch (error) {

@@ -6,11 +6,10 @@ import { deviceName } from './device-status.mjs';
 
 function loadRemoteNeededFiles(api, folderId, deviceId, page, perpage, signal) {
   return api
-    .get(
-      'db/remoteneed',
-      { folder: folderId, device: deviceId, page, perpage },
+    .get('db/remoteneed', {
+      query: { folder: folderId, device: deviceId, page, perpage },
       signal,
-    )
+    })
     .then((data) => data.files || []);
 }
 

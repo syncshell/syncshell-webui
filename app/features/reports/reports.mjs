@@ -10,13 +10,15 @@ export function needsUsageConsent(state) {
 }
 
 export async function usageReport(api, version, diff, signal) {
-  const report = await api.get('svc/report', { version }, signal);
-  if (!diff || version <= 2) return report;
-  const previous = await api.get(
-    'svc/report',
-    { version: version - 1 },
+  const report = await api.get('svc/report', {
+    query: { version },
     signal,
-  );
+  });
+  if (!diff || version <= 2) return report;
+  const previous = await api.get('svc/report', {
+    query: { version: version - 1 },
+    signal,
+  });
   return Object.fromEntries(
     Object.entries(report).filter(([key]) => !Object.hasOwn(previous, key)),
   );

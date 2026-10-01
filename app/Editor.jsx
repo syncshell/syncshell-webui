@@ -121,7 +121,10 @@ export function Editor({ action, state, api, session, onClose, onSaved }) {
     if (kind !== 'folder' || (!isNew && !defaults) || !draft.path) return;
     const controller = new AbortController();
     api
-      .get('system/browse', { current: draft.path }, controller.signal)
+      .get('system/browse', {
+        query: { current: draft.path },
+        signal: controller.signal,
+      })
       .then(setDirectories)
       .catch((error) => {
         if (!controller.signal.aborted) setError(error.message);
@@ -146,7 +149,7 @@ export function Editor({ action, state, api, session, onClose, onSaved }) {
     }
     if (kind === 'folder' && !isNew && draft.type !== 'receiveencrypted') {
       api
-        .get('db/ignores', { folder: draft.id })
+        .get('db/ignores', { query: { folder: draft.id } })
         .then((data) => {
           originalIgnores.current = data.ignore || [];
           setIgnores(originalIgnores.current.join('\n'));
@@ -210,7 +213,9 @@ export function Editor({ action, state, api, session, onClose, onSaved }) {
     setBusy(true);
     setError('');
     try {
-      const data = await api.get('db/ignores', { folder: draft.id });
+      const data = await api.get('db/ignores', {
+        query: { folder: draft.id },
+      });
       originalIgnores.current =
         data.ignore?.length || data.error
           ? data.ignore || []
@@ -284,11 +289,10 @@ export function Editor({ action, state, api, session, onClose, onSaved }) {
         });
       } else if (savingAddedIgnores) {
         if (!addedIgnoresReady) return;
-        await api.post(
-          'db/ignores',
-          { ignore: ignoreLines(ignores) },
-          { folder: draft.id },
-        );
+        await api.post('db/ignores', {
+          body: { ignore: ignoreLines(ignores) },
+          query: { folder: draft.id },
+        });
         await session.setPaused('folders', draft.id, !!draft.paused);
       } else if (
         kind === 'folder' &&
@@ -308,11 +312,10 @@ export function Editor({ action, state, api, session, onClose, onSaved }) {
           loadedIgnores &&
           ignores !== originalIgnores.current.join('\n')
         )
-          await api.post(
-            'db/ignores',
-            { ignore: ignoreLines(ignores) },
-            { folder: draft.id },
-          );
+          await api.post('db/ignores', {
+            body: { ignore: ignoreLines(ignores) },
+            query: { folder: draft.id },
+          });
         await saveDraft();
       }
       saved.current = true;
@@ -329,11 +332,10 @@ export function Editor({ action, state, api, session, onClose, onSaved }) {
     if (!saved.current && addedIgnoresReady) {
       saved.current = true;
       try {
-        await api.post(
-          'db/ignores',
-          { ignore: originalIgnores.current },
-          { folder: draft.id },
-        );
+        await api.post('db/ignores', {
+          body: { ignore: originalIgnores.current },
+          query: { folder: draft.id },
+        });
         await session.setPaused('folders', draft.id, !!draft.paused);
       } catch (error) {
         session.reportError(error);

@@ -26,12 +26,13 @@ test('relative REST base, encoded query, payload and fresh CSRF cookie', async (
     },
     () => cookie,
   );
-  await api.post('db/scan', undefined, {
-    folder: 'a/b & ü',
-    sub: 'nested/file.txt',
+  await api.post('db/scan', {
+    query: { folder: 'a/b & ü', sub: 'nested/file.txt' },
   });
   cookie = 'CSRF-Token-OTHER=wrong; CSRF-Token-DEVICE1=changed';
-  await api.put('config', { folders: [], options: { unrelated: true } });
+  await api.put('config', {
+    body: { folders: [], options: { unrelated: true } },
+  });
   assert.equal(calls[0].url.pathname, '/sync/rest/db/scan');
   assert.equal(calls[0].url.searchParams.get('folder'), 'a/b & ü');
   assert.equal(calls[0].url.searchParams.get('sub'), 'nested/file.txt');
@@ -76,8 +77,7 @@ test('no metadata is required for password login, and credentials stay same-orig
     },
   });
   await api.post('noauth/auth/password', {
-    username: 'test',
-    password: 'test',
+    body: { username: 'test', password: 'test' },
   });
   assert.equal(init.headers.has('X-CSRF-Token-undefined'), false);
   assert.equal(init.credentials, 'same-origin');
@@ -91,8 +91,11 @@ test('abort signal reaches fetch and text diagnostics remain available', async (
     assert.equal(init.signal, controller.signal);
     return new Response('unavailable', { status: 503 });
   });
-  await assert.rejects(api.get('system/status', {}, controller.signal), {
-    status: 503,
-    message: 'unavailable',
-  });
+  await assert.rejects(
+    api.get('system/status', { signal: controller.signal }),
+    {
+      status: 503,
+      message: 'unavailable',
+    },
+  );
 });

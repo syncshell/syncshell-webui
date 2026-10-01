@@ -15,7 +15,7 @@ export function LoggingFacilities({ api, onError }) {
   useEffect(() => {
     const controller = new AbortController();
     api
-      .get('system/loglevels', undefined, controller.signal)
+      .get('system/loglevels', { signal: controller.signal })
       .then(setFacilities)
       .catch((error) => {
         if (!controller.signal.aborted) onError(error.message);
@@ -26,8 +26,7 @@ export function LoggingFacilities({ api, onError }) {
     setBusy(true);
     try {
       await api.post('system/loglevels', {
-        ...facilities.levels,
-        [key]: value,
+        body: { ...facilities.levels, [key]: value },
       });
       setFacilities(await api.get('system/loglevels'));
       onError('');

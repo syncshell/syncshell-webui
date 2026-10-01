@@ -62,8 +62,9 @@ export const versionActions = [
 ];
 
 export async function restoreVersionSelection(api, folderId, selections) {
-  const failures = await api.post('folder/versions', selections, {
-    folder: folderId,
+  const failures = await api.post('folder/versions', {
+    body: selections,
+    query: { folder: folderId },
   });
   if (!Object.keys(failures).length) {
     return { complete: true, failures, selections: {}, versions: null };
@@ -74,6 +75,8 @@ export async function restoreVersionSelection(api, folderId, selections) {
     selections: Object.fromEntries(
       Object.entries(selections).filter(([path]) => failures[path]),
     ),
-    versions: await api.get('folder/versions', { folder: folderId }),
+    versions: await api.get('folder/versions', {
+      query: { folder: folderId },
+    }),
   };
 }

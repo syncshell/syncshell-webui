@@ -38,7 +38,7 @@ test('cursor advances after startup and survives a reconnect', async () => {
     seen = [];
   let reloads = 0;
   const api = {
-    async get(path, query) {
+    async get(path, { query } = {}) {
       calls.push('rest/' + path + '?' + new URLSearchParams(query));
       const item = script.shift();
       if (item.status)
@@ -91,7 +91,7 @@ test('unmount aborts the active request and prevents later callbacks', async () 
   let signal;
   const events = createEvents(
     {
-      get(_, __, requestSignal) {
+      get(_, { signal: requestSignal }) {
         signal = requestSignal;
         entered();
         return new Promise((_, reject) =>

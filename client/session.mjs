@@ -51,7 +51,7 @@ export function createSession(
   }
 
   async function read(path, query) {
-    return api.get(path, query, controller.signal);
+    return api.get(path, { query, signal: controller.signal });
   }
 
   async function refreshFolderStats() {
@@ -312,7 +312,7 @@ export function createSession(
 
   async function saveConfig(config) {
     try {
-      await api.put('config', config, controller.signal);
+      await api.put('config', { body: config, signal: controller.signal });
       update({ ...state, config });
       const inSync = await read('config/insync');
       update({ ...state, configInSync: inSync.configInSync });
@@ -375,7 +375,10 @@ export function createSession(
 
   async function rescan(folder, sub) {
     try {
-      await api.post('db/scan', undefined, { folder, sub }, controller.signal);
+      await api.post('db/scan', {
+        query: { folder, sub },
+        signal: controller.signal,
+      });
     } catch (error) {
       rethrowCommandError(error);
     }
@@ -384,12 +387,7 @@ export function createSession(
   async function clearErrors() {
     const seenError = state.errors.at(-1)?.when || state.seenError;
     try {
-      await api.post(
-        'system/error/clear',
-        undefined,
-        undefined,
-        controller.signal,
-      );
+      await api.post('system/error/clear', { signal: controller.signal });
       update({ ...state, errors: [], seenError });
     } catch (error) {
       rethrowCommandError(error);
@@ -400,8 +398,7 @@ export function createSession(
     try {
       await api.delete(
         folder ? 'cluster/pending/folders' : 'cluster/pending/devices',
-        { device, folder },
-        controller.signal,
+        { query: { device, folder }, signal: controller.signal },
       );
       await refreshPendingOffers();
     } catch (error) {
@@ -411,12 +408,7 @@ export function createSession(
 
   async function systemAction(action) {
     try {
-      await api.post(
-        'system/' + action,
-        undefined,
-        undefined,
-        controller.signal,
-      );
+      await api.post('system/' + action, { signal: controller.signal });
     } catch (error) {
       rethrowCommandError(error);
     }

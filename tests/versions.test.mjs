@@ -21,7 +21,7 @@ test('version date bounds reject invalid and reversed ranges', () => {
 test('successful version restoration completes without reloading versions', async () => {
   const calls = [];
   const api = {
-    async post(path, body, query) {
+    async post(path, { body, query } = {}) {
       calls.push({ method: 'POST', path, body, query });
       return {};
     },
@@ -51,7 +51,7 @@ test('partial version restoration keeps failed selections and reloads', async ()
     async post() {
       return { 'failed.jpg': 'permission denied' };
     },
-    async get(path, query) {
+    async get(path, { query } = {}) {
       assert.equal(path, 'folder/versions');
       assert.deepEqual(query, { folder: 'photos' });
       return versions;

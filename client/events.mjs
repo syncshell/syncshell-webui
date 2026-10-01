@@ -31,7 +31,7 @@ export function createEvents(
     let query = { limit: 1 };
     while (!signal.aborted) {
       try {
-        const data = await api.get('events', query, signal);
+        const data = await api.get('events', { query, signal });
         if (signal.aborted) return;
         // a daemon restart can leave an already-started 200 response empty
         if (!data) throw new Error('Empty event response');

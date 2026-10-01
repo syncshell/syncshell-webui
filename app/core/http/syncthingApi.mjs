@@ -15,6 +15,17 @@ export class HttpError extends Error {
   }
 }
 
+/**
+ * Options shared by Syncthing REST requests. Query values are encoded onto the
+ * URL, while body values are serialized as JSON. Signals cancel the underlying
+ * same-origin fetch.
+ *
+ * @typedef {object} SyncthingRequestOptions
+ * @property {Record<string, unknown>} [query]
+ * @property {unknown} [body]
+ * @property {AbortSignal} [signal]
+ */
+
 export function createSyncthingApi({
   pageUrl = location.href,
   metadata = window.metadata,
@@ -75,11 +86,10 @@ export function createSyncthingApi({
 
   return {
     request,
-    get: (path, query, signal) => request('GET', path, { query, signal }),
-    post: (path, body, query, signal) =>
-      request('POST', path, { body, query, signal }),
-    put: (path, body, signal) => request('PUT', path, { body, signal }),
-    patch: (path, body, signal) => request('PATCH', path, { body, signal }),
-    delete: (path, query, signal) => request('DELETE', path, { query, signal }),
+    get: (path, options) => request('GET', path, options),
+    post: (path, options) => request('POST', path, options),
+    put: (path, options) => request('PUT', path, options),
+    patch: (path, options) => request('PATCH', path, options),
+    delete: (path, options) => request('DELETE', path, options),
   };
 }

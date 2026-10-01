@@ -19,7 +19,7 @@ export function About({ api, version, onClose }) {
     const controller = new AbortController();
     if (window.metadata?.authenticated)
       api
-        .get('system/paths', undefined, controller.signal)
+        .get('system/paths', { signal: controller.signal })
         .then(setPaths)
         .catch((error) => {
           if (!controller.signal.aborted) setError(error.message);

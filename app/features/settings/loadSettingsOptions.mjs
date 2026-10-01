@@ -1,6 +1,6 @@
 export async function loadSettingsOptions(api, signal) {
   const [upgrade, themes] = await Promise.allSettled([
-    api.get('system/upgrade', undefined, signal),
+    api.get('system/upgrade', { signal }),
     fetch(new URL('themes.json', location.href), { signal }).then(
       (response) => {
         if (!response.ok) throw new Error('Could not load GUI themes');

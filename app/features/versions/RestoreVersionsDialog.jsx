@@ -28,7 +28,10 @@ export function RestoreVersionsDialog({ api, folder, onClose }) {
   useEffect(() => {
     const controller = new AbortController();
     api
-      .get('folder/versions', { folder: folder.id }, controller.signal)
+      .get('folder/versions', {
+        query: { folder: folder.id },
+        signal: controller.signal,
+      })
       .then(setVersions)
       .catch((error) => {
         if (!controller.signal.aborted) setError(error.message);

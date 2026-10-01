@@ -19,7 +19,10 @@ const usable = (file) =>
 async function record(api, folder, path, signal) {
   let info;
   try {
-    info = await api.get('db/file', { folder, file: path }, signal);
+    info = await api.get('db/file', {
+      query: { folder, file: path },
+      signal,
+    });
   } catch (error) {
     if (error.status === 404) return null;
     throw error;
@@ -49,11 +52,10 @@ export async function folderConflicts(
   folder,
   { prefix = '', signal } = {},
 ) {
-  const tree = await api.get(
-    'db/browse',
-    { folder: folder.id, prefix },
+  const tree = await api.get('db/browse', {
+    query: { folder: folder.id, prefix },
     signal,
-  );
+  });
   const groups = new Map();
   for (const path of filenames(tree, prefix)) {
     const original = originalPath(path);
@@ -100,12 +102,10 @@ export async function listConflicts(api, folders, signal) {
   };
 }
 export async function recheckConflicts(api, folders, group, signal) {
-  await api.post(
-    'db/scan',
-    undefined,
-    group ? { folder: group.folder, sub: parentPath(group.path) } : {},
+  await api.post('db/scan', {
+    query: group ? { folder: group.folder, sub: parentPath(group.path) } : {},
     signal,
-  );
+  });
   if (!group) return listConflicts(api, folders, signal);
   const folder = folders.find((item) => item.id === group.folder);
   if (!folder) throw new Error('Folder is no longer configured');

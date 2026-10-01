@@ -43,20 +43,20 @@ async function createSessionFixture(testContext) {
     if (error) throw error;
   }
   const api = {
-    async get(path, query) {
+    async get(path, { query } = {}) {
       calls.push({ method: 'GET', path, query });
       failIfRequested('GET', path);
       return responses[path];
     },
-    async post(path, body, query) {
+    async post(path, { body, query } = {}) {
       calls.push({ method: 'POST', path, body, query });
       failIfRequested('POST', path);
     },
-    async put(path, body) {
+    async put(path, { body } = {}) {
       calls.push({ method: 'PUT', path, body });
       failIfRequested('PUT', path);
     },
-    async delete(path, query) {
+    async delete(path, { query } = {}) {
       calls.push({ method: 'DELETE', path, query });
       failIfRequested('DELETE', path);
     },
@@ -246,7 +246,7 @@ test('session hydrates, scans only the selected directory and cancels on disposa
     'db/status': { state: 'idle' },
   };
   const api = {
-    async get(path, query, signal) {
+    async get(path, { query, signal } = {}) {
       calls.push({ path, query });
       if (path !== 'events') return data[path];
       if (events++ === 0) return [{ id: 1, type: 'Starting' }];
@@ -258,13 +258,13 @@ test('session hydrates, scans only the selected directory and cancels on disposa
         ),
       );
     },
-    async post(path, body, query) {
+    async post(path, { body, query } = {}) {
       calls.push({ path, body, query, method: 'POST' });
     },
-    async put(path, body) {
+    async put(path, { body } = {}) {
       data[path] = body;
     },
-    async delete(path, query) {
+    async delete(path, { query } = {}) {
       calls.push({ path, query, method: 'DELETE' });
     },
   };
