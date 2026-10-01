@@ -1,6 +1,6 @@
 import { desktopActions } from '../client/desktop.mjs';
 import { useEffect, useState } from 'preact/hooks';
-import { createSyncthingApi } from '../client/api.mjs';
+import { createSyncthingApi } from './core/http/syncthingApi.mjs';
 import { runReportedSessionAction } from '../client/session.mjs';
 import { useSyncthingSession } from '../client/use-syncthing-session.mjs';
 import { loadEnglishCatalog, translator } from './core/locale/translate.mjs';

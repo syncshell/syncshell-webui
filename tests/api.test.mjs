@@ -1,6 +1,9 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
-import { createSyncthingApi, HttpError } from '../client/api.mjs';
+import {
+  createSyncthingApi,
+  HttpError,
+} from '../app/core/http/syncthingApi.mjs';
 
 function client(fetch, cookie = () => '') {
   return createSyncthingApi({
