@@ -24,7 +24,7 @@ let relative;
 let runtime;
 let source;
 
-async function endpoint(directory) {
+async function loadFixtureEndpoint(directory) {
   await access(join(directory, '.syncshell-test-fixture'));
   const xml = await readFile(join(directory, 'home/config.xml'), 'utf8');
   const address = xml.match(/<gui\b[\s\S]*?<address>(.*?)<\/address>/)[1];
@@ -36,7 +36,7 @@ async function endpoint(directory) {
   };
 }
 
-async function peerScan() {
+async function scanPeerFolder() {
   const response = await fetch(peer.url + 'rest/db/scan?folder=test-folder', {
     method: 'POST',
     headers: { 'X-API-Key': peer.key },
@@ -69,13 +69,23 @@ async function api(path, method = 'GET', body) {
   );
 }
 
-before(async () => {
+function missingFileContents() {
+  return '';
+}
+
+async function waitForFileContents(path, contents, timeout = 15000) {
+  await expect
+    .poll(() => readFile(path, 'utf8').catch(missingFileContents), { timeout })
+    .toBe(contents);
+}
+
+async function setupVersionPeers() {
   runtime = process.env.SYNCSHELL_TEST_RUNTIME;
   peerRoot = process.env.SYNCSHELL_TEST_PEER;
   if (!runtime || !peerRoot)
     throw new Error('Set SYNCSHELL_TEST_RUNTIME and SYNCSHELL_TEST_PEER');
-  current = await endpoint(runtime);
-  peer = await endpoint(peerRoot);
+  current = await loadFixtureEndpoint(runtime);
+  peer = await loadFixtureEndpoint(peerRoot);
   await mkdir(root, { recursive: true });
   browser = await chromium.launch({
     headless: true,
@@ -92,9 +102,9 @@ before(async () => {
   await page.goto(current.url);
   await page.locator('.dashboard-folders .panel-heading').click();
   original = await api('config/folders/test-folder');
-});
+}
 
-after(async () => {
+async function cleanupVersionFixture() {
   let failure;
   const cleanups = [];
   if (source) {
@@ -105,7 +115,7 @@ after(async () => {
           recursive: true,
           force: true,
         }),
-      () => peerScan(),
+      () => scanPeerFolder(),
       () => api('db/scan?folder=test-folder', 'POST'),
       () =>
         api('config/folders/test-folder', 'PATCH', {
@@ -127,7 +137,10 @@ after(async () => {
     }
   }
   if (failure) throw failure;
-});
+}
+
+before(setupVersionPeers);
+after(cleanupVersionFixture);
 
 test('live archived versions restore the exact selected contents', async () => {
   source = await mkdtemp(join(peerRoot, 'files', 'version-fixture-'));
@@ -141,22 +154,14 @@ test('live archived versions restore the exact selected contents', async () => {
     },
   });
   await writeFile(join(source, 'version.txt'), 'original archived contents\n');
-  await peerScan();
-  await expect
-    .poll(async () => readFile(destination, 'utf8').catch(() => ''), {
-      timeout: 15000,
-    })
-    .toBe('original archived contents\n');
+  await scanPeerFolder();
+  await waitForFileContents(destination, 'original archived contents\n');
   await writeFile(
     join(source, 'version.txt'),
     'replacement current contents\n',
   );
-  await peerScan();
-  await expect
-    .poll(async () => readFile(destination, 'utf8').catch(() => ''), {
-      timeout: 15000,
-    })
-    .toBe('replacement current contents\n');
+  await scanPeerFolder();
+  await waitForFileContents(destination, 'replacement current contents\n');
   await page.getByRole('button', { name: 'Versions', exact: true }).click();
   const dialog = page.getByRole('dialog');
   const select = dialog.getByRole('combobox', {
@@ -196,9 +201,7 @@ test('live archived versions restore the exact selected contents', async () => {
   const request = await requestPromise;
   expect(request.postDataJSON()).toEqual({ [relative]: time });
   await expect(dialog).toHaveCount(0);
-  await expect
-    .poll(() => readFile(destination, 'utf8'), { timeout: 10000 })
-    .toBe('original archived contents\n');
+  await waitForFileContents(destination, 'original archived contents\n', 10000);
   expect(failures).toEqual([]);
   results.push({
     framework: 'current',
