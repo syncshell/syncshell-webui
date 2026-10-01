@@ -1,9 +1,9 @@
 import { useContext } from 'preact/hooks';
-import { LocaleContext } from './core/locale/LocaleContext.jsx';
-import { parentPath, missingHelp } from '../client/conflicts.mjs';
-import { unitPrefixed, timestamp } from '../client/format.mjs';
-import { Tooltip } from './Tooltip.jsx';
-import { Icon } from './Icon.jsx';
+import { unitPrefixed, timestamp } from '../../../client/format.mjs';
+import { Icon } from '../../Icon.jsx';
+import { LocaleContext } from '../../core/locale/LocaleContext.jsx';
+import { Tooltip } from '../../Tooltip.jsx';
+import { parentPath, missingHelp } from './conflicts.mjs';
 
 export function ConflictRow({
   group,

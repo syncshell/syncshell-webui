@@ -1,15 +1,15 @@
 import { ConflictRow } from './ConflictRow.jsx';
 import { useContext, useEffect, useRef, useState } from 'preact/hooks';
-import { LocaleContext } from './core/locale/LocaleContext.jsx';
+import { LocaleContext } from '../../core/locale/LocaleContext.jsx';
 import {
   listConflicts,
   recheckConflicts,
   replaceDirectory,
-} from '../client/conflicts.mjs';
-import { Dialog } from './Dialog.jsx';
-import '../client/conflicts.css';
-import { desktopHelp } from '../client/desktop.mjs';
-import { Icon } from './Icon.jsx';
+} from './conflicts.mjs';
+import { Dialog } from '../../Dialog.jsx';
+import './conflicts.css';
+import { desktopHelp } from '../../../client/desktop.mjs';
+import { Icon } from '../../Icon.jsx';
 
 export function Conflicts({
   api,

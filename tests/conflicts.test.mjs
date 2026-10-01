@@ -8,7 +8,7 @@ import {
   parentPath,
   recheckConflicts,
   replaceDirectory,
-} from '../client/conflicts.mjs';
+} from '../app/features/conflicts/conflicts.mjs';
 
 const conflictA = 'report.sync-conflict-20260908-120000-ABCDEFG.txt';
 const conflictB = 'report.sync-conflict-20260909-130000-HIJKLMN.txt';

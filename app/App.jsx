@@ -16,7 +16,7 @@ import { DeviceCard } from './features/devices/DeviceCard.jsx';
 import { Login } from './features/authentication/Login.jsx';
 import { Notifications } from './features/notifications/Notifications.jsx';
 import { DialogHost } from './DialogHost.jsx';
-import { Conflicts } from './Conflicts.jsx';
+import { Conflicts } from './features/conflicts/Conflicts.jsx';
 import { LocaleContext } from './core/locale/LocaleContext.jsx';
 import { Icon } from './Icon.jsx';
 import { DashboardTabs } from './DashboardTabs.jsx';
