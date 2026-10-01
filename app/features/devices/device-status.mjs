@@ -20,7 +20,7 @@ export function deviceStatus(device, state) {
   if (!connection) return 'unknown';
   if (device.paused) return unused + 'paused';
   if (connection.connected) {
-    return state.completion[device.deviceID]?._total === 100
+    return state.completion[device.deviceID]?.totalPercentage === 100
       ? unused + 'insync'
       : 'syncing';
   }
@@ -63,7 +63,7 @@ export function deviceColor(device, state) {
       ? 'default'
       : !connection.connected
         ? 'info'
-        : state.completion[device.deviceID]?._total === 100
+        : state.completion[device.deviceID]?.totalPercentage === 100
           ? 'success'
           : 'primary';
 }

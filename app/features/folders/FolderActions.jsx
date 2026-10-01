@@ -65,7 +65,7 @@ export function FolderActions({
                         !!member.encryptionPassword
                       }
                       remoteState={
-                        state.completion[member.deviceID]?.[folder.id]
+                        state.completion[member.deviceID]?.folders?.[folder.id]
                           ?.remoteState
                       }
                     />

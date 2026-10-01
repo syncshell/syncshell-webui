@@ -39,7 +39,7 @@ export function RemoteNeededFiles({ api, folder, device, state, single }) {
   const [perpage, setPerpage] = useState(10);
   const [files, setFiles] = useState([]);
   const [error, setError] = useState('');
-  const completion = state.completion[device.deviceID]?.[folder.id];
+  const completion = state.completion[device.deviceID]?.folders?.[folder.id];
   const revision = completion?.needItems + ':' + completion?.needBytes;
   useEffect(() => {
     const controller = new AbortController();

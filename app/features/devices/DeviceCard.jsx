@@ -80,7 +80,7 @@ export function DeviceCard({
             {(isLocalDevice ||
               conn.connected ||
               folders.length > 0 ||
-              completion._needItems > 0) && (
+              completion.neededItems > 0) && (
               <details class="device-details" open>
                 <summary>{t('Current activity')}</summary>
                 <table class="table table-condensed table-striped table-auto">
@@ -89,12 +89,12 @@ export function DeviceCard({
                       !conn.connected &&
                       folders.length > 0 && (
                         <DeviceDefinitionRow label="Sync Status">
-                          {completion._total === 100
+                          {completion.totalPercentage === 100
                             ? t('Up to Date')
-                            : completion._total < 100
+                            : completion.totalPercentage < 100
                               ? t('Out of Sync') +
                                 ' (' +
-                                completion._total +
+                                completion.totalPercentage +
                                 '%)'
                               : ''}
                         </DeviceDefinitionRow>
@@ -121,7 +121,7 @@ export function DeviceCard({
                         />
                       </DeviceDefinitionRow>
                     )}
-                    {!isLocalDevice && completion._needItems > 0 && (
+                    {!isLocalDevice && completion.neededItems > 0 && (
                       <DeviceDefinitionRow label="Out of Sync Items">
                         <a
                           href="#remote-needed"
@@ -130,10 +130,10 @@ export function DeviceCard({
                           <Tooltip
                             icon="arrow-left-right"
                             label="Out of Sync Items"
-                            text={`${completion._needItems.toLocaleString()} ${t('items')}, ~${unitPrefixed(completion._needBytes, true)}B`}
+                            text={`${completion.neededItems.toLocaleString()} ${t('items')}, ~${unitPrefixed(completion.neededBytes, true)}B`}
                           />
-                          {compactNumber(completion._needItems)} {t('items')}, ~
-                          {unitPrefixed(completion._needBytes, true)}B
+                          {compactNumber(completion.neededItems)} {t('items')},
+                          ~{unitPrefixed(completion.neededBytes, true)}B
                         </a>
                       </DeviceDefinitionRow>
                     )}

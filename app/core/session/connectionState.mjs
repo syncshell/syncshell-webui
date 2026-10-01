@@ -3,23 +3,22 @@ export function completionTotal(folders = {}) {
   let needed = 0;
   let items = 0;
   let deletes = 0;
-  for (const [key, folder] of Object.entries(folders)) {
-    if (key.startsWith('_')) continue;
+  for (const folder of Object.values(folders)) {
     bytes += folder.globalBytes;
     needed += folder.needBytes;
     items += folder.needItems;
     deletes += folder.needDeletes;
   }
   return {
-    ...folders,
-    _total:
+    folders,
+    totalPercentage:
       needed === 0 && items + deletes > 0
         ? 95
         : bytes === 0
           ? 100
           : Math.floor(100 * (1 - needed / bytes)),
-    _needBytes: bytes === 0 ? 0 : needed,
-    _needItems: bytes === 0 ? 0 : items + deletes,
+    neededBytes: bytes === 0 ? 0 : needed,
+    neededItems: bytes === 0 ? 0 : items + deletes,
   };
 }
 

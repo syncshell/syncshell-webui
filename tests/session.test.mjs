@@ -9,6 +9,7 @@ import {
   reduceDaemonEvent,
   reduceFolderEvent,
 } from '../app/core/session/sessionState.mjs';
+import { completionTotal } from '../app/core/session/connectionState.mjs';
 
 async function createSessionFixture(testContext) {
   const calls = [];
@@ -143,6 +144,23 @@ test('reported session actions pass rejection to their error owner and settle', 
   assert.equal(reported, failure);
 });
 
+test('completion aggregates keep folder identifiers separate from totals', () => {
+  const folders = {
+    _archive: {
+      globalBytes: 1000,
+      needBytes: 250,
+      needItems: 2,
+      needDeletes: 0,
+    },
+  };
+  assert.deepEqual(completionTotal(folders), {
+    folders,
+    totalPercentage: 75,
+    neededBytes: 250,
+    neededItems: 2,
+  });
+});
+
 test('folder events leave other folders unchanged and clear obsolete scan data', () => {
   const original = {
     ...createInitialState(),
@@ -217,8 +235,9 @@ test('daemon event reduction updates completion and saved configuration', () => 
       needDeletes: 0,
     },
   });
-  assert.equal(completion.completion.peer._total, 75);
-  assert.equal(completion.completion.peer._needItems, 2);
+  assert.equal(completion.completion.peer.totalPercentage, 75);
+  assert.equal(completion.completion.peer.neededItems, 2);
+  assert.equal(completion.completion.peer.folders.photos.needBytes, 250);
 
   const config = { folders: [], devices: [], options: {}, gui: {} };
   const saved = reduceDaemonEvent(completion, {
@@ -365,8 +384,8 @@ test('daemon events update completion and connection lifecycle', async (testCont
     needItems: 2,
     needDeletes: 0,
   });
-  assert.equal(state.completion.peer._total, 75);
-  assert.equal(state.completion.peer._needItems, 2);
+  assert.equal(state.completion.peer.totalPercentage, 75);
+  assert.equal(state.completion.peer.neededItems, 2);
 
   fixture.responses['stats/device'] = {
     peer: { lastSeen: '2026-09-09T12:00:00Z' },
@@ -439,7 +458,7 @@ test('daemon events refresh pending offers and saved configuration', async (test
   state = await fixture.emit('ConfigSaved', config);
   assert.equal(state.config, config);
   assert.equal(state.model.photos.localFiles, 4);
-  assert.equal(state.completion.peer._total, 90);
+  assert.equal(state.completion.peer.totalPercentage, 90);
   assert.equal(state.configInSync, false);
 });
 

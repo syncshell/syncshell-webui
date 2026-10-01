@@ -111,7 +111,7 @@ export function reduceDaemonEvent(state, event) {
         completion: {
           ...next.completion,
           [data.device]: completionTotal({
-            ...next.completion[data.device],
+            ...next.completion[data.device]?.folders,
             [data.folder]: data,
           }),
         },

@@ -42,7 +42,9 @@ export function DeviceSharingFields({
             pendingFolders[folder.id]?.offeredBy?.[device.deviceID]
               ?.remoteEncrypted
           }
-          remoteState={completion[device.deviceID]?.[folder.id]?.remoteState}
+          remoteState={
+            completion[device.deviceID]?.folders?.[folder.id]?.remoteState
+          }
           onSelected={(value) => onChange(folder.id, 'selected', value)}
           onPassword={(value) => onChange(folder.id, 'password', value)}
         />

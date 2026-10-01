@@ -52,7 +52,7 @@ export function FolderSharingFields({
                   ?.remoteEncrypted
               }
               remoteState={
-                completion[device.deviceID]?.[folder.id]?.remoteState
+                completion[device.deviceID]?.folders?.[folder.id]?.remoteState
               }
               onSelected={(value) => onSelected(device.deviceID, value)}
               onPassword={(value) => onPassword(device.deviceID, value)}

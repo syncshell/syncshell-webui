@@ -7,7 +7,8 @@ export function RemoteNeededDialog({ api, device, state, onClose }) {
   const { t } = useLocale();
   const folders = sharedFolders(state.config, device.deviceID).filter(
     (folder) => {
-      const completion = state.completion[device.deviceID]?.[folder.id];
+      const completion =
+        state.completion[device.deviceID]?.folders?.[folder.id];
       return !completion || completion.needItems + completion.needDeletes > 0;
     },
   );

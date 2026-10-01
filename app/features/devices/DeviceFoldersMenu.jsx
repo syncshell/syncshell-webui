@@ -51,7 +51,7 @@ export function DeviceFoldersMenu({
                       )?.encryptionPassword
                     }
                     remoteState={
-                      state.completion[device.deviceID]?.[folder.id]
+                      state.completion[device.deviceID]?.folders?.[folder.id]
                         ?.remoteState
                     }
                   />

@@ -26,7 +26,7 @@ export function DeviceHeader({
       {!isLocalDevice && status === 'syncing' && (
         <span
           class="panel-progress"
-          style={{ width: completion._total + '%' }}
+          style={{ width: completion.totalPercentage + '%' }}
         />
       )}
       <span class="panel-title device-title">
@@ -37,7 +37,7 @@ export function DeviceHeader({
           >
             <span class="hidden-xs">{t(deviceLabels[status])}</span>
             {status === 'syncing' &&
-              ` (${completion._total}%, ${unitPrefixed(completion._needBytes, true)}B)`}
+              ` (${completion.totalPercentage}%, ${unitPrefixed(completion.neededBytes, true)}B)`}
             <Icon
               name={deviceIcons[status]}
               class="visible-xs icon-fixed"

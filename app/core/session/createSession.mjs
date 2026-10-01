@@ -151,7 +151,7 @@ export function createSession(
                   completion: {
                     ...state.completion,
                     [device.deviceID]: completionTotal({
-                      ...state.completion[device.deviceID],
+                      ...state.completion[device.deviceID]?.folders,
                       [folder.id]: result,
                     }),
                   },
@@ -200,9 +200,10 @@ export function createSession(
       config.devices.map((device) => [
         device.deviceID,
         state.completion[device.deviceID] || {
-          _total: 100,
-          _needBytes: 0,
-          _needItems: 0,
+          folders: {},
+          totalPercentage: 100,
+          neededBytes: 0,
+          neededItems: 0,
         },
       ]),
     );
