@@ -2,17 +2,15 @@ import { useContext, useEffect, useRef, useState } from 'preact/hooks';
 import { Dialog } from '../../Dialog.jsx';
 import { LocaleContext } from '../../locale-context.jsx';
 import { Tabs } from '../../Tabs.jsx';
+import { useLogTail } from './useLogTail.mjs';
 
 export function Logs({ api, onClose }) {
   const { t } = useContext(LocaleContext);
   const area = useRef();
-  const pausedRef = useRef(false);
   const [tab, setTab] = useState('Log');
-  const [entries, setEntries] = useState([]);
   const [facilities, setFacilities] = useState({ levels: {}, packages: {} });
-  const [error, setError] = useState('');
   const [busy, setBusy] = useState(false);
-  const [paused, setPaused] = useState(false);
+  const { entries, error, setError, paused, setPaused } = useLogTail(api);
   const tabItems = ['Log', 'Debugging Facilities'].map((name) => ({
     id: name,
     tabId: 'logs-' + name.toLowerCase().replaceAll(' ', '-') + '-tab',
@@ -31,43 +29,18 @@ export function Logs({ api, onClose }) {
     .join('\n');
   useEffect(() => {
     const controller = new AbortController();
-    let timer, since;
     api
       .get('system/loglevels', undefined, controller.signal)
       .then(setFacilities)
       .catch((error) => {
         if (!controller.signal.aborted) setError(error.message);
       });
-    async function poll() {
-      try {
-        if (!pausedRef.current) {
-          const data = await api.get(
-            'system/log',
-            { since },
-            controller.signal,
-          );
-          if (!pausedRef.current && !controller.signal.aborted) {
-            setEntries((previous) => [...previous, ...(data.messages || [])]);
-            since = data.messages?.at(-1)?.when || since;
-            setError('');
-          }
-        }
-      } catch (error) {
-        if (!controller.signal.aborted) setError(error.message);
-      } finally {
-        if (!controller.signal.aborted) timer = setTimeout(poll, 2000);
-      }
-    }
-    poll();
-    return () => {
-      controller.abort();
-      clearTimeout(timer);
-    };
+    return () => controller.abort();
   }, [api]);
   useEffect(() => {
-    if (!pausedRef.current && area.current)
+    if (!paused && area.current)
       area.current.scrollTop = area.current.scrollHeight;
-  }, [entries, tab]);
+  }, [entries, paused, tab]);
   async function setLoggingLevel(key, value) {
     setBusy(true);
     try {
@@ -109,17 +82,16 @@ export function Logs({ api, onClose }) {
               value={content}
               onScroll={() => {
                 const element = area.current;
-                pausedRef.current =
+                setPaused(
                   element.scrollHeight >
-                  element.scrollTop + element.clientHeight + 1;
-                setPaused(pausedRef.current);
+                    element.scrollTop + element.clientHeight + 1,
+                );
               }}
             />
             {paused && (
               <button
                 class="btn btn-link"
                 onClick={() => {
-                  pausedRef.current = false;
                   setPaused(false);
                   area.current.scrollTop = area.current.scrollHeight;
                 }}
