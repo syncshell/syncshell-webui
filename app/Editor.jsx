@@ -25,7 +25,10 @@ import { Tooltip } from './Tooltip.jsx';
 import { IdentityControls } from './IdentityControls.jsx';
 import { SharingEntry } from './SharingEntry.jsx';
 import { deviceName } from '../client/devices.mjs';
-import { deviceEditorFields } from '../client/device-editor.mjs';
+import {
+  deviceEditorFields,
+  saveDeviceEditor,
+} from '../client/device-editor.mjs';
 import { Icon } from './Icon.jsx';
 
 export function Editor({ action, state, api, session, onClose, onSaved }) {
@@ -211,20 +214,27 @@ export function Editor({ action, state, api, session, onClose, onSaved }) {
       [id]: { ...shares[id], [property]: value },
     }));
   }
+  function saveDraft(options = {}) {
+    const request = {
+      session,
+      api,
+      state,
+      draft,
+      isNew,
+      shares,
+      ...options,
+    };
+    return kind === 'device'
+      ? saveDeviceEditor(request)
+      : saveEditor({ ...request, kind });
+  }
   async function save() {
     if (!form.current.reportValidity()) return;
     setBusy(true);
     setError('');
     try {
       if (defaults) {
-        await saveEditor({
-          session,
-          api,
-          state,
-          kind,
-          draft,
-          isNew,
-          shares,
+        await saveDraft({
           defaults,
           ignores: ignoreLines(ignores),
         });
@@ -242,14 +252,8 @@ export function Editor({ action, state, api, session, onClose, onSaved }) {
         addIgnores &&
         draft.type !== 'receiveencrypted'
       ) {
-        await saveEditor({
-          session,
-          api,
-          state,
-          kind,
+        await saveDraft({
           draft: { ...cloneConfig(draft), paused: true },
-          isNew,
-          shares,
         });
         setStage('ignores');
         setTab('Ignore Patterns');
@@ -266,7 +270,7 @@ export function Editor({ action, state, api, session, onClose, onSaved }) {
             { ignore: ignoreLines(ignores) },
             { folder: draft.id },
           );
-        await saveEditor({ session, api, state, kind, draft, isNew, shares });
+        await saveDraft();
       }
       saved.current = true;
       onSaved?.(cloneConfig(draft), ignoreLines(ignores));

@@ -156,99 +156,49 @@ export function ignoreLines(text) {
 
 export async function saveEditor({
   session,
-  api,
   state,
-  kind,
   draft,
   isNew,
-  shares,
   defaults = false,
   ignores = [],
 }) {
-  const value = normalizeEditor(draft, kind);
-  if (defaults)
+  const value = normalizeEditor(draft, 'folder');
+  if (defaults) {
     return session.changeConfig((config) => {
-      config.defaults[kind] = value;
-      if (kind === 'folder') config.defaults.ignores.lines = ignores;
+      config.defaults.folder = value;
+      config.defaults.ignores.lines = ignores;
     });
-  if (kind === 'device') {
-    const checked = await api.get('svc/deviceid', { id: value.deviceID });
-    if (checked.error) throw new Error(checked.error);
-    value.deviceID = checked.id || value.deviceID;
-    if (
-      state.config.folders.some(
-        (folder) =>
-          folder.type !== 'receiveencrypted' &&
-          (value.untrusted ||
-            state.pendingFolders?.[folder.id]?.offeredBy?.[value.deviceID]
-              ?.remoteEncrypted) &&
-          shares[folder.id]?.selected &&
-          !shares[folder.id]?.password,
-      )
-    )
-      throw new Error(
-        'Encryption Password is required for an untrusted device.',
-      );
-    if (
-      isNew &&
-      state.config.devices.some((item) => item.deviceID === value.deviceID)
-    )
-      throw new Error('A device with that ID is already added.');
-  } else {
-    if (!value.id.trim()) throw new Error('The folder ID cannot be blank.');
-    if (!value.path.trim()) throw new Error('The folder path cannot be blank.');
-    if (isNew && state.config.folders.some((item) => item.id === value.id))
-      throw new Error('The folder ID must be unique.');
-    if (!value.devices.some((item) => item.deviceID === state.system.myID))
-      value.devices.push({ deviceID: state.system.myID });
-    if (!value.versioning?.type) value.versioning = { type: '' };
-    if (
-      value.versioning.type === 'external' &&
-      !value.versioning.params?.command?.trim()
-    )
-      throw new Error('External Versioning Command cannot be blank.');
-    if (
-      value.type !== 'receiveencrypted' &&
-      value.devices.some(
-        (member) =>
-          (state.config.devices.find(
-            (device) => device.deviceID === member.deviceID,
-          )?.untrusted ||
-            state.pendingFolders?.[value.id]?.offeredBy?.[member.deviceID]
-              ?.remoteEncrypted) &&
-          !member.encryptionPassword,
-      )
-    )
-      throw new Error(
-        'Encryption Password is required for an untrusted device.',
-      );
   }
+  if (!value.id.trim()) throw new Error('The folder ID cannot be blank.');
+  if (!value.path.trim()) throw new Error('The folder path cannot be blank.');
+  if (isNew && state.config.folders.some((item) => item.id === value.id))
+    throw new Error('The folder ID must be unique.');
+  if (!value.devices.some((item) => item.deviceID === state.system.myID))
+    value.devices.push({ deviceID: state.system.myID });
+  if (!value.versioning?.type) value.versioning = { type: '' };
+  if (
+    value.versioning.type === 'external' &&
+    !value.versioning.params?.command?.trim()
+  )
+    throw new Error('External Versioning Command cannot be blank.');
+  if (
+    value.type !== 'receiveencrypted' &&
+    value.devices.some(
+      (member) =>
+        (state.config.devices.find(
+          (device) => device.deviceID === member.deviceID,
+        )?.untrusted ||
+          state.pendingFolders?.[value.id]?.offeredBy?.[member.deviceID]
+            ?.remoteEncrypted) &&
+        !member.encryptionPassword,
+    )
+  )
+    throw new Error('Encryption Password is required for an untrusted device.');
   return session.changeConfig((config) => {
-    const list = kind === 'device' ? 'devices' : 'folders';
-    const key = kind === 'device' ? 'deviceID' : 'id';
-    config[list] = [
-      ...config[list].filter((item) => item[key] !== value[key]),
+    config.folders = [
+      ...config.folders.filter((item) => item.id !== value.id),
       value,
     ];
-    if (kind === 'device')
-      for (const folder of config.folders) {
-        const present = folder.devices.some(
-          (item) => item.deviceID === value.deviceID,
-        );
-        if (shares[folder.id]?.selected && !present)
-          folder.devices.push({
-            deviceID: value.deviceID,
-            encryptionPassword: shares[folder.id].password || '',
-          });
-        if (shares[folder.id]?.selected && present)
-          folder.devices.find(
-            (item) => item.deviceID === value.deviceID,
-          ).encryptionPassword = shares[folder.id].password || '';
-        if (!shares[folder.id]?.selected && present)
-          folder.devices = folder.devices.filter(
-            (item) => item.deviceID !== value.deviceID,
-          );
-      }
   });
 }
 

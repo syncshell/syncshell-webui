@@ -21,6 +21,7 @@ import {
 } from '../client/editor-behavior.mjs';
 import {
   deviceEditorFieldState,
+  saveDeviceEditor,
   updateDeviceEditor,
 } from '../client/device-editor.mjs';
 
@@ -129,6 +130,18 @@ async function saveFolder(fixture, draft, overrides = {}) {
     api: fixture.api,
     state: fixture.state,
     kind: 'folder',
+    draft,
+    isNew: true,
+    shares: {},
+    ...overrides,
+  });
+}
+
+async function saveDevice(fixture, draft, overrides = {}) {
+  return saveDeviceEditor({
+    session: fixture.session,
+    api: fixture.api,
+    state: fixture.state,
     draft,
     isNew: true,
     shares: {},
@@ -317,16 +330,11 @@ test('saving defaults normalizes folder rules and keeps ignore lines', async () 
   ]);
 
   const deviceDefaults = createSaveFixture();
-  await saveEditor({
-    session: deviceDefaults.session,
-    api: deviceDefaults.api,
-    state: deviceDefaults.state,
-    kind: 'device',
-    draft: { name: 'Future peers', addresses: ['dynamic'] },
-    isNew: false,
-    shares: {},
-    defaults: true,
-  });
+  await saveDevice(
+    deviceDefaults,
+    { name: 'Future peers', addresses: ['dynamic'] },
+    { isNew: false, defaults: true },
+  );
   assert.deepEqual(deviceDefaults.savedConfig().defaults.device, {
     name: 'Future peers',
     addresses: ['dynamic'],
@@ -435,29 +443,13 @@ test('device saves validate IDs and reject duplicate new devices', async () => {
     deviceCheck: { error: 'device ID is invalid' },
   });
   await assert.rejects(
-    saveEditor({
-      session: invalid.session,
-      api: invalid.api,
-      state: invalid.state,
-      kind: 'device',
-      draft: { deviceID: 'invalid', name: 'Invalid' },
-      isNew: true,
-      shares: {},
-    }),
+    saveDevice(invalid, { deviceID: 'invalid', name: 'Invalid' }),
     /device ID is invalid/,
   );
 
   const duplicate = createSaveFixture({ deviceCheck: { id: 'PEER' } });
   await assert.rejects(
-    saveEditor({
-      session: duplicate.session,
-      api: duplicate.api,
-      state: duplicate.state,
-      kind: 'device',
-      draft: { deviceID: 'peer', name: 'Duplicate' },
-      isNew: true,
-      shares: {},
-    }),
+    saveDevice(duplicate, { deviceID: 'peer', name: 'Duplicate' }),
     /device with that ID is already added/,
   );
   assert.deepEqual(duplicate.calls, [
@@ -468,17 +460,15 @@ test('device saves validate IDs and reject duplicate new devices', async () => {
 test('device saves require encrypted-share passwords before changing config', async () => {
   const fixture = createSaveFixture();
   await assert.rejects(
-    saveEditor({
-      session: fixture.session,
-      api: fixture.api,
-      state: fixture.state,
-      kind: 'device',
-      draft: { deviceID: 'NEW-PEER', name: 'New peer', untrusted: true },
-      isNew: true,
-      shares: {
-        photos: { selected: true, password: '' },
+    saveDevice(
+      fixture,
+      { deviceID: 'NEW-PEER', name: 'New peer', untrusted: true },
+      {
+        shares: {
+          photos: { selected: true, password: '' },
+        },
       },
-    }),
+    ),
     /Encryption Password is required for an untrusted device/,
   );
   assert.equal(fixture.savedConfig(), undefined);
@@ -486,19 +476,18 @@ test('device saves require encrypted-share passwords before changing config', as
 
 test('device saves replace the device and update every folder share', async () => {
   const fixture = createSaveFixture({ deviceCheck: { id: 'PEER' } });
-  await saveEditor({
-    session: fixture.session,
-    api: fixture.api,
-    state: fixture.state,
-    kind: 'device',
-    draft: { deviceID: 'peer', name: 'Renamed peer', untrusted: false },
-    isNew: false,
-    shares: {
-      photos: { selected: true, password: 'new-password' },
-      archive: { selected: true, password: '' },
-      'removed-share': { selected: false, password: '' },
+  await saveDevice(
+    fixture,
+    { deviceID: 'peer', name: 'Renamed peer', untrusted: false },
+    {
+      isNew: false,
+      shares: {
+        photos: { selected: true, password: 'new-password' },
+        archive: { selected: true, password: '' },
+        'removed-share': { selected: false, password: '' },
+      },
     },
-  });
+  );
 
   const saved = fixture.savedConfig();
   assert.equal(
