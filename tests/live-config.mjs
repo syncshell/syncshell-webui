@@ -1,11 +1,14 @@
 import { chromium, expect } from '@playwright/test';
 import { readFile, access } from 'node:fs/promises';
+import { after, before, test } from 'node:test';
 
-const runtime = process.env.SYNCSHELL_TEST_RUNTIME;
-await access(runtime + '/.syncshell-test-fixture');
-const xml = await readFile(runtime + '/home/config.xml', 'utf8');
-const key = xml.match(/<apikey>(.*?)<\/apikey>/)[1];
-const base = process.env.SYNCSHELL_WEBUI_URL;
+let base;
+let browser;
+let device;
+let folder;
+let key;
+let myID;
+
 async function api(path, body) {
   const response = await fetch(base + '/rest/' + path, {
     method: body ? 'PATCH' : 'GET',
@@ -16,16 +19,44 @@ async function api(path, body) {
   const text = await response.text();
   return text ? JSON.parse(text) : null;
 }
-const { myID } = await api('system/status');
-const device = await api('config/devices/' + myID);
-const folder = await api('config/folders/test-folder');
-const browser = await chromium.launch({
-  headless: true,
-  ...(process.env.SYNCSHELL_CHROMIUM
-    ? { executablePath: process.env.SYNCSHELL_CHROMIUM }
-    : {}),
+
+before(async () => {
+  const runtime = process.env.SYNCSHELL_TEST_RUNTIME;
+  base = process.env.SYNCSHELL_WEBUI_URL;
+  if (!runtime || !base)
+    throw new Error('Set SYNCSHELL_TEST_RUNTIME and SYNCSHELL_WEBUI_URL');
+  await access(runtime + '/.syncshell-test-fixture');
+  const xml = await readFile(runtime + '/home/config.xml', 'utf8');
+  key = xml.match(/<apikey>(.*?)<\/apikey>/)[1];
+  ({ myID } = await api('system/status'));
+  device = await api('config/devices/' + myID);
+  folder = await api('config/folders/test-folder');
+  browser = await chromium.launch({
+    headless: true,
+    ...(process.env.SYNCSHELL_CHROMIUM
+      ? { executablePath: process.env.SYNCSHELL_CHROMIUM }
+      : {}),
+  });
 });
-try {
+
+after(async () => {
+  let failure;
+  for (const restore of [
+    device && (() => api('config/devices/' + myID, { name: device.name })),
+    folder &&
+      (() => api('config/folders/test-folder', { label: folder.label })),
+    browser && (() => browser.close()),
+  ].filter(Boolean)) {
+    try {
+      await restore();
+    } catch (error) {
+      failure ||= error;
+    }
+  }
+  if (failure) throw failure;
+});
+
+test('live configuration saves and refreshes from native events', async () => {
   const page = await browser.newPage();
   await page.goto(base);
   await expect(page.locator('.dashboard-folders .panel-heading')).toBeVisible();
@@ -53,9 +84,4 @@ try {
   expect(await page.evaluate(() => window.configurationAcceptance)).toBe(
     'retained',
   );
-  console.log('Real configuration save and event-driven refresh passed');
-} finally {
-  await api('config/devices/' + myID, { name: device.name });
-  await api('config/folders/test-folder', { label: folder.label });
-  await browser.close();
-}
+});
