@@ -18,12 +18,7 @@ import { ActionDialog } from './ActionDialog.jsx';
 import { Conflicts } from './Conflicts.jsx';
 import { LocaleContext } from './locale-context.jsx';
 import { Icon } from './Icon.jsx';
-
-const tabs = [
-  { id: 'overview', label: 'Overview' },
-  { id: 'conflicts', label: 'Resolve sync conflicts' },
-  { id: 'notifications', label: 'Notifications' },
-];
+import { DashboardTabs } from './DashboardTabs.jsx';
 const helpLinks = [
   {
     label: 'Introduction',
@@ -145,18 +140,6 @@ export function App() {
     );
     if (device) openAction({ type: 'edit-device', device });
   }, [state.ready, state.config.devices]);
-  function tabKey(event) {
-    let index = tabs.findIndex((tab) => tab.id === activeTab);
-    if (event.key === 'ArrowRight') index = (index + 1) % tabs.length;
-    else if (event.key === 'ArrowLeft')
-      index = (index + tabs.length - 1) % tabs.length;
-    else if (event.key === 'Home') index = 0;
-    else if (event.key === 'End') index = tabs.length - 1;
-    else return;
-    event.preventDefault();
-    setActiveTab(tabs[index].id);
-    event.currentTarget.querySelectorAll('[role="tab"]')[index].focus();
-  }
   useEffect(() => {
     loadEnglish()
       .then(setLocale)
@@ -370,57 +353,7 @@ export function App() {
             )}
             {!state.ready && <p role="status">{t('Loading data...')}</p>}
             <div class="dashboard">
-              <ul
-                class="nav nav-tabs dashboard-tabs"
-                role="tablist"
-                onKeyDown={tabKey}
-              >
-                {tabs.map(({ id, label }) => (
-                  <li
-                    key={id}
-                    class={id === activeTab ? 'active' : ''}
-                    role="presentation"
-                  >
-                    <a
-                      id={id + '-tab'}
-                      href={'#dashboard-' + id}
-                      role="tab"
-                      aria-controls={'dashboard-' + id}
-                      aria-selected={id === activeTab}
-                      tabIndex={id === activeTab ? 0 : -1}
-                      onClick={(event) => {
-                        event.preventDefault();
-                        setActiveTab(id);
-                      }}
-                    >
-                      {t(label)}
-                      {id === 'conflicts' ? ' (beta)' : ''}
-                      {id === 'notifications' && (
-                        <span class="notification-indicator">
-                          <Icon
-                            name="dot"
-                            class="text-success"
-                            role="img"
-                            aria-label={t('Pending notifications')}
-                          />
-                          <Icon
-                            name="dot"
-                            class="text-warning"
-                            role="img"
-                            aria-label={t('Pending warnings')}
-                          />
-                          <Icon
-                            name="dot"
-                            class="text-danger"
-                            role="img"
-                            aria-label={t('Pending errors')}
-                          />
-                        </span>
-                      )}
-                    </a>
-                  </li>
-                ))}
-              </ul>
+              <DashboardTabs activeTab={activeTab} onSelect={setActiveTab} />
               <div class="tab-content">
                 <div
                   id="dashboard-overview"
