@@ -1,0 +1,10 @@
+.xattr-rule {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.xattr-rule .form-control {
+  min-width: 0;
+}
