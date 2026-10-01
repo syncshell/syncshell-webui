@@ -14,7 +14,7 @@ import { Folder } from './Folder.jsx';
 import { Device } from './Device.jsx';
 import { Login } from './Login.jsx';
 import { Notifications } from './Notifications.jsx';
-import { ActionDialog } from './ActionDialog.jsx';
+import { DialogHost } from './DialogHost.jsx';
 import { Conflicts } from './Conflicts.jsx';
 import { LocaleContext } from './locale-context.jsx';
 import { Icon } from './Icon.jsx';
@@ -357,7 +357,7 @@ export function App() {
         )}
       </main>
       {action && (
-        <ActionDialog
+        <DialogHost
           key={
             action.type + (action.device?.deviceID || action.folder?.id || '')
           }

@@ -17,7 +17,25 @@ import {
 } from '../client/devices.mjs';
 import { timestamp } from '../client/format.mjs';
 import { Tooltip } from './Tooltip.jsx';
-export function ActionDialog({ action, state, api, session, onClose }) {
+
+/**
+ * @typedef (
+ *   | {type: 'about'}
+ *   | {type: 'logs'}
+ *   | {type: 'settings' | 'advanced'}
+ *   | {type: 'restart' | 'shutdown' | 'upgrade'}
+ *   | {type: 'add-device' | 'edit-device', device: object}
+ *   | {type: 'add-folder' | 'edit-folder', folder: object}
+ *   | {type: 'override' | 'revert', folder: object}
+ *   | {type: 'versions', folder: object}
+ *   | {type: 'identification' | 'remote-needed', device: object}
+ *   | {type: 'listeners' | 'discovery'}
+ *   | {type: 'changes'}
+ * ) DialogRequest
+ */
+
+/** @param {{action: DialogRequest, state: object, api: object, session: object, onClose: function}} props */
+export function DialogHost({ action, state, api, session, onClose }) {
   const { t } = useContext(LocaleContext);
   const friendly = (id) =>
     deviceName(
