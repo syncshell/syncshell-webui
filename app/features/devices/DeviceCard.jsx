@@ -4,8 +4,7 @@ import {
   deviceName,
   sharedFolders,
   deviceStatus,
-  deviceLabels,
-  deviceIcons,
+  devicePresentation,
 } from './device-status.mjs';
 import { connectionType, remoteGui } from './connections.mjs';
 import { localStateTotal } from '../folders/folder-status.mjs';
@@ -42,6 +41,7 @@ export function DeviceCard({
     ? state.config.folders
     : sharedFolders(state.config, device.deviceID);
   const status = deviceStatus(device, state);
+  const presentation = devicePresentation[status];
   const type = connectionType(conn);
   const totals = localStateTotal(state.model);
   const gui = remoteGui(device, conn);
@@ -70,9 +70,9 @@ export function DeviceCard({
                 <tbody>
                   <DeviceDefinitionRow
                     label="Device Status"
-                    icon={deviceIcons[status]}
+                    icon={presentation.icon}
                   >
-                    {t(deviceLabels[status])}
+                    {t(presentation.label)}
                   </DeviceDefinitionRow>
                 </tbody>
               </table>

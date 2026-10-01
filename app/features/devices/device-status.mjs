@@ -7,10 +7,10 @@ export const sharedFolders = (config, id) =>
   );
 
 export function lastSeenDays(value) {
+  if (!value) return undefined;
   const date = new Date(value);
-  return !value || date.getTime() === 0
-    ? undefined
-    : (Date.now() - date) / 86400000;
+  if (date.getTime() === 0) return undefined;
+  return (Date.now() - date) / 86400000;
 }
 
 export function deviceStatus(device, state) {
@@ -25,45 +25,32 @@ export function deviceStatus(device, state) {
       : 'syncing';
   }
   const age = lastSeenDays(state.deviceStats[device.deviceID]?.lastSeen);
-  return (
-    unused +
-    (!unused && (!age || age >= 7) ? 'disconnected-inactive' : 'disconnected')
-  );
+  if (!unused && (age === undefined || age >= 7))
+    return 'disconnected-inactive';
+  return unused + 'disconnected';
 }
 
-export const deviceLabels = {
-  unknown: 'Unknown',
-  disconnected: 'Disconnected',
-  'disconnected-inactive': 'Disconnected (Inactive)',
-  insync: 'Up to Date',
-  paused: 'Paused',
-  syncing: 'Syncing',
-  'unused-disconnected': 'Disconnected (Unused)',
-  'unused-insync': 'Connected (Unused)',
-  'unused-paused': 'Paused (Unused)',
-};
-
-export const deviceIcons = {
-  disconnected: 'power',
-  'disconnected-inactive': 'power',
-  insync: 'check',
-  paused: 'pause',
-  syncing: 'refresh',
-  unknown: 'help',
-  'unused-disconnected': 'unlink',
-  'unused-insync': 'unlink',
-  'unused-paused': 'unlink',
+export const devicePresentation = {
+  unknown: { label: 'Unknown', icon: 'help' },
+  disconnected: { label: 'Disconnected', icon: 'power' },
+  'disconnected-inactive': {
+    label: 'Disconnected (Inactive)',
+    icon: 'power',
+  },
+  insync: { label: 'Up to Date', icon: 'check' },
+  paused: { label: 'Paused', icon: 'pause' },
+  syncing: { label: 'Syncing', icon: 'refresh' },
+  'unused-disconnected': { label: 'Disconnected (Unused)', icon: 'unlink' },
+  'unused-insync': { label: 'Connected (Unused)', icon: 'unlink' },
+  'unused-paused': { label: 'Paused (Unused)', icon: 'unlink' },
 };
 
 export function deviceColor(device, state) {
   const connection = state.connections[device.deviceID];
-  return !connection
-    ? 'info'
-    : device.paused
-      ? 'default'
-      : !connection.connected
-        ? 'info'
-        : state.completion[device.deviceID]?.totalPercentage === 100
-          ? 'success'
-          : 'primary';
+  if (!connection) return 'info';
+  if (device.paused) return 'default';
+  if (!connection.connected) return 'info';
+  if (state.completion[device.deviceID]?.totalPercentage === 100)
+    return 'success';
+  return 'primary';
 }

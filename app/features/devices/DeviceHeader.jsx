@@ -5,9 +5,8 @@ import { DeviceIdenticon } from './DeviceIdenticon.jsx';
 import { useLocale } from '../../core/locale/LocaleContext.jsx';
 import {
   deviceColor,
-  deviceIcons,
-  deviceLabels,
   deviceName,
+  devicePresentation,
 } from './device-status.mjs';
 
 export function DeviceHeader({
@@ -21,6 +20,7 @@ export function DeviceHeader({
   onToggle,
 }) {
   const { t } = useLocale();
+  const presentation = devicePresentation[status];
   return (
     <button class="btn panel-heading" aria-expanded={open} onClick={onToggle}>
       {!isLocalDevice && status === 'syncing' && (
@@ -35,13 +35,13 @@ export function DeviceHeader({
           <span
             class={`panel-status pull-right text-${deviceColor(device, state)}`}
           >
-            <span class="hidden-xs">{t(deviceLabels[status])}</span>
+            <span class="hidden-xs">{t(presentation.label)}</span>
             {status === 'syncing' &&
               ` (${completion.totalPercentage}%, ${unitPrefixed(completion.neededBytes, true)}B)`}
             <Icon
-              name={deviceIcons[status]}
+              name={presentation.icon}
               class="visible-xs icon-fixed"
-              label={t(deviceLabels[status])}
+              label={t(presentation.label)}
             />
             <span class="inline-icon">
               <span
