@@ -1,16 +1,16 @@
 import { useContext, useEffect, useState } from 'preact/hooks';
-import { LocaleContext } from './locale-context.jsx';
-import { Dialog } from './Dialog.jsx';
+import { LocaleContext } from '../../locale-context.jsx';
+import { Dialog } from '../../Dialog.jsx';
 import {
   versionGroups,
   selectVersions,
   selectedVersions,
   versionActions,
-} from '../client/versions.mjs';
-import { timestamp, unitPrefixed } from '../client/format.mjs';
-import { Icon } from './Icon.jsx';
+} from './versions.mjs';
+import { timestamp, unitPrefixed } from '../../../client/format.mjs';
+import { Icon } from '../../Icon.jsx';
 
-export function RestoreVersions({ api, folder, onClose }) {
+export function RestoreVersionsDialog({ api, folder, onClose }) {
   const { t } = useContext(LocaleContext);
   const [versions, setVersions] = useState(null);
   const [selections, setSelections] = useState({});

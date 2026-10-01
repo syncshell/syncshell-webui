@@ -4,7 +4,7 @@ import { Logs } from './Logs.jsx';
 import { Editor } from './Editor.jsx';
 import { Settings } from './Settings.jsx';
 import { ConfirmAction } from './ConfirmAction.jsx';
-import { RestoreVersions } from './RestoreVersions.jsx';
+import { RestoreVersionsDialog } from './features/versions/RestoreVersionsDialog.jsx';
 import { ServiceHealthDialog } from './ServiceHealthDialog.jsx';
 import { RecentChangesDialog } from './RecentChangesDialog.jsx';
 import { DeviceIdentificationDialog } from './DeviceIdentificationDialog.jsx';
@@ -79,7 +79,11 @@ export function DialogHost({ action, state, api, session, onClose }) {
       );
     case 'versions':
       return (
-        <RestoreVersions api={api} folder={action.folder} onClose={onClose} />
+        <RestoreVersionsDialog
+          api={api}
+          folder={action.folder}
+          onClose={onClose}
+        />
       );
     case 'about':
       return <About api={api} version={state.version} onClose={onClose} />;
