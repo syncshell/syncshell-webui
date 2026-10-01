@@ -123,7 +123,7 @@ export async function loadSettings(api, signal) {
     themes: themes.status === 'fulfilled' ? themes.value.themes : [],
   };
 }
-export function advancedSections(config) {
+export function buildAdvancedConfigSections(config) {
   const sections = [
     { label: 'GUI', path: 'gui' },
     { label: 'LDAP', path: 'ldap' },

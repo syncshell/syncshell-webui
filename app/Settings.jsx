@@ -13,7 +13,7 @@ import {
   ignoredFolders,
   unignore,
   loadSettings,
-  advancedSections,
+  buildAdvancedConfigSections,
 } from '../client/settings.mjs';
 import { timestamp } from '../client/format.mjs';
 export function Settings({ state, api, session, onClose, advanced = false }) {
@@ -146,7 +146,7 @@ export function Settings({ state, api, session, onClose, advanced = false }) {
                     'Incorrect configuration may damage your folder contents and render Syncthing inoperable.',
                   )}
                 </p>
-                {advancedSections(draft).map((section) => (
+                {buildAdvancedConfigSections(draft).map((section) => (
                   <details key={section.path} class="panel panel-default">
                     <summary class="panel-heading">{t(section.label)}</summary>
                     <div class="panel-body">
