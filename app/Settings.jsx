@@ -16,6 +16,7 @@ import {
   buildAdvancedConfigSections,
 } from '../client/settings.mjs';
 import { timestamp } from '../client/format.mjs';
+import { Tabs } from './Tabs.jsx';
 export function Settings({ state, api, session, onClose, advanced = false }) {
   const { t } = useContext(LocaleContext);
   const form = useRef();
@@ -30,6 +31,12 @@ export function Settings({ state, api, session, onClose, advanced = false }) {
   const [report, setReport] = useState(null);
   const [discard, setDiscard] = useState(false);
   const fields = settingsFields(tab, draft, state.system.myID, options.themes);
+  const tabItems = settingsTabs.map((name) => ({
+    id: name,
+    tabId: 'settings-' + name.toLowerCase().replaceAll(' ', '-') + '-tab',
+    panelId: 'settings-panel',
+    label: t(name),
+  }));
   const ignored = ignoredFolders(draft);
   useEffect(() => {
     const controller = new AbortController();
@@ -161,235 +168,240 @@ export function Settings({ state, api, session, onClose, advanced = false }) {
               </>
             ) : (
               <>
-                <ul class="nav nav-tabs">
-                  {settingsTabs.map((name) => (
-                    <li key={name} class={tab === name ? 'active' : ''}>
-                      <a
-                        href={'#settings-' + name}
-                        onClick={(event) => {
-                          event.preventDefault();
-                          setTab(name);
-                        }}
-                      >
-                        {t(name)}
-                      </a>
-                    </li>
-                  ))}
-                </ul>
-                {tab === 'Ignored Devices' ? (
-                  <>
-                    {!draft.remoteIgnoredDevices?.length && (
-                      <p>{t('You have no ignored devices.')}</p>
-                    )}
-                    <div class="table-responsive">
-                      <table class="table table-striped">
-                        <tbody>
-                          {(draft.remoteIgnoredDevices || []).map((device) => (
-                            <tr key={device.deviceID}>
-                              <td>{timestamp(device.time)}</td>
-                              <td
-                                class="word-break-all"
-                                title={device.deviceID}
-                              >
-                                {device.name || device.deviceID}
-                              </td>
-                              <td class="word-break-all">{device.address}</td>
-                              <td>
-                                <button
-                                  type="button"
-                                  class="btn btn-default btn-sm"
-                                  onClick={() =>
-                                    setDraft(unignore(draft, device.deviceID))
-                                  }
+                <Tabs activeId={tab} items={tabItems} onSelect={setTab} />
+                <div
+                  id="settings-panel"
+                  role="tabpanel"
+                  aria-labelledby={
+                    'settings-' +
+                    tab.toLowerCase().replaceAll(' ', '-') +
+                    '-tab'
+                  }
+                >
+                  {tab === 'Ignored Devices' ? (
+                    <>
+                      {!draft.remoteIgnoredDevices?.length && (
+                        <p>{t('You have no ignored devices.')}</p>
+                      )}
+                      <div class="table-responsive">
+                        <table class="table table-striped">
+                          <tbody>
+                            {(draft.remoteIgnoredDevices || []).map(
+                              (device) => (
+                                <tr key={device.deviceID}>
+                                  <td>{timestamp(device.time)}</td>
+                                  <td
+                                    class="word-break-all"
+                                    title={device.deviceID}
+                                  >
+                                    {device.name || device.deviceID}
+                                  </td>
+                                  <td class="word-break-all">
+                                    {device.address}
+                                  </td>
+                                  <td>
+                                    <button
+                                      type="button"
+                                      class="btn btn-default btn-sm"
+                                      onClick={() =>
+                                        setDraft(
+                                          unignore(draft, device.deviceID),
+                                        )
+                                      }
+                                    >
+                                      {t('Unignore')}
+                                    </button>
+                                  </td>
+                                </tr>
+                              ),
+                            )}
+                          </tbody>
+                        </table>
+                      </div>
+                    </>
+                  ) : tab === 'Ignored Folders' ? (
+                    <>
+                      {!ignored.length && (
+                        <p>{t('You have no ignored folders.')}</p>
+                      )}
+                      <div class="table-responsive">
+                        <table class="table table-striped">
+                          <tbody>
+                            {ignored.map(({ device, folder }) => (
+                              <tr key={device.deviceID + folder.id}>
+                                <td>{timestamp(folder.time)}</td>
+                                <td>{folder.label || folder.id}</td>
+                                <td
+                                  class="word-break-all"
+                                  title={device.deviceID}
                                 >
-                                  {t('Unignore')}
-                                </button>
-                              </td>
-                            </tr>
-                          ))}
-                        </tbody>
-                      </table>
-                    </div>
-                  </>
-                ) : tab === 'Ignored Folders' ? (
-                  <>
-                    {!ignored.length && (
-                      <p>{t('You have no ignored folders.')}</p>
-                    )}
-                    <div class="table-responsive">
-                      <table class="table table-striped">
-                        <tbody>
-                          {ignored.map(({ device, folder }) => (
-                            <tr key={device.deviceID + folder.id}>
-                              <td>{timestamp(folder.time)}</td>
-                              <td>{folder.label || folder.id}</td>
-                              <td
-                                class="word-break-all"
-                                title={device.deviceID}
+                                  {device.name || device.deviceID}
+                                </td>
+                                <td>
+                                  <button
+                                    type="button"
+                                    class="btn btn-default btn-sm"
+                                    onClick={() =>
+                                      setDraft(
+                                        unignore(
+                                          draft,
+                                          device.deviceID,
+                                          folder.id,
+                                        ),
+                                      )
+                                    }
+                                  >
+                                    {t('Unignore')}
+                                  </button>
+                                </td>
+                              </tr>
+                            ))}
+                          </tbody>
+                        </table>
+                      </div>
+                    </>
+                  ) : (
+                    <>
+                      <FormFields
+                        draft={draft}
+                        fields={fields}
+                        onChange={update}
+                      />
+                      {tab === 'GUI' && state.system.guiAddressOverridden && (
+                        <p class="text-warning">
+                          {t(
+                            'The GUI address is overridden by startup options. Changes here will not take effect while the override is in place.',
+                          )}
+                        </p>
+                      )}
+                      {tab === 'General' && (
+                        <>
+                          <label for="settings-api-key">{t('API Key')}</label>
+                          <div class="input-group">
+                            <input
+                              id="settings-api-key"
+                              class="form-control"
+                              type="text"
+                              readOnly
+                              value={draft.gui.apiKey}
+                            />
+                            <span class="input-group-btn">
+                              <button
+                                type="button"
+                                class="btn btn-default"
+                                onClick={generateKey}
                               >
-                                {device.name || device.deviceID}
-                              </td>
-                              <td>
-                                <button
-                                  type="button"
-                                  class="btn btn-default btn-sm"
-                                  onClick={() =>
-                                    setDraft(
-                                      unignore(
-                                        draft,
-                                        device.deviceID,
-                                        folder.id,
-                                      ),
-                                    )
-                                  }
-                                >
-                                  {t('Unignore')}
-                                </button>
-                              </td>
-                            </tr>
-                          ))}
-                        </tbody>
-                      </table>
-                    </div>
-                  </>
-                ) : (
-                  <>
-                    <FormFields
-                      draft={draft}
-                      fields={fields}
-                      onChange={update}
-                    />
-                    {tab === 'GUI' && state.system.guiAddressOverridden && (
-                      <p class="text-warning">
-                        {t(
-                          'The GUI address is overridden by startup options. Changes here will not take effect while the override is in place.',
-                        )}
-                      </p>
-                    )}
-                    {tab === 'General' && (
-                      <>
-                        <label for="settings-api-key">{t('API Key')}</label>
-                        <div class="input-group">
-                          <input
-                            id="settings-api-key"
-                            class="form-control"
-                            type="text"
-                            readOnly
-                            value={draft.gui.apiKey}
-                          />
-                          <span class="input-group-btn">
+                                {t('Generate')}
+                              </button>
+                            </span>
+                          </div>
+                          <div class="form-group">
+                            <label for="settings-usage">
+                              {t('Anonymous Usage Reporting')}
+                            </label>{' '}
+                            <button
+                              type="button"
+                              class="btn btn-link btn-sm"
+                              onClick={preview}
+                            >
+                              {t('Preview')}
+                            </button>
+                            {mode === 'candidate' ||
+                            state.version.isCandidate ? (
+                              <p>
+                                {t(
+                                  'Usage reporting is always enabled for candidate releases.',
+                                )}
+                              </p>
+                            ) : (
+                              <select
+                                id="settings-usage"
+                                class="form-control"
+                                value={draft.options.urAccepted}
+                                onChange={(event) =>
+                                  update(
+                                    'options.urAccepted',
+                                    Number(event.currentTarget.value),
+                                  )
+                                }
+                              >
+                                {Array.from(
+                                  {
+                                    length: Math.max(
+                                      0,
+                                      (state.system.urVersionMax || 1) - 1,
+                                    ),
+                                  },
+                                  (_, i) => state.system.urVersionMax - i,
+                                ).map((version) => (
+                                  <option key={version} value={version}>
+                                    {t('Version')} {version}
+                                  </option>
+                                ))}
+                                <option value={0}>
+                                  {t('Undecided (will prompt)')}
+                                </option>
+                                <option value={-1}>{t('Disabled')}</option>
+                              </select>
+                            )}
+                          </div>
+                          <div class="form-group">
+                            <label for="settings-upgrades">
+                              {t('Automatic upgrades')}
+                            </label>
+                            {options.upgrade ? (
+                              <select
+                                id="settings-upgrades"
+                                class="form-control"
+                                value={mode}
+                                onChange={(event) =>
+                                  setMode(event.currentTarget.value)
+                                }
+                              >
+                                {!state.version.isCandidate && (
+                                  <option value="none">
+                                    {t('No upgrades')}
+                                  </option>
+                                )}
+                                <option value="stable">
+                                  {t('Stable releases only')}
+                                </option>
+                                <option value="candidate">
+                                  {t('Stable releases and release candidates')}
+                                </option>
+                              </select>
+                            ) : (
+                              <p>
+                                {t(
+                                  'Unavailable/Disabled by administrator or maintainer',
+                                )}
+                              </p>
+                            )}
+                          </div>
+                          <p>
+                            <strong>{t('Default Configuration')}</strong>
+                          </p>
+                          <div class="folder-actions">
                             <button
                               type="button"
                               class="btn btn-default"
-                              onClick={generateKey}
+                              onClick={() => defaults('folder')}
                             >
-                              {t('Generate')}
+                              {t('Edit Folder Defaults')}
                             </button>
-                          </span>
-                        </div>
-                        <div class="form-group">
-                          <label for="settings-usage">
-                            {t('Anonymous Usage Reporting')}
-                          </label>{' '}
-                          <button
-                            type="button"
-                            class="btn btn-link btn-sm"
-                            onClick={preview}
-                          >
-                            {t('Preview')}
-                          </button>
-                          {mode === 'candidate' || state.version.isCandidate ? (
-                            <p>
-                              {t(
-                                'Usage reporting is always enabled for candidate releases.',
-                              )}
-                            </p>
-                          ) : (
-                            <select
-                              id="settings-usage"
-                              class="form-control"
-                              value={draft.options.urAccepted}
-                              onChange={(event) =>
-                                update(
-                                  'options.urAccepted',
-                                  Number(event.currentTarget.value),
-                                )
-                              }
+                            <button
+                              type="button"
+                              class="btn btn-default"
+                              onClick={() => defaults('device')}
                             >
-                              {Array.from(
-                                {
-                                  length: Math.max(
-                                    0,
-                                    (state.system.urVersionMax || 1) - 1,
-                                  ),
-                                },
-                                (_, i) => state.system.urVersionMax - i,
-                              ).map((version) => (
-                                <option key={version} value={version}>
-                                  {t('Version')} {version}
-                                </option>
-                              ))}
-                              <option value={0}>
-                                {t('Undecided (will prompt)')}
-                              </option>
-                              <option value={-1}>{t('Disabled')}</option>
-                            </select>
-                          )}
-                        </div>
-                        <div class="form-group">
-                          <label for="settings-upgrades">
-                            {t('Automatic upgrades')}
-                          </label>
-                          {options.upgrade ? (
-                            <select
-                              id="settings-upgrades"
-                              class="form-control"
-                              value={mode}
-                              onChange={(event) =>
-                                setMode(event.currentTarget.value)
-                              }
-                            >
-                              {!state.version.isCandidate && (
-                                <option value="none">{t('No upgrades')}</option>
-                              )}
-                              <option value="stable">
-                                {t('Stable releases only')}
-                              </option>
-                              <option value="candidate">
-                                {t('Stable releases and release candidates')}
-                              </option>
-                            </select>
-                          ) : (
-                            <p>
-                              {t(
-                                'Unavailable/Disabled by administrator or maintainer',
-                              )}
-                            </p>
-                          )}
-                        </div>
-                        <p>
-                          <strong>{t('Default Configuration')}</strong>
-                        </p>
-                        <div class="folder-actions">
-                          <button
-                            type="button"
-                            class="btn btn-default"
-                            onClick={() => defaults('folder')}
-                          >
-                            {t('Edit Folder Defaults')}
-                          </button>
-                          <button
-                            type="button"
-                            class="btn btn-default"
-                            onClick={() => defaults('device')}
-                          >
-                            {t('Edit Device Defaults')}
-                          </button>
-                        </div>
-                      </>
-                    )}
-                  </>
-                )}
+                              {t('Edit Device Defaults')}
+                            </button>
+                          </div>
+                        </>
+                      )}
+                    </>
+                  )}
+                </div>
               </>
             )}
           </fieldset>

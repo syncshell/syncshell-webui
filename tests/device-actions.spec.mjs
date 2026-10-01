@@ -40,7 +40,7 @@ test('device actions expose local folders and dismiss menus outside', async ({
   const settings = page.getByRole('dialog', { name: 'Settings', exact: true });
   await expect(
     settings
-      .getByRole('link', { name: 'General', exact: true })
+      .getByRole('tab', { name: 'General', exact: true })
       .locator('xpath=..'),
   ).toHaveClass(/active/);
   await settings.getByRole('button', { name: 'Close', exact: true }).click();

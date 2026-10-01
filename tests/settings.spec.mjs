@@ -70,11 +70,11 @@ test('settings drafts survive default editing and ignored-list changes', async (
     'Unsaved device label',
   );
   await dialog
-    .getByRole('link', { name: 'Ignored Devices', exact: true })
+    .getByRole('tab', { name: 'Ignored Devices', exact: true })
     .click();
   await dialog.getByRole('button', { name: 'Unignore', exact: true }).click();
   await dialog
-    .getByRole('link', { name: 'Ignored Folders', exact: true })
+    .getByRole('tab', { name: 'Ignored Folders', exact: true })
     .click();
   await dialog.getByRole('button', { name: 'Unignore', exact: true }).click();
   await page.screenshot({ path: testInfo.outputPath('settings-ignored.png') });
