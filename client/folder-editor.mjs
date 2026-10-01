@@ -1,4 +1,4 @@
-import { setValue } from './edit.mjs';
+import { cloneConfig, setValue } from './edit.mjs';
 
 const field = (path, label, type = 'text', options) => ({
   path,
@@ -215,4 +215,87 @@ export function overlappingPath(draft, config, system) {
     }
   }
   return null;
+}
+
+export function normalizeFolderEditor(draft) {
+  const value = cloneConfig(draft);
+  if (value.xattrFilter) {
+    value.xattrFilter.entries = (value.xattrFilter.entries || []).filter(
+      (entry) => entry.match !== '',
+    );
+  }
+  const versioning = value.versioning || {};
+  for (const key of versioning.type === 'simple'
+    ? ['keep', 'cleanoutDays']
+    : versioning.type === 'trashcan'
+      ? ['cleanoutDays']
+      : versioning.type === 'staggered'
+        ? ['maxAge']
+        : []) {
+    const number = Number(versioning.params?.[key]);
+    if (
+      !Number.isFinite(number) ||
+      number < (key === 'keep' ? 1 : 0) ||
+      versioning.params[key] === ''
+    ) {
+      throw new Error(
+        key === 'keep'
+          ? 'You must keep at least one version.'
+          : 'A negative number of days does not make sense.',
+      );
+    }
+  }
+  return value;
+}
+
+export async function saveFolderEditor({
+  session,
+  state,
+  draft,
+  isNew,
+  defaults = false,
+  ignores = [],
+}) {
+  const value = normalizeFolderEditor(draft);
+  if (defaults) {
+    return session.changeConfig((config) => {
+      config.defaults.folder = value;
+      config.defaults.ignores.lines = ignores;
+    });
+  }
+  if (!value.id.trim()) throw new Error('The folder ID cannot be blank.');
+  if (!value.path.trim()) throw new Error('The folder path cannot be blank.');
+  if (isNew && state.config.folders.some((item) => item.id === value.id)) {
+    throw new Error('The folder ID must be unique.');
+  }
+  if (!value.devices.some((item) => item.deviceID === state.system.myID)) {
+    value.devices.push({ deviceID: state.system.myID });
+  }
+  if (!value.versioning?.type) value.versioning = { type: '' };
+  if (
+    value.versioning.type === 'external' &&
+    !value.versioning.params?.command?.trim()
+  ) {
+    throw new Error('External Versioning Command cannot be blank.');
+  }
+  if (
+    value.type !== 'receiveencrypted' &&
+    value.devices.some(
+      (member) =>
+        (state.config.devices.find(
+          (device) => device.deviceID === member.deviceID,
+        )?.untrusted ||
+          state.pendingFolders?.[value.id]?.offeredBy?.[member.deviceID]
+            ?.remoteEncrypted) &&
+        !member.encryptionPassword,
+    )
+  ) {
+    throw new Error('Encryption Password is required for an untrusted device.');
+  }
+  return session.changeConfig((config) => {
+    config.folders = [
+      ...config.folders.filter((item) => item.id !== value.id),
+      value,
+    ];
+  });
 }

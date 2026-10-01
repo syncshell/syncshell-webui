@@ -6,15 +6,15 @@ import {
   getValue,
   ignoreLines,
   inputValue,
-  normalizeEditor,
-  saveEditor,
   setValue,
 } from '../client/edit.mjs';
 import {
   folderEditorFieldState,
   folderPath,
   newXattrEntry,
+  normalizeFolderEditor,
   overlappingPath,
+  saveFolderEditor,
   updateFolderEditor,
   xattrDefault,
   xattrHint,
@@ -124,14 +124,11 @@ function folderDraft(overrides = {}) {
 }
 
 async function saveFolder(fixture, draft, overrides = {}) {
-  return saveEditor({
+  return saveFolderEditor({
     session: fixture.session,
-    api: fixture.api,
     state: fixture.state,
-    kind: 'folder',
     draft,
     isNew: true,
-    shares: {},
     ...overrides,
   });
 }
@@ -254,7 +251,7 @@ test('folder normalization removes unfinished attribute rules from a clone', () 
     },
   };
 
-  const normalized = normalizeEditor(draft, 'folder');
+  const normalized = normalizeFolderEditor(draft);
   assert.deepEqual(normalized.xattrFilter.entries, [
     { match: 'user.*', permit: true },
   ]);
@@ -265,15 +262,12 @@ test('folder normalization rejects invalid versioning boundaries', () => {
   for (const keep of ['', '0', '-1', 'not-a-number']) {
     assert.throws(
       () =>
-        normalizeEditor(
-          {
-            versioning: {
-              type: 'simple',
-              params: { keep, cleanoutDays: '0' },
-            },
+        normalizeFolderEditor({
+          versioning: {
+            type: 'simple',
+            params: { keep, cleanoutDays: '0' },
           },
-          'folder',
-        ),
+        }),
       /keep at least one version/,
       `keep=${keep}`,
     );
@@ -285,21 +279,17 @@ test('folder normalization rejects invalid versioning boundaries', () => {
     ['staggered', { maxAge: 'not-a-number' }],
   ]) {
     assert.throws(
-      () => normalizeEditor({ versioning: { type, params } }, 'folder'),
+      () => normalizeFolderEditor({ versioning: { type, params } }),
       /negative number of days/,
       type,
     );
   }
 
   assert.doesNotThrow(() =>
-    normalizeEditor(
-      { versioning: { type: 'external', params: { command: '' } } },
-      'folder',
-    ),
+    normalizeFolderEditor({
+      versioning: { type: 'external', params: { command: '' } },
+    }),
   );
-  assert.deepEqual(normalizeEditor({ name: 'Peer' }, 'device'), {
-    name: 'Peer',
-  });
 });
 
 test('saving defaults normalizes folder rules and keeps ignore lines', async () => {

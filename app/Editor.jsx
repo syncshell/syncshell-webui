@@ -7,7 +7,6 @@ import {
   getValue,
   inputValue,
   changedValue,
-  saveEditor,
   ignoreLines,
 } from '../client/edit.mjs';
 import { fieldHelp } from '../client/field-help.mjs';
@@ -27,6 +26,7 @@ import {
   folderPath,
   newXattrEntry,
   overlappingPath,
+  saveFolderEditor,
   updateFolderEditor,
   xattrDefault,
   xattrHint,
@@ -223,7 +223,7 @@ export function Editor({ action, state, api, session, onClose, onSaved }) {
     };
     return kind === 'device'
       ? saveDeviceEditor(request)
-      : saveEditor({ ...request, kind });
+      : saveFolderEditor(request);
   }
   async function save() {
     if (!form.current.reportValidity()) return;
