@@ -13,7 +13,7 @@ import { deviceFieldHelp } from './features/devices/DeviceDefinitionRow.jsx';
 import { folderFieldHelp } from './features/folders/FolderDefinitionRow.jsx';
 import { Tooltip } from './Tooltip.jsx';
 import { ShareDeviceIdentity } from './features/devices/ShareDeviceIdentity.jsx';
-import { EncryptedShareField } from './features/sharing/EncryptedShareField.jsx';
+import { DeviceSharingFields } from './features/devices/DeviceSharingFields.jsx';
 import {
   deviceEditorFieldState,
   deviceEditorFields,
@@ -282,6 +282,16 @@ export function Editor({ action, state, api, session, onClose, onSaved }) {
       [id]: { ...shares[id], [property]: value },
     }));
   }
+  function selectDeviceFolders(selected) {
+    setShares((previous) =>
+      Object.fromEntries(
+        Object.entries(previous).map(([id, share]) => [
+          id,
+          { ...share, selected },
+        ]),
+      ),
+    );
+  }
   function saveDraft(options = {}) {
     const request = {
       session,
@@ -451,57 +461,15 @@ export function Editor({ action, state, api, session, onClose, onSaved }) {
                 onPassword={sharePassword}
               />
             ) : tab === 'Sharing' ? (
-              <>
-                <div class="folder-actions">
-                  {[true, false].map((select) => (
-                    <button
-                      key={String(select)}
-                      type="button"
-                      class="btn btn-link btn-sm"
-                      onClick={() =>
-                        setShares((previous) =>
-                          Object.fromEntries(
-                            Object.entries(previous).map(([id, share]) => [
-                              id,
-                              { ...share, selected: select },
-                            ]),
-                          ),
-                        )
-                      }
-                    >
-                      {t(select ? 'Select All' : 'Deselect All')}
-                    </button>
-                  ))}
-                </div>
-                <p class="help-block">
-                  {t('Select the folders to share with this device.')}
-                </p>
-                {state.config.folders.map((folder) => (
-                  <EncryptedShareField
-                    key={folder.id}
-                    label={folder.label || folder.id}
-                    id={folder.id}
-                    isSelected={shares[folder.id].selected}
-                    password={shares[folder.id].password}
-                    isEncrypted={folder.type === 'receiveencrypted'}
-                    isPasswordRequired={
-                      draft.untrusted ||
-                      state.pendingFolders[folder.id]?.offeredBy?.[
-                        draft.deviceID
-                      ]?.remoteEncrypted
-                    }
-                    remoteState={
-                      state.completion[draft.deviceID]?.[folder.id]?.remoteState
-                    }
-                    onSelected={(value) =>
-                      shareFolder(folder.id, 'selected', value)
-                    }
-                    onPassword={(value) =>
-                      shareFolder(folder.id, 'password', value)
-                    }
-                  />
-                ))}
-              </>
+              <DeviceSharingFields
+                device={draft}
+                folders={state.config.folders}
+                pendingFolders={state.pendingFolders}
+                completion={state.completion}
+                shares={shares}
+                onSelectAll={selectDeviceFolders}
+                onChange={shareFolder}
+              />
             ) : tab === 'Ignore Patterns' ? (
               <FolderIgnorePatterns
                 folder={draft}
