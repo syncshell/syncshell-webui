@@ -6,9 +6,9 @@
   "scripts": {
     "build": "vite build && node scripts/assets.mjs",
     "check": "npm run format:check && npm run lint && npm test",
-    "format": "prettier --write . --ignore-unknown",
-    "format:check": "prettier --check . --ignore-unknown",
-    "lint": "eslint .",
+    "format": "prettier --write . --ignore-unknown && npm run shell:format",
+    "format:check": "prettier --check . --ignore-unknown && shfmt -d scripts/*.sh",
+    "lint": "eslint . && npm run shell:lint",
     "shell:format": "shfmt -w scripts/*.sh",
     "shell:lint": "shellcheck scripts/*.sh",
     "test": "node --test tests/*.test.mjs",

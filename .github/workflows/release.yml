@@ -31,8 +31,9 @@ jobs:
         with:
           go-version-file: tests/fixture/go.mod
           cache: false
+      - uses: jdx/mise-action@9149ea85001c7435d5a66bb127d6a1b6227cb0a5
       - run: npm ci
-      - run: npm test
+      - run: npm run check
       - name: Package committed source
         shell: bash
         run: |
