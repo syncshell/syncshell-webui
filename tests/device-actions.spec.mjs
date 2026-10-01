@@ -219,6 +219,15 @@ test('modern follows the browser color scheme across reloads', async ({
     'background-color',
     'rgb(39, 39, 39)',
   );
+  const overviewTab = page.getByRole('tab', { name: 'Overview' });
+  await overviewTab.focus();
+  await expect(overviewTab).toHaveCSS('outline-style', 'solid');
+  await expect(overviewTab).toHaveCSS('outline-color', 'rgb(63, 169, 240)');
+
+  const addFolderButton = page.getByRole('button', { name: /Add Folder/ });
+  await addFolderButton.focus();
+  await expect(addFolderButton).toHaveCSS('outline-style', 'solid');
+  await expect(addFolderButton).toHaveCSS('outline-color', 'rgb(63, 169, 240)');
   await page.reload();
   await expect(page.locator('body')).toHaveCSS(
     'background-color',

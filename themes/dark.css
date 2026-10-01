@@ -30,10 +30,14 @@ body {
   background-color: #272727 !important;
 }
 
-a:hover,
+a:hover {
+  outline: none !important;
+}
+
 a:focus,
 a.focus {
-  outline: none !important;
+  outline: 2px solid var(--color-focus) !important;
+  outline-offset: 2px;
 }
 
 /* navbar */
@@ -156,10 +160,14 @@ li.hidden-xs:hover {
   border-width: 0px !important;
 }
 
-.btn:hover,
+.btn:hover {
+  outline: none !important;
+}
+
 .btn:focus,
 .btn.focus {
-  outline: none !important;
+  outline: 2px solid var(--color-focus) !important;
+  outline-offset: 2px;
 }
 .btn-default {
   color: #aaa !important;
