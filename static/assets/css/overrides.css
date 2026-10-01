@@ -46,7 +46,7 @@ ul + h5 {
 
 .panel-progress {
   height: 3px;
-  left: 0;
+  inset-inline-start: 0;
   position: absolute;
   top: 0;
   display: block;
@@ -146,8 +146,7 @@ table.table-auto td {
   display: inline-block;
   vertical-align: -10%;
   background-size: contain;
-  margin-left: 0.14285715em;
-  margin-right: 0.14285715em;
+  margin-inline: 0.14285715em;
 }
 
 .inline-icon {
@@ -184,12 +183,12 @@ table.table-auto td {
 /* Break up long words in paragraphs only if necessary to prevent text overflow. */
 
 .nav > li {
-  float: left;
+  float: inline-start;
 }
 .navbar-right {
   /* to align with panel */
-  padding-right: 15px;
-  float: right;
+  padding-inline-end: 15px;
+  float: inline-end;
 }
 
 .panel-body .table-condensed {
@@ -201,8 +200,8 @@ table.table-auto td {
  */
 
 .panel-icon {
-  float: left;
-  margin-right: 15px;
+  float: inline-start;
+  margin-inline-end: 15px;
   margin-top: 0.125em;
   margin-bottom: 0.125em;
   line-height: 1;
@@ -217,10 +216,10 @@ button.panel-heading {
   display: block;
   position: relative;
   width: 100%;
-  text-align: left;
+  text-align: start;
   border-top-width: 0;
-  border-left-width: 0;
-  border-right-width: 0;
+  border-inline-start-width: 0;
+  border-inline-end-width: 0;
   border-radius: 0;
 }
 
@@ -231,7 +230,7 @@ button.panel-heading {
 }
 
 .panel-heading .panel-status {
-  margin-left: 15px;
+  margin-inline-start: 15px;
 }
 
 .identicon {
@@ -274,8 +273,8 @@ button.panel-heading {
 
   .navbar-nav .open .dropdown-menu {
     position: absolute;
-    left: auto;
-    right: 0;
+    inset-inline-start: auto;
+    inset-inline-end: 0;
     background-color: #ffffff;
     border: 1px solid #cccccc;
     border: 1px solid rgba(0, 0, 0, 0.15);
@@ -305,7 +304,8 @@ button.panel-heading {
   }
 
   .navbar-nav .open .dropdown-menu > li > a {
-    padding: 12px 15px 12px 25px;
+    padding-block: 12px;
+    padding-inline: 25px 15px;
   }
 
   /* Limit the block layout to folder and device panel details. */
@@ -351,8 +351,8 @@ button.panel-heading {
 .checkbox[disabled] {
   background-color: #eeeeee;
   opacity: 1;
-  margin-left: -5px;
-  padding-left: 5px;
+  margin-inline-start: -5px;
+  padding-inline-start: 5px;
 }
 
 .checkbox[disabled] *,
