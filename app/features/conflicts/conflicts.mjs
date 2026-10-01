@@ -1,18 +1,8 @@
 // Copyright (C) 2026 The Syncshell Authors.
 // SPDX-License-Identifier: MPL-2.0
 
-// Syncthing v2.1.3 folder_sendrecv.go inserts this before the last extension.
-const marker = /^(.*)\.sync-conflict-\d{8}-\d{6}-[A-Z2-7]{7}(\..*)?$/;
-export const parentPath = (path) =>
-  path.includes('/') ? path.slice(0, path.lastIndexOf('/')) : '';
-export const basename = (path) => path.slice(path.lastIndexOf('/') + 1);
-export function originalPath(path) {
-  const match = marker.exec(basename(path));
-  if (!match) return null;
-  const name = match[1] + (match[2] || '');
-  if (marker.test(name)) return null;
-  return (parentPath(path) ? parentPath(path) + '/' : '') + name;
-}
+import { basename, originalPath, parentPath } from './conflictFilename.mjs';
+
 const usable = (file) =>
   file?.type === 'FILE_INFO_TYPE_FILE' &&
   !['deleted', 'ignored', 'invalid', 'mustRescan'].some((key) => file[key]);
@@ -128,5 +118,3 @@ export function replaceDirectory(groups, group, updated) {
     ...updated,
   ];
 }
-export const missingHelp =
-  'The latest Syncthing index has no usable file at the original name. Conflict files are ordinary files with a conflict marker in their names. Rename the version you want to keep, or delete unwanted conflict files, then recheck. Rechecking alone does not rename or delete files.';

@@ -3,7 +3,7 @@ import { unitPrefixed, timestamp } from '../../../client/format.mjs';
 import { Icon } from '../../Icon.jsx';
 import { LocaleContext } from '../../core/locale/LocaleContext.jsx';
 import { ConflictFileChoice } from './ConflictFileChoice.jsx';
-import { parentPath } from './conflicts.mjs';
+import { parentPath } from './conflictFilename.mjs';
 
 export function ConflictRow({
   group,

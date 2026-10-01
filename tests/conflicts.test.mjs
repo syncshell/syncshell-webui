@@ -2,10 +2,12 @@ import assert from 'node:assert/strict';
 import { test } from 'node:test';
 import {
   basename,
-  folderConflicts,
-  listConflicts,
   originalPath,
   parentPath,
+} from '../app/features/conflicts/conflictFilename.mjs';
+import {
+  folderConflicts,
+  listConflicts,
   recheckConflicts,
   replaceDirectory,
 } from '../app/features/conflicts/conflicts.mjs';

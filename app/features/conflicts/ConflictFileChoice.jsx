@@ -2,7 +2,9 @@ import { useContext } from 'preact/hooks';
 import { Icon } from '../../Icon.jsx';
 import { LocaleContext } from '../../core/locale/LocaleContext.jsx';
 import { Tooltip } from '../../Tooltip.jsx';
-import { missingHelp } from './conflicts.mjs';
+
+const missingCurrentFileHelp =
+  'The latest Syncthing index has no usable file at the original name. Conflict files are ordinary files with a conflict marker in their names. Rename the version you want to keep, or delete unwanted conflict files, then recheck. Rechecking alone does not rename or delete files.';
 
 export function ConflictFileChoice({ group, file, permission, onOpen }) {
   const { t } = useContext(LocaleContext);
@@ -13,7 +15,7 @@ export function ConflictFileChoice({ group, file, permission, onOpen }) {
         <Tooltip
           icon="triangle-alert"
           label="Missing current file"
-          text={t(missingHelp)}
+          text={t(missingCurrentFileHelp)}
         />{' '}
         {t('Missing current file')}
       </span>
