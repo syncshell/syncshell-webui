@@ -1,8 +1,7 @@
 import { LocaleContext } from './locale-context.jsx';
 import { useContext, useEffect, useRef, useState } from 'preact/hooks';
-import { createApi } from '../client/api.mjs';
 
-export function Login() {
+export function Login({ api }) {
   const { t } = useContext(LocaleContext);
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
@@ -13,12 +12,12 @@ export function Login() {
   useEffect(() => {
     userInput.current.focus();
   }, []);
-  async function login(event) {
+  async function handleSubmit(event) {
     event.preventDefault();
     setBusy(true);
     setError('');
     try {
-      await createApi().post('noauth/auth/password', {
+      await api.post('noauth/auth/password', {
         username: username.trim(),
         password,
         stayLoggedIn,
@@ -37,7 +36,7 @@ export function Login() {
   return (
     <div class="center-block">
       <h3>{t('Authentication Required')}</h3>
-      <form onSubmit={login}>
+      <form onSubmit={handleSubmit}>
         <div class="form-group">
           <label for="user">{t('User')}</label>
           <input

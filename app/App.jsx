@@ -104,7 +104,7 @@ export function App() {
       />
       <main class="container content">
         {!authenticated ? (
-          <Login />
+          <Login api={api} />
         ) : (
           <>
             {state.error &&
