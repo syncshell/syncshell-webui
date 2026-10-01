@@ -4,7 +4,7 @@ import { createApi } from '../client/api.mjs';
 import { runReportedSessionAction } from '../client/session.mjs';
 import { useSyncthingSession } from '../client/use-syncthing-session.mjs';
 import { loadEnglish, translator } from '../client/locale.mjs';
-import { groupAndSortItems } from '../client/devices.mjs';
+import { groupAndSortItems } from '../client/grouping.mjs';
 import { deviceName } from './features/devices/device-status.mjs';
 import { UsageReport } from './UsageReport.jsx';
 import { needsUsageConsent } from '../client/reports.mjs';
