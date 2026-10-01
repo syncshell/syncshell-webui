@@ -6,11 +6,11 @@ import {
   parentPath,
 } from '../app/features/conflicts/conflictFilename.mjs';
 import {
-  folderConflicts,
-  listConflicts,
-  recheckConflicts,
-  replaceDirectory,
-} from '../app/features/conflicts/conflicts.mjs';
+  loadConflictGroups,
+  loadFolderConflictGroups,
+  replaceConflictDirectory,
+  rescanConflictGroups,
+} from '../app/features/conflicts/loadConflictGroups.mjs';
 
 const conflictA = 'report.sync-conflict-20260908-120000-ABCDEFG.txt';
 const conflictB = 'report.sync-conflict-20260909-130000-HIJKLMN.txt';
@@ -127,7 +127,7 @@ test('folder conflicts group nested copies and distinguish local availability', 
     },
   });
 
-  const groups = await folderConflicts(
+  const groups = await loadFolderConflictGroups(
     api,
     { id: 'photos', label: 'Family photos', path: '/srv/photos' },
     { signal },
@@ -174,7 +174,7 @@ test('listing conflicts keeps successful folders and reports failed folders', as
     },
   });
 
-  const result = await listConflicts(api, [
+  const result = await loadConflictGroups(api, [
     { id: 'photos', label: 'Photos', path: '/srv/photos' },
     { id: 'documents', label: 'Documents', path: '/srv/documents' },
   ]);
@@ -194,7 +194,7 @@ test('listing conflicts propagates cancellation after folder requests settle', a
   };
 
   await assert.rejects(
-    listConflicts(
+    loadConflictGroups(
       api,
       [{ id: 'photos', label: 'Photos', path: '/srv/photos' }],
       controller.signal,
@@ -213,7 +213,7 @@ test('rechecking all folders scans globally and reloads every folder', async () 
     { id: 'documents', label: 'Documents', path: '/srv/documents' },
   ];
 
-  const result = await recheckConflicts(api, folders, null, signal);
+  const result = await rescanConflictGroups(api, folders, null, signal);
   assert.deepEqual(result, { groups: [], errors: [] });
   assert.deepEqual(api.calls[0], {
     method: 'POST',
@@ -239,7 +239,7 @@ test('rechecking one directory scans and reloads only that directory', async () 
   ];
   const group = { folder: 'photos', path: 'notes/report.txt' };
 
-  const result = await recheckConflicts(api, folders, group, signal);
+  const result = await rescanConflictGroups(api, folders, group, signal);
   assert.deepEqual(result, { groups: [], errors: [] });
   assert.deepEqual(api.calls[0], {
     method: 'POST',
@@ -256,7 +256,10 @@ test('rechecking one directory scans and reloads only that directory', async () 
   });
 
   await assert.rejects(
-    recheckConflicts(api, folders, { folder: 'removed', path: 'old/file.txt' }),
+    rescanConflictGroups(api, folders, {
+      folder: 'removed',
+      path: 'old/file.txt',
+    }),
     /Folder is no longer configured/,
   );
 });
@@ -271,7 +274,7 @@ test('directory replacement keeps siblings and other folders', () => {
   const updated = [{ id: 'updated', folder: 'photos', path: 'notes/new.txt' }];
 
   assert.deepEqual(
-    replaceDirectory(
+    replaceConflictDirectory(
       groups,
       { folder: 'photos', path: 'notes/report.txt' },
       updated,
@@ -279,7 +282,7 @@ test('directory replacement keeps siblings and other folders', () => {
     ['other-dir', 'other-folder', 'updated'],
   );
   assert.deepEqual(
-    replaceDirectory(
+    replaceConflictDirectory(
       groups,
       { folder: 'photos', path: 'report.txt' },
       updated,

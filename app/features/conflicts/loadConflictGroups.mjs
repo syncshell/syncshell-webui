@@ -3,10 +3,11 @@
 
 import { basename, originalPath, parentPath } from './conflictFilename.mjs';
 
-const usable = (file) =>
+const isUsableFile = (file) =>
   file?.type === 'FILE_INFO_TYPE_FILE' &&
   !['deleted', 'ignored', 'invalid', 'mustRescan'].some((key) => file[key]);
-async function record(api, folder, path, signal) {
+
+async function loadFileRecord(api, folder, path, signal) {
   let info;
   try {
     info = await api.get('db/file', {
@@ -17,8 +18,8 @@ async function record(api, folder, path, signal) {
     if (error.status === 404) return null;
     throw error;
   }
-  if (!usable(info.global)) return null;
-  const available = usable(info.local);
+  if (!isUsableFile(info.global)) return null;
+  const available = isUsableFile(info.local);
   const file = available ? info.local : info.global;
   return {
     path,
@@ -29,15 +30,17 @@ async function record(api, folder, path, signal) {
     digest: available ? (file.blocksHash ?? null) : null,
   };
 }
-function* filenames(nodes, parent = '') {
+
+function* filePaths(nodes, parent = '') {
   for (const node of nodes) {
     const path = parent ? parent + '/' + node.name : node.name;
     if (node.type === 'FILE_INFO_TYPE_DIRECTORY')
-      yield* filenames(node.children || [], path);
+      yield* filePaths(node.children || [], path);
     else if (node.type === 'FILE_INFO_TYPE_FILE') yield path;
   }
 }
-export async function folderConflicts(
+
+export async function loadFolderConflictGroups(
   api,
   folder,
   { prefix = '', signal } = {},
@@ -47,10 +50,10 @@ export async function folderConflicts(
     signal,
   });
   const groups = new Map();
-  for (const path of filenames(tree, prefix)) {
+  for (const path of filePaths(tree, prefix)) {
     const original = originalPath(path);
     if (!original) continue;
-    const copy = await record(api, folder.id, path, signal);
+    const copy = await loadFileRecord(api, folder.id, path, signal);
     if (!copy) continue;
     if (!groups.has(original))
       groups.set(original, {
@@ -66,14 +69,15 @@ export async function folderConflicts(
     groups.get(original).copies.push(copy);
   }
   for (const group of groups.values()) {
-    group.current = await record(api, folder.id, group.path, signal);
+    group.current = await loadFileRecord(api, folder.id, group.path, signal);
     group.copies.sort((a, b) => b.name.localeCompare(a.name));
   }
   return [...groups.values()].sort((a, b) => a.path.localeCompare(b.path));
 }
-export async function listConflicts(api, folders, signal) {
+
+export async function loadConflictGroups(api, folders, signal) {
   const results = await Promise.allSettled(
-    folders.map((folder) => folderConflicts(api, folder, { signal })),
+    folders.map((folder) => loadFolderConflictGroups(api, folder, { signal })),
   );
   if (signal?.aborted) throw signal.reason;
   return {
@@ -91,23 +95,25 @@ export async function listConflicts(api, folders, signal) {
     ),
   };
 }
-export async function recheckConflicts(api, folders, group, signal) {
+
+export async function rescanConflictGroups(api, folders, group, signal) {
   await api.post('db/scan', {
     query: group ? { folder: group.folder, sub: parentPath(group.path) } : {},
     signal,
   });
-  if (!group) return listConflicts(api, folders, signal);
+  if (!group) return loadConflictGroups(api, folders, signal);
   const folder = folders.find((item) => item.id === group.folder);
   if (!folder) throw new Error('Folder is no longer configured');
   return {
-    groups: await folderConflicts(api, folder, {
+    groups: await loadFolderConflictGroups(api, folder, {
       prefix: parentPath(group.path),
       signal,
     }),
     errors: [],
   };
 }
-export function replaceDirectory(groups, group, updated) {
+
+export function replaceConflictDirectory(groups, group, updated) {
   const prefix = parentPath(group.path);
   return [
     ...groups.filter(

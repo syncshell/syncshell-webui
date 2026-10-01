@@ -2,10 +2,10 @@ import { ConflictRow } from './ConflictRow.jsx';
 import { useContext, useEffect, useRef, useState } from 'preact/hooks';
 import { LocaleContext } from '../../core/locale/LocaleContext.jsx';
 import {
-  listConflicts,
-  recheckConflicts,
-  replaceDirectory,
-} from './conflicts.mjs';
+  loadConflictGroups,
+  replaceConflictDirectory,
+  rescanConflictGroups,
+} from './loadConflictGroups.mjs';
 import './conflicts.css';
 import { desktopHelp } from '../../../client/desktop.mjs';
 import { Icon } from '../../Icon.jsx';
@@ -59,12 +59,12 @@ export function Conflicts({
     setMessage('');
     try {
       const result = scan
-        ? await recheckConflicts(api, folders, group, request.signal)
-        : await listConflicts(api, folders, request.signal);
+        ? await rescanConflictGroups(api, folders, group, request.signal)
+        : await loadConflictGroups(api, folders, request.signal);
       if (request.signal.aborted) return;
       setGroups((previous) =>
         group
-          ? replaceDirectory(previous, group, result.groups)
+          ? replaceConflictDirectory(previous, group, result.groups)
           : result.groups,
       );
       setErrors(result.errors);
