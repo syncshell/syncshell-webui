@@ -14,7 +14,6 @@ import { folderFieldHelp } from './features/folders/FolderDefinitionRow.jsx';
 import { Tooltip } from './Tooltip.jsx';
 import { ShareDeviceIdentity } from './features/devices/ShareDeviceIdentity.jsx';
 import { EncryptedShareField } from './features/sharing/EncryptedShareField.jsx';
-import { deviceName } from './features/devices/device-status.mjs';
 import {
   deviceEditorFieldState,
   deviceEditorFields,
@@ -35,6 +34,7 @@ import { Icon } from './Icon.jsx';
 import { Tabs } from './Tabs.jsx';
 import { FolderExtendedAttributes } from './features/folders/FolderExtendedAttributes.jsx';
 import { FolderIgnorePatterns } from './features/folders/FolderIgnorePatterns.jsx';
+import { FolderSharingFields } from './features/folders/FolderSharingFields.jsx';
 import { FolderVersioningFields } from './features/folders/FolderVersioningFields.jsx';
 
 export function Editor({ action, state, api, session, onClose, onSaved }) {
@@ -258,6 +258,24 @@ export function Editor({ action, state, api, session, onClose, onSaved }) {
         : draft.devices.filter((device) => device.deviceID !== id),
     }));
   }
+  function selectFolderDevices(selected) {
+    setDraft((previous) => ({
+      ...previous,
+      devices: selected
+        ? state.config.devices.map(
+            (device) =>
+              previous.devices.find(
+                (member) => member.deviceID === device.deviceID,
+              ) || {
+                deviceID: device.deviceID,
+                encryptionPassword: passwords[device.deviceID] || '',
+              },
+          )
+        : previous.devices.filter(
+            (member) => member.deviceID === state.system.myID,
+          ),
+    }));
+  }
   function shareFolder(id, property, value) {
     setShares((shares) => ({
       ...shares,
@@ -420,7 +438,19 @@ export function Editor({ action, state, api, session, onClose, onSaved }) {
               'editor-' + tab.toLowerCase().replaceAll(' ', '-') + '-tab'
             }
           >
-            {tab === 'Sharing' ? (
+            {tab === 'Sharing' && kind === 'folder' ? (
+              <FolderSharingFields
+                folder={draft}
+                devices={state.config.devices}
+                localDeviceID={state.system.myID}
+                pendingFolders={state.pendingFolders}
+                completion={state.completion}
+                passwords={passwords}
+                onSelectAll={selectFolderDevices}
+                onSelected={shareDevice}
+                onPassword={sharePassword}
+              />
+            ) : tab === 'Sharing' ? (
               <>
                 <div class="folder-actions">
                   {[true, false].map((select) => (
@@ -428,109 +458,49 @@ export function Editor({ action, state, api, session, onClose, onSaved }) {
                       key={String(select)}
                       type="button"
                       class="btn btn-link btn-sm"
-                      onClick={() => {
-                        if (kind === 'folder')
-                          setDraft((previous) => ({
-                            ...previous,
-                            devices: select
-                              ? state.config.devices.map(
-                                  (device) =>
-                                    previous.devices.find(
-                                      (member) =>
-                                        member.deviceID === device.deviceID,
-                                    ) || {
-                                      deviceID: device.deviceID,
-                                      encryptionPassword:
-                                        passwords[device.deviceID] || '',
-                                    },
-                                )
-                              : previous.devices.filter(
-                                  (member) =>
-                                    member.deviceID === state.system.myID,
-                                ),
-                          }));
-                        else
-                          setShares((previous) =>
-                            Object.fromEntries(
-                              Object.entries(previous).map(([id, share]) => [
-                                id,
-                                { ...share, selected: select },
-                              ]),
-                            ),
-                          );
-                      }}
+                      onClick={() =>
+                        setShares((previous) =>
+                          Object.fromEntries(
+                            Object.entries(previous).map(([id, share]) => [
+                              id,
+                              { ...share, selected: select },
+                            ]),
+                          ),
+                        )
+                      }
                     >
                       {t(select ? 'Select All' : 'Deselect All')}
                     </button>
                   ))}
                 </div>
                 <p class="help-block">
-                  {t(
-                    kind === 'folder'
-                      ? 'Select additional devices to share this folder with.'
-                      : 'Select the folders to share with this device.',
-                  )}
+                  {t('Select the folders to share with this device.')}
                 </p>
-                {kind === 'folder'
-                  ? state.config.devices
-                      .filter((device) => device.deviceID !== state.system.myID)
-                      .map((device) => {
-                        const member = draft.devices.find(
-                          (item) => item.deviceID === device.deviceID,
-                        );
-                        return (
-                          <EncryptedShareField
-                            key={device.deviceID}
-                            label={deviceName(device)}
-                            id={device.deviceID}
-                            isSelected={!!member}
-                            password={passwords[device.deviceID] || ''}
-                            isEncrypted={draft.type === 'receiveencrypted'}
-                            isPasswordRequired={
-                              device.untrusted ||
-                              state.pendingFolders[draft.id]?.offeredBy?.[
-                                device.deviceID
-                              ]?.remoteEncrypted
-                            }
-                            remoteState={
-                              state.completion[device.deviceID]?.[draft.id]
-                                ?.remoteState
-                            }
-                            onSelected={(value) =>
-                              shareDevice(device.deviceID, value)
-                            }
-                            onPassword={(value) =>
-                              sharePassword(device.deviceID, value)
-                            }
-                          />
-                        );
-                      })
-                  : state.config.folders.map((folder) => (
-                      <EncryptedShareField
-                        key={folder.id}
-                        label={folder.label || folder.id}
-                        id={folder.id}
-                        isSelected={shares[folder.id].selected}
-                        password={shares[folder.id].password}
-                        isEncrypted={folder.type === 'receiveencrypted'}
-                        isPasswordRequired={
-                          draft.untrusted ||
-                          state.pendingFolders[folder.id]?.offeredBy?.[
-                            draft.deviceID
-                          ]?.remoteEncrypted
-                        }
-                        remoteState={
-                          state.completion[draft.deviceID]?.[folder.id]
-                            ?.remoteState
-                        }
-                        onSelected={(value) =>
-                          shareFolder(folder.id, 'selected', value)
-                        }
-                        onPassword={(value) =>
-                          shareFolder(folder.id, 'password', value)
-                        }
-                      />
-                    ))}
+                {state.config.folders.map((folder) => (
+                  <EncryptedShareField
+                    key={folder.id}
+                    label={folder.label || folder.id}
+                    id={folder.id}
+                    isSelected={shares[folder.id].selected}
+                    password={shares[folder.id].password}
+                    isEncrypted={folder.type === 'receiveencrypted'}
+                    isPasswordRequired={
+                      draft.untrusted ||
+                      state.pendingFolders[folder.id]?.offeredBy?.[
+                        draft.deviceID
+                      ]?.remoteEncrypted
+                    }
+                    remoteState={
+                      state.completion[draft.deviceID]?.[folder.id]?.remoteState
+                    }
+                    onSelected={(value) =>
+                      shareFolder(folder.id, 'selected', value)
+                    }
+                    onPassword={(value) =>
+                      shareFolder(folder.id, 'password', value)
+                    }
+                  />
+                ))}
               </>
             ) : tab === 'Ignore Patterns' ? (
               <FolderIgnorePatterns
