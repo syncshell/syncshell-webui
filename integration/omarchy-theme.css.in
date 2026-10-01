@@ -1,3 +1,4 @@
+@layer theme {
 :root {
   --color-page: {{background}};
   --color-surface: {{surface}};
@@ -193,4 +194,5 @@ li.hidden-xs:hover,
 .progress .frontal {
   fill: {{background}};
   color: {{background}};
+}
 }
