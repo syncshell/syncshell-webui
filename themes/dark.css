@@ -9,6 +9,22 @@ Modified by: fti7
 
 **/
 
+:root {
+  --color-page: #272727;
+  --color-surface: #333;
+  --color-surface-muted: #424242;
+  --color-text: #aaa;
+  --color-text-strong: #fff;
+  --color-text-muted: #666;
+  --color-border: #424242;
+  --color-accent: #3498db;
+  --color-info: #3fa9f0;
+  --color-success: #0a8522;
+  --color-warning: #f1c40f;
+  --color-danger: #e74c3c;
+  --color-focus: #3fa9f0;
+}
+
 body {
   color: #aaa !important;
   background-color: #272727 !important;

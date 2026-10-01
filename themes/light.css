@@ -7,6 +7,22 @@
 
 */
 
+:root {
+  --color-page: #fff;
+  --color-surface: #fff;
+  --color-surface-muted: #f5f5f5;
+  --color-text: #333;
+  --color-text-strong: #222;
+  --color-text-muted: #777;
+  --color-border: #ddd;
+  --color-accent: #337ab7;
+  --color-info: #31708f;
+  --color-success: #3c763d;
+  --color-warning: #8a6d3b;
+  --color-danger: #a94442;
+  --color-focus: #337ab7;
+}
+
 .panel-progress {
   background: #3498db;
 }

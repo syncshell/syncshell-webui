@@ -1,0 +1,16 @@
+:root {
+  --space-1: 4px;
+  --space-2: 6px;
+  --space-3: 8px;
+  --space-4: 12px;
+  --space-5: 16px;
+  --space-6: 20px;
+  --space-7: 24px;
+  --text-small: 12px;
+  --text-body: 14px;
+  --text-heading: 16px;
+  --radius-small: 2px;
+  --motion-fast: 100ms;
+  --motion-normal: 200ms;
+  --motion-delayed: 400ms;
+}
