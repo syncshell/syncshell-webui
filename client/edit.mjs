@@ -15,6 +15,3 @@ export function changedValue(field, input) {
       .filter(Boolean);
   return input.value;
 }
-export function ignoreLines(text) {
-  return text === '' ? [] : text.split('\n');
-}

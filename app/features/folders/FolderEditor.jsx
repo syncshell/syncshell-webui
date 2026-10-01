@@ -1,5 +1,4 @@
 import { useContext, useEffect, useRef, useState } from 'preact/hooks';
-import { ignoreLines } from '../../../client/edit.mjs';
 import { Dialog } from '../../Dialog.jsx';
 import { EditorField } from '../../EditorField.jsx';
 import { Icon } from '../../Icon.jsx';
@@ -22,6 +21,7 @@ import { FolderExtendedAttributes } from './FolderExtendedAttributes.jsx';
 import { FolderIgnorePatterns } from './FolderIgnorePatterns.jsx';
 import { FolderSharingFields } from './FolderSharingFields.jsx';
 import { FolderVersioningFields } from './FolderVersioningFields.jsx';
+import { ignoreLines } from './folderIgnorePatterns.mjs';
 
 export function FolderEditor({
   action,

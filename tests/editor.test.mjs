@@ -5,7 +5,8 @@ import {
   getValue,
   setValue,
 } from '../app/core/config/configValues.mjs';
-import { changedValue, ignoreLines, inputValue } from '../client/edit.mjs';
+import { changedValue, inputValue } from '../client/edit.mjs';
+import { ignoreLines } from '../app/features/folders/folderIgnorePatterns.mjs';
 import {
   folderEditorFieldState,
   folderPath,
