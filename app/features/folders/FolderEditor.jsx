@@ -313,6 +313,83 @@ export function FolderEditor({
     }
     onClose();
   }
+  function fieldPanel() {
+    return (
+      <>
+        {fields.map((field) => (
+          <div class="form-group" key={field.path}>
+            <EditorField
+              field={field}
+              draft={draft}
+              help={folderFieldHelp[field.label]}
+              hasError={Boolean(error)}
+              isNew={isNew}
+              defaults={defaults}
+              onChange={(value) => updateField(field, value)}
+            />
+            {field.path === 'path' && overlap && (
+              <p class="text-warning">
+                {t(
+                  overlap.type === 'subdirectory'
+                    ? 'Warning, this path is a subdirectory of an existing folder "{%otherFolder%}".'
+                    : 'Warning, this path is a parent directory of an existing folder "{%otherFolder%}".',
+                ).replace(
+                  '{%otherFolder%}',
+                  overlap.folder.label || overlap.folder.id,
+                )}
+              </p>
+            )}
+          </div>
+        ))}
+        {tab === 'File Versioning' && (
+          <FolderVersioningFields draft={draft} dispatch={dispatchFolder} />
+        )}
+        {tab === 'Advanced' && (draft.syncXattrs || draft.sendXattrs) && (
+          <FolderExtendedAttributes draft={draft} dispatch={dispatchFolder} />
+        )}
+      </>
+    );
+  }
+  function editorPanel() {
+    switch (tab) {
+      case 'Sharing':
+        return (
+          <FolderSharingFields
+            folder={draft}
+            devices={state.config.devices}
+            localDeviceID={state.system.myID}
+            pendingFolders={state.pendingFolders}
+            completion={state.completion}
+            passwords={passwords}
+            onSelectAll={selectFolderDevices}
+            onSelected={shareDevice}
+            onPassword={sharePassword}
+          />
+        );
+      case 'Ignore Patterns':
+        return (
+          <FolderIgnorePatterns
+            folder={draft}
+            isNew={isNew}
+            savingAddedIgnores={savingAddedIgnores}
+            addedIgnoresReady={addedIgnoresReady}
+            busy={busy}
+            addIgnores={addIgnores}
+            ignores={ignores}
+            loadedIgnores={loadedIgnores}
+            onRetry={loadAddedIgnores}
+            onToggleAdd={setAddIgnores}
+            onInput={setIgnores}
+          />
+        );
+      case 'General':
+      case 'File Versioning':
+      case 'Advanced':
+        return fieldPanel();
+      default:
+        throw new Error(`Unknown folder editor tab: ${tab}`);
+    }
+  }
   const footer = (
     <>
       {!defaults && !isNew && savePhase === newFolderSavePhases.editing && (
@@ -384,74 +461,7 @@ export function FolderEditor({
               'editor-' + tab.toLowerCase().replaceAll(' ', '-') + '-tab'
             }
           >
-            {tab === 'Sharing' ? (
-              <FolderSharingFields
-                folder={draft}
-                devices={state.config.devices}
-                localDeviceID={state.system.myID}
-                pendingFolders={state.pendingFolders}
-                completion={state.completion}
-                passwords={passwords}
-                onSelectAll={selectFolderDevices}
-                onSelected={shareDevice}
-                onPassword={sharePassword}
-              />
-            ) : tab === 'Ignore Patterns' ? (
-              <FolderIgnorePatterns
-                folder={draft}
-                isNew={isNew}
-                savingAddedIgnores={savingAddedIgnores}
-                addedIgnoresReady={addedIgnoresReady}
-                busy={busy}
-                addIgnores={addIgnores}
-                ignores={ignores}
-                loadedIgnores={loadedIgnores}
-                onRetry={loadAddedIgnores}
-                onToggleAdd={setAddIgnores}
-                onInput={setIgnores}
-              />
-            ) : (
-              <>
-                {fields.map((field) => (
-                  <div class="form-group" key={field.path}>
-                    <EditorField
-                      field={field}
-                      draft={draft}
-                      help={folderFieldHelp[field.label]}
-                      hasError={Boolean(error)}
-                      isNew={isNew}
-                      defaults={defaults}
-                      onChange={(value) => updateField(field, value)}
-                    />
-                    {field.path === 'path' && overlap && (
-                      <p class="text-warning">
-                        {t(
-                          overlap.type === 'subdirectory'
-                            ? 'Warning, this path is a subdirectory of an existing folder "{%otherFolder%}".'
-                            : 'Warning, this path is a parent directory of an existing folder "{%otherFolder%}".',
-                        ).replace(
-                          '{%otherFolder%}',
-                          overlap.folder.label || overlap.folder.id,
-                        )}
-                      </p>
-                    )}
-                  </div>
-                ))}
-                {tab === 'File Versioning' && (
-                  <FolderVersioningFields
-                    draft={draft}
-                    dispatch={dispatchFolder}
-                  />
-                )}
-                {tab === 'Advanced' &&
-                  (draft.syncXattrs || draft.sendXattrs) && (
-                    <FolderExtendedAttributes
-                      draft={draft}
-                      dispatch={dispatchFolder}
-                    />
-                  )}
-              </>
-            )}
+            {editorPanel()}
           </div>
         </form>
       </Dialog>
