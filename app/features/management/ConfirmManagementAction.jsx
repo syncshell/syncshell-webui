@@ -1,8 +1,9 @@
 import { useContext, useState } from 'preact/hooks';
-import { LocaleContext } from './locale-context.jsx';
-import { Dialog } from './Dialog.jsx';
-import { managementActions, performManagement } from '../client/management.mjs';
-export function ConfirmAction({
+import { Dialog } from '../../Dialog.jsx';
+import { LocaleContext } from '../../locale-context.jsx';
+import { managementActions, performManagement } from './management.mjs';
+
+export function ConfirmManagementAction({
   action,
   api,
   session,
@@ -23,7 +24,7 @@ export function ConfirmAction({
   );
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState('');
-  async function apply() {
+  async function handleConfirm() {
     setBusy(true);
     setError('');
     try {
@@ -46,7 +47,11 @@ export function ConfirmAction({
       }}
       footer={
         <>
-          <button class="btn btn-warning" disabled={busy} onClick={apply}>
+          <button
+            class="btn btn-warning"
+            disabled={busy}
+            onClick={handleConfirm}
+          >
             {t(definition.button)}
           </button>
           <button class="btn btn-default" disabled={busy} onClick={onClose}>

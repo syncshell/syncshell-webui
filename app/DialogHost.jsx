@@ -3,7 +3,7 @@ import { ServiceDialog } from './ServiceDialog.jsx';
 import { Logs } from './features/logs/Logs.jsx';
 import { Editor } from './Editor.jsx';
 import { Settings } from './Settings.jsx';
-import { ConfirmAction } from './ConfirmAction.jsx';
+import { ConfirmManagementAction } from './features/management/ConfirmManagementAction.jsx';
 import { RestoreVersionsDialog } from './features/versions/RestoreVersionsDialog.jsx';
 import { ServiceHealthDialog } from './ServiceHealthDialog.jsx';
 import { RecentChangesDialog } from './RecentChangesDialog.jsx';
@@ -69,7 +69,7 @@ export function DialogHost({ action, state, api, session, onClose }) {
     case 'override':
     case 'revert':
       return (
-        <ConfirmAction
+        <ConfirmManagementAction
           action={action}
           api={api}
           session={session}

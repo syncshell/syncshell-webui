@@ -1,5 +1,5 @@
 import { useContext } from 'preact/hooks';
-import { managementActions } from '../../../client/management.mjs';
+import { managementActions } from '../management/management.mjs';
 import { Icon } from '../../Icon.jsx';
 import { LocaleContext } from '../../locale-context.jsx';
 import { MenuButton } from '../../MenuButton.jsx';

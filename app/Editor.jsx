@@ -1,7 +1,7 @@
 import { useContext, useEffect, useRef, useState } from 'preact/hooks';
 import { LocaleContext } from './locale-context.jsx';
 import { Dialog } from './Dialog.jsx';
-import { ConfirmAction } from './ConfirmAction.jsx';
+import { ConfirmManagementAction } from './features/management/ConfirmManagementAction.jsx';
 import {
   cloneConfig,
   getValue,
@@ -841,7 +841,7 @@ export function Editor({ action, state, api, session, onClose, onSaved }) {
         </form>
       </Dialog>
       {removing && (
-        <ConfirmAction
+        <ConfirmManagementAction
           action={{ type: 'remove-' + kind, [kind]: draft }}
           api={api}
           session={session}
