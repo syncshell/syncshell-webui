@@ -2,8 +2,7 @@ import { useContext, useEffect, useState } from 'preact/hooks';
 import { Dialog } from '../../Dialog.jsx';
 import { LocaleContext } from '../../locale-context.jsx';
 import { Tabs } from '../../Tabs.jsx';
-import data from './about-data.json';
-import { aboutPaths } from './about.mjs';
+import { AuthorsPanel, PathsPanel, SoftwarePanel } from './AboutPanels.jsx';
 
 export function About({ api, version, onClose }) {
   const { t } = useContext(LocaleContext);
@@ -27,62 +26,11 @@ export function About({ api, version, onClose }) {
         });
     return () => controller.abort();
   }, [api]);
-  function renderPanel() {
-    switch (tab) {
-      case 'Authors':
-        return (
-          <>
-            <h4>{t('The Syncthing Authors')}</h4>
-            <p>{data.authors}</p>
-          </>
-        );
-      case 'Included Software':
-        return (
-          <>
-            <p>
-              Preact · <a href="licenses/preact.txt">MIT license</a>
-            </p>
-            <p>
-              {t(
-                'Syncthing includes the following software or portions thereof:',
-              )}
-            </p>
-            <ul class="list-unstyled">
-              {data.software.map((software) => (
-                <li key={software.url}>
-                  <a href={software.url} target="_blank" rel="noreferrer">
-                    {software.name}
-                  </a>{' '}
-                  · {software.notice}
-                </li>
-              ))}
-            </ul>
-          </>
-        );
-      case 'Paths':
-        return (
-          <table class="table table-condensed table-striped about-paths">
-            <caption>{t('Internally used paths:')}</caption>
-            <tbody>
-              {aboutPaths.map(({ label, keys }) => (
-                <tr key={label}>
-                  <th>{t(label)}</th>
-                  <td>
-                    {keys.map((key) => (
-                      <div key={key}>
-                        <code class="word-break-all">{paths[key] || ''}</code>
-                      </div>
-                    ))}
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        );
-      default:
-        return null;
-    }
-  }
+  const panels = {
+    Authors: <AuthorsPanel />,
+    'Included Software': <SoftwarePanel />,
+    Paths: <PathsPanel paths={paths} />,
+  };
   return (
     <Dialog title="About" large status="info" icon="heart" onClose={onClose}>
       <h2 class="text-center">
@@ -94,7 +42,9 @@ export function About({ api, version, onClose }) {
           Syncshell
         </a>
       </h2>
-      <p class="text-center">Modern / Omarchy Web UI, based on Syncthing.</p>
+      <p class="text-center">
+        A focused Syncthing web interface for Syncshell.
+      </p>
       <p class="text-center">
         Syncthing {version.version || ''} {version.codename || ''}
       </p>
@@ -124,7 +74,7 @@ export function About({ api, version, onClose }) {
             {error}
           </p>
         )}
-        {renderPanel()}
+        {panels[tab]}
       </div>
     </Dialog>
   );
