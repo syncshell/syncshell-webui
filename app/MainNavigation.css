@@ -1,0 +1,24 @@
+@layer components {
+  .navbar .syncshell-brand {
+    color: inherit;
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-3);
+    font-size: 24px;
+    font-weight: 600;
+  }
+
+  .navbar-default .syncshell-brand:hover,
+  .navbar-default .syncshell-brand:focus {
+    color: inherit;
+  }
+
+  .syncshell-mark {
+    width: 28px;
+    height: 28px;
+    flex: none;
+    background-color: currentColor;
+    -webkit-mask: var(--syncshell-mark) center / contain no-repeat;
+    mask: var(--syncshell-mark) center / contain no-repeat;
+  }
+}

@@ -3,5 +3,4 @@
 @import './tokens.css' layer(base);
 @import './layout.css' layer(layout);
 @import './components.css' layer(components);
-@import './modern.css' layer(features);
 @import './utilities.css' layer(utilities);
