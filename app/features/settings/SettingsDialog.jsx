@@ -15,6 +15,7 @@ import {
   IgnoredFoldersSettings,
 } from './IgnoredSettings.jsx';
 import { GeneralSettings } from './GeneralSettings.jsx';
+import { ConnectionSettings, GuiSettings } from './StandardSettings.jsx';
 
 export function SettingsDialog({
   state,
@@ -209,22 +210,21 @@ export function SettingsDialog({
                       onPreview={preview}
                       onUpdate={update}
                     />
+                  ) : tab === 'GUI' ? (
+                    <GuiSettings
+                      addressOverridden={state.system.guiAddressOverridden}
+                      describedBy={error ? 'settings-error' : undefined}
+                      draft={draft}
+                      fields={fields}
+                      onUpdate={update}
+                    />
                   ) : (
-                    <>
-                      <FormFields
-                        describedBy={error ? 'settings-error' : undefined}
-                        draft={draft}
-                        fields={fields}
-                        onChange={update}
-                      />
-                      {tab === 'GUI' && state.system.guiAddressOverridden && (
-                        <p class="text-warning">
-                          {t(
-                            'The GUI address is overridden by startup options. Changes here will not take effect while the override is in place.',
-                          )}
-                        </p>
-                      )}
-                    </>
+                    <ConnectionSettings
+                      describedBy={error ? 'settings-error' : undefined}
+                      draft={draft}
+                      fields={fields}
+                      onUpdate={update}
+                    />
                   )}
                 </div>
               </>
