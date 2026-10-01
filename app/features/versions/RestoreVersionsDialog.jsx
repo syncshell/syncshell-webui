@@ -1,6 +1,6 @@
 import { useContext, useEffect, useState } from 'preact/hooks';
 import { LocaleContext } from '../../core/locale/LocaleContext.jsx';
-import { Dialog } from '../../Dialog.jsx';
+import { Dialog } from '../../ui/Dialog.jsx';
 import {
   versionGroups,
   selectVersions,

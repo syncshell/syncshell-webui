@@ -1,6 +1,6 @@
 import { useContext, useEffect, useRef, useState } from 'preact/hooks';
-import { LocaleContext } from './core/locale/LocaleContext.jsx';
-import { Icon } from './Icon.jsx';
+import { LocaleContext } from '../core/locale/LocaleContext.jsx';
+import { Icon } from '../Icon.jsx';
 
 export function Dialog({
   title,

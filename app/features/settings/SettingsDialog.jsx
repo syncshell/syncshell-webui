@@ -4,7 +4,7 @@ import { settingsTabs, settingsFields, upgradeMode } from './settings.mjs';
 import { buildAdvancedConfigSections } from './advancedConfigFields.mjs';
 import { loadSettingsOptions } from './loadSettingsOptions.mjs';
 import { prepareSettingsForSave } from './prepareSettingsForSave.mjs';
-import { Dialog } from '../../Dialog.jsx';
+import { Dialog } from '../../ui/Dialog.jsx';
 import { LocaleContext } from '../../core/locale/LocaleContext.jsx';
 import { Tabs } from '../../Tabs.jsx';
 import { DeviceEditor } from '../devices/DeviceEditor.jsx';
