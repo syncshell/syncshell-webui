@@ -389,8 +389,3 @@ button.panel-heading {
   padding-top: 6px;
   padding-bottom: 6px;
 }
-
-/* CJK languages don't use italic at all, hence don't force it on them. */
-html[lang|='zh'] i {
-  font-style: normal;
-}
