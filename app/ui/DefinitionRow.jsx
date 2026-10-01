@@ -1,7 +1,7 @@
 import { useContext } from 'preact/hooks';
-import { LocaleContext } from './core/locale/LocaleContext.jsx';
-import { unitPrefixed } from '../client/format.mjs';
-import { Tooltip } from './ui/Tooltip.jsx';
+import { unitPrefixed } from '../../client/format.mjs';
+import { LocaleContext } from '../core/locale/LocaleContext.jsx';
+import { Tooltip } from './Tooltip.jsx';
 
 export function DefinitionRow({
   label,

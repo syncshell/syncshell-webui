@@ -1,5 +1,5 @@
 // explanations retained from the accepted Syncshell UI
-import { DefinitionRow } from '../../DefinitionRow.jsx';
+import { DefinitionRow } from '../../ui/DefinitionRow.jsx';
 
 export const folderFieldHelp = {
   'Global/local State': {
