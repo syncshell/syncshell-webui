@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { desktopActions } from '../client/desktop.mjs';
+import { desktopActions, parseDesktopGrant } from '../client/desktop.mjs';
 
 function browser(grant) {
   const values = new Map();
@@ -25,6 +25,26 @@ function browser(grant) {
     },
   };
 }
+
+test('desktop grants require loopback, a valid port and a lowercase token', () => {
+  const token = 'a'.repeat(64);
+  assert.deepEqual(parseDesktopGrant(`127.0.0.1:12345/${token}`), {
+    port: '12345',
+    token,
+  });
+  for (const grant of [
+    undefined,
+    '',
+    `evil.example:12345/${token}`,
+    `127.0.0.1:0/${token}`,
+    `127.0.0.1:65536/${token}`,
+    `127.0.0.1:12345/${token.toUpperCase()}`,
+    '127.0.0.1:12345/not-a-token',
+  ]) {
+    assert.equal(parseDesktopGrant(grant), null);
+  }
+});
+
 test('desktop grant stays off requests to Syncthing and survives tab reload', async () => {
   const page = browser('127.0.0.1:12345/' + 'a'.repeat(64));
   const actions = desktopActions(page);

@@ -21,6 +21,8 @@ export const desktopHelp =
 
 /** @typedef {{type: 'edit-device', device: string}} DesktopLaunchAction */
 
+/** @typedef {{port: string, token: string}} DesktopGrant */
+
 /**
  * @typedef {object} DesktopActionPort
  * @property {() => DesktopLaunchAction | null} takeLaunchAction
@@ -30,7 +32,19 @@ export const desktopHelp =
  * @property {(group: DesktopFileGroup, file: DesktopFile, device: string) => Promise<unknown>} rename
  */
 
-// Only the plugin launch grants access; the address bar and HTTP requests retain no token.
+/**
+ * @param {unknown} value
+ * @returns {DesktopGrant | null}
+ */
+export function parseDesktopGrant(value) {
+  if (typeof value !== 'string') return null;
+  const match = /^127\.0\.0\.1:([0-9]{1,5})\/([a-f0-9]{64})$/.exec(value);
+  const port = Number(match?.[1]);
+  if (!match || port < 1 || port > 65535) return null;
+  return { port: match[1], token: match[2] };
+}
+
+// Only the plugin launch grants access; the address bar retains no token.
 /**
  * @param {Window} [browser]
  * @returns {DesktopActionPort | null}
@@ -59,9 +73,9 @@ export function desktopActions(browser = window) {
   } catch {
     return null;
   }
-  const match = /^127\.0\.0\.1:([0-9]{1,5})\/([a-f0-9]{64})$/.exec(grant || '');
-  if (!match || Number(match[1]) < 1 || Number(match[1]) > 65535) return null;
-  const [, port, token] = match;
+  const parsedGrant = parseDesktopGrant(grant);
+  if (!parsedGrant) return null;
+  const { port, token } = parsedGrant;
   if (launch) {
     try {
       browser.sessionStorage.setItem(launchKey, JSON.stringify(launch));
