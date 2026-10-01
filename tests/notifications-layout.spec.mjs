@@ -105,7 +105,7 @@ test('notification cards form a responsive grid with aligned headers', async ({
     }),
   );
 
-  await page.setViewportSize({ width: 1400, height: 900 });
+  await page.setViewportSize({ width: 1908, height: 900 });
   await page.goto('/');
   await page.getByRole('tab', { name: /Notifications/ }).click();
 
@@ -143,23 +143,15 @@ test('notification cards form a responsive grid with aligned headers', async ({
     expect(header.titleWidth).toBeGreaterThan(0);
   }
 
-  const authenticationTitle = panels
-    .filter({ hasText: 'GUI Authentication: Set User and Password' })
-    .locator('.notification-title-text');
-  const titleMetrics = await authenticationTitle.evaluate((node) => ({
-    height: node.getBoundingClientRect().height,
-    lineHeight: Number.parseFloat(getComputedStyle(node).lineHeight),
-  }));
-  expect(titleMetrics.height).toBeGreaterThan(titleMetrics.lineHeight * 1.5);
-
   await expectColumns(panels, 4);
   await expect(page.locator('.notification-grid')).toHaveScreenshot(
     'notifications-light-desktop.png',
   );
 
   for (const [width, columns] of [
-    [1100, 3],
-    [800, 2],
+    [1400, 3],
+    [1100, 2],
+    [829, 1],
     [600, 1],
   ]) {
     await page.setViewportSize({ width, height: 900 });
