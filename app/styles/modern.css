@@ -73,28 +73,6 @@
   padding-inline-start: 32px;
 }
 
-.folder-count-tooltip .tooltip-inner {
-  display: table;
-  border-collapse: separate;
-  max-width: none;
-  text-align: start;
-  white-space: nowrap;
-}
-
-.folder-count-tooltip .tooltip-inner > div {
-  display: table-row;
-}
-
-.folder-count-tooltip .tooltip-inner > div > span {
-  display: table-cell;
-}
-
-.folder-count-tooltip .tooltip-inner > div > span:last-child {
-  padding-inline-start: var(--space-4);
-  text-align: end;
-  font-variant-numeric: tabular-nums;
-}
-
 .folder-actions {
   display: flex;
   justify-content: flex-end;
@@ -136,19 +114,6 @@
   overflow-wrap: anywhere;
 }
 
-.folder-tail,
-.folder-text {
-  display: block;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.folder-tail {
-  direction: rtl;
-  text-align: start;
-}
-
 .folder-change {
   display: flex;
   gap: 0.3em;
@@ -157,25 +122,6 @@
 .folder-change .folder-tail {
   min-width: 0;
   flex: 1;
-}
-
-.folder-change-tooltip .tooltip-inner {
-  max-width: min(400px, calc(100vw - var(--space-7)));
-  text-align: start;
-  overflow-wrap: anywhere;
-}
-
-.folder-help-tooltip .tooltip-inner {
-  max-width: 280px;
-  text-align: start;
-}
-
-.folder-help-icon,
-.folder-count-icon {
-  box-sizing: content-box;
-  padding: 2px;
-  margin: -2px;
-  cursor: default;
 }
 
 .navbar .syncshell-brand {
