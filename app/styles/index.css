@@ -1,7 +1,8 @@
 @layer vendor, base, layout, components, features, utilities, theme;
 
 @import '../../static/vendor/bootstrap/css/bootstrap.css' layer(vendor);
-@import './tokens.css';
-@import './modern.css';
-@import './layout.css';
-@import './utilities.css';
+@import '../../static/assets/css/overrides.css' layer(components);
+@import './tokens.css' layer(base);
+@import './layout.css' layer(layout);
+@import './modern.css' layer(features);
+@import './utilities.css' layer(utilities);
