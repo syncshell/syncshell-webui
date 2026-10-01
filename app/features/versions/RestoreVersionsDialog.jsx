@@ -6,6 +6,7 @@ import {
   selectVersions,
   selectedVersions,
   versionActions,
+  restoreVersionSelection,
 } from './versions.mjs';
 import { timestamp, unitPrefixed } from '../../../client/format.mjs';
 import { Icon } from '../../Icon.jsx';
@@ -34,23 +35,17 @@ export function RestoreVersionsDialog({ api, folder, onClose }) {
       });
     return () => controller.abort();
   }, [api, folder.id]);
-  async function restore() {
+  async function handleRestore() {
     setBusy(true);
     setError('');
     try {
-      const failures = await api.post('folder/versions', chosen, {
-        folder: folder.id,
-      });
-      setErrors(failures);
+      const result = await restoreVersionSelection(api, folder.id, chosen);
+      setErrors(result.failures);
       setConfirm(false);
-      if (!Object.keys(failures).length) onClose();
+      if (result.complete) onClose();
       else {
-        setSelections(
-          Object.fromEntries(
-            Object.entries(chosen).filter(([path]) => failures[path]),
-          ),
-        );
-        setVersions(await api.get('folder/versions', { folder: folder.id }));
+        setSelections(result.selections);
+        setVersions(result.versions);
       }
     } catch (error) {
       setError(error.message);
@@ -85,7 +80,7 @@ export function RestoreVersionsDialog({ api, folder, onClose }) {
             <button
               class="btn btn-warning btn-sm"
               disabled={busy}
-              onClick={restore}
+              onClick={handleRestore}
             >
               {t('Yes')}
             </button>

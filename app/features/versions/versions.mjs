@@ -44,3 +44,20 @@ export const versionActions = [
   { action: 'oldest', label: 'Select oldest version' },
   { action: 'unset', label: 'Do not restore all' },
 ];
+
+export async function restoreVersionSelection(api, folderId, selections) {
+  const failures = await api.post('folder/versions', selections, {
+    folder: folderId,
+  });
+  if (!Object.keys(failures).length) {
+    return { complete: true, failures, selections: {}, versions: null };
+  }
+  return {
+    complete: false,
+    failures,
+    selections: Object.fromEntries(
+      Object.entries(selections).filter(([path]) => failures[path]),
+    ),
+    versions: await api.get('folder/versions', { folder: folderId }),
+  };
+}
