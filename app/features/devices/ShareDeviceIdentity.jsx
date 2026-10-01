@@ -11,22 +11,28 @@ export function ShareDeviceIdentity({ device, api }) {
   const [copied, setCopied] = useState(false);
   const [error, setError] = useState('');
   const message = validated ? identityMessage(validated, method, t) : null;
-  async function use(action) {
+  async function runIdentityAction(action) {
     setError('');
     try {
       const result = await api.get('svc/deviceid', { id: device.deviceID });
       if (result.error) throw new Error(result.error);
       const value = { ...device, deviceID: result.id };
       setValidated(value);
-      if (action === 'copy') {
-        await navigator.clipboard.writeText(value.deviceID);
-        setCopied(true);
-      } else setMethod(action);
+      await action(value);
     } catch (error) {
       setError(error.message);
     }
   }
-  async function copy(text) {
+  function copyDeviceId() {
+    return runIdentityAction(async (value) => {
+      await navigator.clipboard.writeText(value.deviceID);
+      setCopied(true);
+    });
+  }
+  function shareDeviceId(method) {
+    return runIdentityAction(() => setMethod(method));
+  }
+  async function copyMessageText(text) {
     try {
       await navigator.clipboard.writeText(text);
     } catch (error) {
@@ -40,7 +46,7 @@ export function ShareDeviceIdentity({ device, api }) {
           type="button"
           class="btn btn-default"
           disabled={!device.deviceID}
-          onClick={() => use('copy')}
+          onClick={copyDeviceId}
         >
           <Icon name="copy" /> {t(copied ? 'Copied!' : 'Copy')}
         </button>
@@ -48,7 +54,7 @@ export function ShareDeviceIdentity({ device, api }) {
           type="button"
           class="btn btn-default"
           disabled={!device.deviceID}
-          onClick={() => use('email')}
+          onClick={() => shareDeviceId('email')}
         >
           <Icon name="mail" /> {t('Share by Email')}
         </button>
@@ -56,7 +62,7 @@ export function ShareDeviceIdentity({ device, api }) {
           type="button"
           class="btn btn-default"
           disabled={!device.deviceID}
-          onClick={() => use('sms')}
+          onClick={() => shareDeviceId('sms')}
         >
           <Icon name="message" /> {t('Share by SMS')}
         </button>
@@ -102,7 +108,7 @@ export function ShareDeviceIdentity({ device, api }) {
               <pre class="share-text">{message.subject}</pre>
               <button
                 class="btn btn-default btn-sm"
-                onClick={() => copy(message.subject)}
+                onClick={() => copyMessageText(message.subject)}
               >
                 {t('Copy')}
               </button>
@@ -112,7 +118,7 @@ export function ShareDeviceIdentity({ device, api }) {
           <pre class="share-text">{message.body}</pre>
           <button
             class="btn btn-default btn-sm"
-            onClick={() => copy(message.body)}
+            onClick={() => copyMessageText(message.body)}
           >
             {t('Copy')}
           </button>
