@@ -44,7 +44,7 @@ export function parseDesktopGrant(value) {
   return { port: match[1], token: match[2] };
 }
 
-// Only the plugin launch grants access; the address bar retains no token.
+// Only a plugin launch grants access, so remove its token from the address bar.
 /**
  * @param {Window} [browser]
  * @returns {DesktopActionPort | null}

@@ -28,7 +28,7 @@ export function compactNumber(input) {
 }
 
 export function unitPrefixed(input, binary) {
-  // Preserve Syncthing's coercion and strict unit boundaries for existing data.
+  // Coerce API values while keeping Syncthing's strict unit boundaries.
   const numericInput = Number(input);
   if (Number.isNaN(numericInput)) return '0 ';
   const factor = binary ? 1024 : 1000;

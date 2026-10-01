@@ -1,4 +1,4 @@
-// explanations retained from the accepted Syncshell UI
+// Keep device field explanations beside the views that consume them.
 import { DefinitionRow } from '../../ui/DefinitionRow.jsx';
 
 export const deviceFieldHelp = {

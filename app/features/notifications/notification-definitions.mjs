@@ -1,6 +1,6 @@
 // Copyright (C) 2014 The Syncthing Authors.
 // SPDX-License-Identifier: MPL-2.0
-// prose retained from the existing Syncthing notification cards
+// Keep notification wording centralized so builders only choose behavior.
 export const notificationCards = {
   channelNotification: {
     paragraphs: [
