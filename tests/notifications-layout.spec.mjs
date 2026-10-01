@@ -21,9 +21,9 @@ async function expectColumns(panels, count) {
 
 test('notification cards form a responsive grid with aligned headers', async ({
   page,
-  folderFixture,
+  syncthing,
 }) => {
-  await folderFixture({
+  syncthing.configure({
     folder: { fsWatcherEnabled: true, paused: false },
     model: { watchError: 'watch failed' },
   });

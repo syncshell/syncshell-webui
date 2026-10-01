@@ -2,10 +2,10 @@ import { test, expect } from './playwright-fixtures.mjs';
 
 test('editor enforces folder restrictions and orders attribute rules', async ({
   page,
-  folderFixture,
+  syncthing,
 }) => {
   let saved;
-  await folderFixture({ folder: { blockIndexing: true } });
+  syncthing.configure({ folder: { blockIndexing: true } });
   await page.route('**/rest/config', async (route) => {
     if (route.request().method() === 'PUT') {
       saved = route.request().postDataJSON();
@@ -82,9 +82,9 @@ test('editor enforces folder restrictions and orders attribute rules', async ({
 
 test('a new folder stays paused through ignore load/save failures and retries', async ({
   page,
-  folderFixture,
+  syncthing,
 }) => {
-  await folderFixture();
+  syncthing.configure();
   let config,
     ignoreReads = 0,
     ignoreWrites = 0;

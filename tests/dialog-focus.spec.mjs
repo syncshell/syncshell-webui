@@ -2,9 +2,9 @@ import { test, expect } from './playwright-fixtures.mjs';
 
 test('dialogs take initial focus and return it after Escape', async ({
   page,
-  folderFixture,
+  syncthing,
 }) => {
-  await folderFixture();
+  syncthing.configure();
   await page.route('**/rest/events/disk?*', (route) =>
     route.fulfill({ json: [] }),
   );
@@ -34,9 +34,9 @@ test('dialogs take initial focus and return it after Escape', async ({
 
 test('nested dialogs return focus to their parent dialog', async ({
   page,
-  folderFixture,
+  syncthing,
 }) => {
-  await folderFixture();
+  syncthing.configure();
   await page.goto('/');
 
   await page.getByRole('link', { name: /Actions/ }).click();

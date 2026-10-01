@@ -2,9 +2,9 @@ import { test, expect } from './playwright-fixtures.mjs';
 
 test('device actions open identification and settings dialogs', async ({
   page,
-  folderFixture,
+  syncthing,
 }) => {
-  await folderFixture();
+  syncthing.configure();
   await page.goto('/');
 
   const local = page.locator('.dashboard-devices > .panel');
@@ -31,9 +31,9 @@ test('device actions open identification and settings dialogs', async ({
 
 test('folder menus open editors and dismiss outside', async ({
   page,
-  folderFixture,
+  syncthing,
 }) => {
-  await folderFixture();
+  syncthing.configure();
   await page.goto('/');
 
   const local = page.locator('.dashboard-devices > .panel');
@@ -69,9 +69,9 @@ test('folder menus open editors and dismiss outside', async ({
 
 test('pausing the local device pauses every folder', async ({
   page,
-  folderFixture,
+  syncthing,
 }) => {
-  await folderFixture();
+  syncthing.configure();
   let saved;
   await page.route('**/rest/config', async (route) => {
     if (route.request().method() !== 'PUT') return route.fallback();
@@ -92,9 +92,9 @@ test('pausing the local device pauses every folder', async ({
 
 test('recent changes keep long paths usable across dialog sizes', async ({
   page,
-  folderFixture,
+  syncthing,
 }) => {
-  await folderFixture();
+  syncthing.configure();
   const path =
     'projects/syncshell/syncshell-webui/' +
     'a-very-long-directory/'.repeat(20) +
@@ -157,9 +157,9 @@ test('recent changes keep long paths usable across dialog sizes', async ({
 
 test('modern follows the browser color scheme across reloads', async ({
   page,
-  folderFixture,
+  syncthing,
 }) => {
-  await folderFixture();
+  syncthing.configure();
   await page.emulateMedia({ colorScheme: 'dark' });
   await page.goto('/');
   await expect(page.locator('body')).toHaveCSS(

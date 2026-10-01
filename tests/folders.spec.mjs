@@ -8,9 +8,9 @@ async function openFolder(page, query = '') {
 
 test('accepted fields, compact values and icon-only help stay readable in English', async ({
   page,
-  folderFixture,
+  syncthing,
 }) => {
-  await folderFixture();
+  syncthing.configure();
   await openFolder(page, '?lang=de');
   const summary = page.locator('.folder-state-summary');
   await expect(summary).toContainText('109.2k');
@@ -47,9 +47,9 @@ test('accepted fields, compact values and icon-only help stay readable in Englis
 
 test('divergence exposes compact child rows and a working paged error dialog', async ({
   page,
-  folderFixture,
+  syncthing,
 }) => {
-  await folderFixture({
+  syncthing.configure({
     model: {
       localFiles: 109000,
       localBytes: 7340000000,
@@ -107,9 +107,9 @@ test('divergence exposes compact child rows and a working paged error dialog', a
 
 test('configuration fields and scanning estimate follow visibility rules', async ({
   page,
-  folderFixture,
+  syncthing,
 }) => {
-  await folderFixture({
+  syncthing.configure({
     folder: {
       ignorePerms: true,
       type: 'receiveonly',

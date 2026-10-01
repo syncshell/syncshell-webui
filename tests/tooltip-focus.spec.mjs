@@ -2,9 +2,9 @@ import { test, expect } from './playwright-fixtures.mjs';
 
 test('focused tooltips describe their trigger and hide on Escape', async ({
   page,
-  folderFixture,
+  syncthing,
 }) => {
-  await folderFixture();
+  syncthing.configure();
   await page.goto('/');
   await page.getByRole('button', { name: /Folder under test/ }).click();
 
@@ -32,10 +32,10 @@ test('focused tooltips describe their trigger and hide on Escape', async ({
 
 test('hovered tooltips remain open across the pointer gap and stay in view', async ({
   page,
-  folderFixture,
+  syncthing,
 }) => {
+  syncthing.configure();
   await page.clock.install();
-  await folderFixture();
   await page.goto('/');
   await page.getByRole('button', { name: /Folder under test/ }).click();
 

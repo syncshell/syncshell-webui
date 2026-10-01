@@ -2,10 +2,10 @@ import { test, expect } from './playwright-fixtures.mjs';
 
 test('version restore sends selected REST values and recovers from errors', async ({
   page,
-  folderFixture,
+  syncthing,
 }) => {
   await page.emulateMedia({ colorScheme: 'dark' });
-  await folderFixture({
+  syncthing.configure({
     folder: {
       versioning: {
         type: 'simple',

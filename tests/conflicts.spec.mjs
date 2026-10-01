@@ -2,9 +2,9 @@ import { test, expect } from './playwright-fixtures.mjs';
 
 test('rechecks show activity until completion and clear it after errors', async ({
   page,
-  folderFixture,
+  syncthing,
 }) => {
-  await folderFixture();
+  syncthing.configure();
   const copy = 'note.sync-conflict-20260908-120000-ABCDEFG.txt';
   await page.route('**/rest/db/browse?*', (route) =>
     route.fulfill({

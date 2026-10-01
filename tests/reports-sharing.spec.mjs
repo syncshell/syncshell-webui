@@ -34,9 +34,9 @@ for (const [accepted, answer, result] of [
 ])
   test(`usage consent ${accepted} with ${answer} saves ${result}`, async ({
     page,
-    folderFixture,
+    syncthing,
   }) => {
-    await folderFixture();
+    syncthing.configure();
     const config = await configFixture(page, (value) => {
       value.options.urAccepted = accepted;
       value.options.urSeen = 0;
@@ -68,9 +68,9 @@ for (const [accepted, answer, result] of [
 
 test('report version comparison and major upgrades expose their warnings', async ({
   page,
-  folderFixture,
+  syncthing,
 }) => {
-  await folderFixture();
+  syncthing.configure();
   await page.route('**/rest/system/status', async (route) =>
     route.fulfill({
       json: { ...(await (await route.fetch()).json()), urVersionMax: 4 },
@@ -129,9 +129,9 @@ test('report version comparison and major upgrades expose their warnings', async
 
 test('pending encrypted sharing keeps its password across device toggles', async ({
   page,
-  folderFixture,
+  syncthing,
 }) => {
-  await folderFixture();
+  syncthing.configure();
   let peer;
   const config = await configFixture(page, async (value, route) => {
     const status = await (
@@ -209,9 +209,9 @@ test('pending encrypted sharing keeps its password across device toggles', async
 
 test('notification severity changes from danger through warning and success to empty', async ({
   page,
-  folderFixture,
+  syncthing,
 }) => {
-  await folderFixture();
+  syncthing.configure();
   const push = await events(page);
   const config = await configFixture(page, (value) => {
     value.gui.user = '';

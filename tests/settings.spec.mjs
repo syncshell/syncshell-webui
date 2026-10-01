@@ -13,10 +13,10 @@ async function openSettings(page, advanced = false) {
 
 test('settings drafts survive default editing and ignored-list changes', async ({
   page,
-  folderFixture,
+  syncthing,
 }) => {
+  syncthing.configure();
   let original, saved;
-  await folderFixture();
   await page.route('**/rest/config', async (route) => {
     if (route.request().method() === 'PUT') {
       saved = route.request().postDataJSON();
@@ -95,9 +95,9 @@ test('settings drafts survive default editing and ignored-list changes', async (
 
 test('settings controls keep labels and associate save errors', async ({
   page,
-  folderFixture,
+  syncthing,
 }) => {
-  await folderFixture();
+  syncthing.configure();
   await page.goto('/');
   const dialog = await openSettings(page);
   await dialog.getByRole('tab', { name: 'GUI', exact: true }).click();
@@ -124,10 +124,10 @@ test('settings controls keep labels and associate save errors', async ({
 
 test('advanced changes stay in the draft until save or explicit discard', async ({
   page,
-  folderFixture,
+  syncthing,
 }) => {
+  syncthing.configure();
   let saved;
-  await folderFixture();
   await page.route('**/rest/config', async (route) => {
     if (route.request().method() === 'PUT') {
       saved = route.request().postDataJSON();
@@ -180,9 +180,9 @@ for (const [type, model, label, operation] of [
 ])
   test(`${label} requires confirmation before the folder request`, async ({
     page,
-    folderFixture,
+    syncthing,
   }) => {
-    await folderFixture({ folder: { type }, model });
+    syncthing.configure({ folder: { type }, model });
     let calls = 0;
     await page.route('**/rest/db/' + operation + '?*', async (route) => {
       expect(route.request().method()).toBe('POST');
