@@ -1,16 +1,10 @@
 import { test, expect } from './playwright-fixtures.mjs';
 
-test('device actions expose local folders and dismiss menus outside', async ({
+test('device actions open identification and settings dialogs', async ({
   page,
   folderFixture,
 }) => {
-  await folderFixture({ model: { ignorePatterns: true } });
-  let saved;
-  await page.route('**/rest/config', async (route) => {
-    if (route.request().method() !== 'PUT') return route.fallback();
-    saved = route.request().postDataJSON();
-    await route.fulfill({ status: 200, body: '' });
-  });
+  await folderFixture();
   await page.goto('/');
 
   const local = page.locator('.dashboard-devices > .panel');
@@ -35,7 +29,16 @@ test('device actions expose local folders and dismiss menus outside', async ({
       .locator('xpath=..'),
   ).toHaveClass(/active/);
   await settings.getByRole('button', { name: 'Close', exact: true }).click();
+});
 
+test('folder menus open editors and dismiss outside', async ({
+  page,
+  folderFixture,
+}) => {
+  await folderFixture();
+  await page.goto('/');
+
+  const local = page.locator('.dashboard-devices > .panel');
   const localFolders = local.getByRole('button', { name: /Folders/ });
   await localFolders.click();
   await expect(localFolders.locator('xpath=..')).toHaveClass(/open/);
@@ -69,7 +72,22 @@ test('device actions expose local folders and dismiss menus outside', async ({
   await remoteFolders.click();
   await page.locator('.dashboard-folders > h3').click();
   await expect(remoteFolders.locator('xpath=..')).not.toHaveClass(/open/);
+});
 
+test('pausing the local device pauses every folder', async ({
+  page,
+  folderFixture,
+}) => {
+  await folderFixture();
+  let saved;
+  await page.route('**/rest/config', async (route) => {
+    if (route.request().method() !== 'PUT') return route.fallback();
+    saved = route.request().postDataJSON();
+    await route.fulfill({ status: 200, body: '' });
+  });
+  await page.goto('/');
+
+  const local = page.locator('.dashboard-devices > .panel');
   await local.getByRole('button', { name: 'Pause', exact: true }).click();
   await expect
     .poll(() => saved?.folders.every((folder) => folder.paused))
