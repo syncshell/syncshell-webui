@@ -1,14 +1,24 @@
 import { useContext, useState } from 'preact/hooks';
-import { LocaleContext } from './locale-context.jsx';
+import { Icon } from '../../Icon.jsx';
+import { LocaleContext } from '../../locale-context.jsx';
 import { ShareStatus } from './ShareStatus.jsx';
-import { Icon } from './Icon.jsx';
-export function SharingEntry({
+
+function passwordPlaceholder({ isEncrypted, isSelected, isPasswordRequired }) {
+  if (isEncrypted) return 'Received data is already encrypted';
+  if (!isSelected) return 'Not shared';
+  if (isPasswordRequired) {
+    return 'Device is untrusted, enter encryption password';
+  }
+  return 'If untrusted, enter encryption password';
+}
+
+export function EncryptedShareField({
   label,
   id,
-  selected,
+  isSelected,
   password = '',
-  encrypted = false,
-  required = false,
+  isEncrypted = false,
+  isPasswordRequired = false,
   remoteState = '',
   onSelected,
   onPassword,
@@ -20,7 +30,7 @@ export function SharingEntry({
       <label title={id}>
         <input
           type="checkbox"
-          checked={selected}
+          checked={isSelected}
           onChange={(event) => onSelected(event.currentTarget.checked)}
         />{' '}
         {label}
@@ -28,7 +38,7 @@ export function SharingEntry({
       <ShareStatus remoteState={remoteState} />
       <div class="input-group">
         <span class="input-group-addon">
-          <Icon name={encrypted || password ? 'lock' : 'unlock'} />
+          <Icon name={isEncrypted || password ? 'lock' : 'unlock'} />
         </span>
         <input
           class="form-control"
@@ -36,16 +46,14 @@ export function SharingEntry({
           aria-label={t('Encryption Password') + ': ' + label}
           autoComplete="off"
           value={password}
-          disabled={encrypted || !selected}
-          required={selected && !encrypted && required}
+          disabled={isEncrypted || !isSelected}
+          required={isSelected && !isEncrypted && isPasswordRequired}
           placeholder={t(
-            encrypted
-              ? 'Received data is already encrypted'
-              : !selected
-                ? 'Not shared'
-                : required
-                  ? 'Device is untrusted, enter encryption password'
-                  : 'If untrusted, enter encryption password',
+            passwordPlaceholder({
+              isEncrypted,
+              isSelected,
+              isPasswordRequired,
+            }),
           )}
           onInput={(event) => onPassword(event.currentTarget.value)}
         />
@@ -53,7 +61,7 @@ export function SharingEntry({
           <button
             type="button"
             class="btn btn-default"
-            disabled={encrypted || !selected}
+            disabled={isEncrypted || !isSelected}
             aria-label={t(plain ? 'Hide password' : 'Show password')}
             onClick={() => setPlain(!plain)}
           >

@@ -2,7 +2,7 @@ import { useContext } from 'preact/hooks';
 import { Icon } from '../../Icon.jsx';
 import { LocaleContext } from '../../locale-context.jsx';
 import { MenuButton } from '../../MenuButton.jsx';
-import { ShareStatus } from '../../ShareStatus.jsx';
+import { ShareStatus } from '../sharing/ShareStatus.jsx';
 
 export function DeviceFoldersMenu({
   device,
@@ -45,7 +45,7 @@ export function DeviceFoldersMenu({
                 <>
                   {' '}
                   <ShareStatus
-                    encrypted={
+                    isEncrypted={
                       folder.type === 'receiveencrypted' ||
                       !!folder.devices.find(
                         (member) => member.deviceID === device.deviceID,

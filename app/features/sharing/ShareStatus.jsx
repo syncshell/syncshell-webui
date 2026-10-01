@@ -1,8 +1,11 @@
-import { Tooltip } from './Tooltip.jsx';
-export function ShareStatus({ encrypted = false, remoteState = '' }) {
+import { Tooltip } from '../../Tooltip.jsx';
+
+export function ShareStatus({ isEncrypted = false, remoteState = '' }) {
   return (
     <>
-      {encrypted && <Tooltip icon="lock" label="Encrypted" text="Encrypted" />}
+      {isEncrypted && (
+        <Tooltip icon="lock" label="Encrypted" text="Encrypted" />
+      )}
       {remoteState === 'paused' && (
         <Tooltip
           icon="pause"

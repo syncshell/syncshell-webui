@@ -6,7 +6,7 @@ import {
 import { Icon } from '../../Icon.jsx';
 import { LocaleContext } from '../../locale-context.jsx';
 import { MenuButton } from '../../MenuButton.jsx';
-import { ShareStatus } from '../../ShareStatus.jsx';
+import { ShareStatus } from '../sharing/ShareStatus.jsx';
 
 export function FolderActions({
   folder,
@@ -63,7 +63,7 @@ export function FolderActions({
                   >
                     {device?.name || member.deviceID.slice(0, 7)}{' '}
                     <ShareStatus
-                      encrypted={
+                      isEncrypted={
                         folder.type === 'receiveencrypted' ||
                         !!member.encryptionPassword
                       }

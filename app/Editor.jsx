@@ -12,7 +12,7 @@ import {
 import { fieldHelp } from '../client/field-help.mjs';
 import { Tooltip } from './Tooltip.jsx';
 import { ShareDeviceIdentity } from './features/devices/ShareDeviceIdentity.jsx';
-import { SharingEntry } from './SharingEntry.jsx';
+import { EncryptedShareField } from './features/sharing/EncryptedShareField.jsx';
 import { deviceName } from './features/devices/device-status.mjs';
 import {
   deviceEditorFieldState,
@@ -474,14 +474,14 @@ export function Editor({ action, state, api, session, onClose, onSaved }) {
                           (item) => item.deviceID === device.deviceID,
                         );
                         return (
-                          <SharingEntry
+                          <EncryptedShareField
                             key={device.deviceID}
                             label={deviceName(device)}
                             id={device.deviceID}
-                            selected={!!member}
+                            isSelected={!!member}
                             password={passwords[device.deviceID] || ''}
-                            encrypted={draft.type === 'receiveencrypted'}
-                            required={
+                            isEncrypted={draft.type === 'receiveencrypted'}
+                            isPasswordRequired={
                               device.untrusted ||
                               state.pendingFolders[draft.id]?.offeredBy?.[
                                 device.deviceID
@@ -501,14 +501,14 @@ export function Editor({ action, state, api, session, onClose, onSaved }) {
                         );
                       })
                   : state.config.folders.map((folder) => (
-                      <SharingEntry
+                      <EncryptedShareField
                         key={folder.id}
                         label={folder.label || folder.id}
                         id={folder.id}
-                        selected={shares[folder.id].selected}
+                        isSelected={shares[folder.id].selected}
                         password={shares[folder.id].password}
-                        encrypted={folder.type === 'receiveencrypted'}
-                        required={
+                        isEncrypted={folder.type === 'receiveencrypted'}
+                        isPasswordRequired={
                           draft.untrusted ||
                           state.pendingFolders[folder.id]?.offeredBy?.[
                             draft.deviceID
