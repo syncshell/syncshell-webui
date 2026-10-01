@@ -1,21 +1,10 @@
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
+import { after, before, test } from 'node:test';
 
-const xml = await readFile(
-  process.env.SYNCSHELL_TEST_RUNTIME + '/home/config.xml',
-  'utf8',
-);
-const key = xml.match(/<apikey>(.*?)<\/apikey>/)[1];
-const base = process.env.SYNCSHELL_WEBUI_URL;
-const headers = {
-  'X-API-Key': key,
-  'Content-Type': 'application/json',
-  Connection: 'close',
-};
-const themes = await fetch(base + '/themes.json', { headers }).then((r) =>
-  r.json(),
-);
-assert.ok(themes.themes.includes('syncshell-modern'));
+let base;
+let headers;
+
 async function select(theme) {
   const response = await fetch(base + '/rest/config/gui', {
     method: 'PATCH',
@@ -36,6 +25,30 @@ async function select(theme) {
   }
   assert.fail('Theme did not change to ' + theme);
 }
-await select('default');
-await select('syncshell-modern');
-console.log('Installed theme discovery and default GUI restoration passed');
+
+before(async () => {
+  const xml = await readFile(
+    process.env.SYNCSHELL_TEST_RUNTIME + '/home/config.xml',
+    'utf8',
+  );
+  const key = xml.match(/<apikey>(.*?)<\/apikey>/)[1];
+  base = process.env.SYNCSHELL_WEBUI_URL;
+  headers = {
+    'X-API-Key': key,
+    'Content-Type': 'application/json',
+    Connection: 'close',
+  };
+});
+
+after(async () => {
+  if (headers) await select('syncshell-modern');
+});
+
+test('installed themes discover Syncshell and restore the default GUI', async () => {
+  const themes = await fetch(base + '/themes.json', { headers }).then((r) =>
+    r.json(),
+  );
+  assert.ok(themes.themes.includes('syncshell-modern'));
+  await select('default');
+  await select('syncshell-modern');
+});

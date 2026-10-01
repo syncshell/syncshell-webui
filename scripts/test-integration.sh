@@ -30,4 +30,4 @@ npm run test:browser
 node tests/live-auth.mjs
 node tests/live-config.mjs
 node tests/live-versions.mjs
-node tests/installed.mjs
+node --test tests/installed.mjs
