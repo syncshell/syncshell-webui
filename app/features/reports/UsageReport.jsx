@@ -10,19 +10,25 @@ export function UsageReport({ api, session, state, consent = false, onClose }) {
   const [diff, setDiff] = useState(false);
   const [preview, setPreview] = useState(!consent);
   const [report, setReport] = useState(null);
+  const [reportPhase, setReportPhase] = useState(consent ? 'idle' : 'loading');
   const [error, setError] = useState('');
   const [busy, setBusy] = useState(false);
   useEffect(() => {
     if (!preview) return;
     const controller = new AbortController();
     setReport(null);
+    setReportPhase('loading');
+    setError('');
     usageReport(api, version, diff, controller.signal)
       .then((value) => {
         setReport(value);
-        setError('');
+        setReportPhase('ready');
       })
       .catch((error) => {
-        if (!controller.signal.aborted) setError(error.message);
+        if (!controller.signal.aborted) {
+          setError(error.message);
+          setReportPhase('error');
+        }
       });
     return () => controller.abort();
   }, [api, version, diff, preview]);
@@ -36,6 +42,10 @@ export function UsageReport({ api, session, state, consent = false, onClose }) {
     } finally {
       setBusy(false);
     }
+  }
+  function showPreview() {
+    setReportPhase('loading');
+    setPreview(true);
   }
   return (
     <Dialog
@@ -104,7 +114,7 @@ export function UsageReport({ api, session, state, consent = false, onClose }) {
         </>
       )}
       {!preview ? (
-        <button class="btn btn-default" onClick={() => setPreview(true)}>
+        <button class="btn btn-default" onClick={showPreview}>
           {t('Preview Usage Report')}
         </button>
       ) : (
@@ -140,11 +150,11 @@ export function UsageReport({ api, session, state, consent = false, onClose }) {
               )}
             </>
           )}
-          {report ? (
+          {reportPhase === 'ready' ? (
             <pre class="share-text">{JSON.stringify(report, null, 2)}</pre>
-          ) : (
-            !error && <p role="status">{t('Loading data...')}</p>
-          )}
+          ) : reportPhase === 'loading' ? (
+            <p role="status">{t('Loading data...')}</p>
+          ) : null}
         </>
       )}
       {error && (
