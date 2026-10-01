@@ -7,19 +7,6 @@ export function setValue(object, path, value) {
   let target = result;
   for (const key of keys.slice(0, -1)) target = target[key] ||= {};
   target[keys.at(-1)] = value;
-  if (path === 'versioning.type' && value) {
-    const defaults =
-      value === 'simple'
-        ? { keep: '5', cleanoutDays: '0' }
-        : value === 'trashcan'
-          ? { cleanoutDays: '0' }
-          : value === 'staggered'
-            ? { maxAge: String(365 * 86400) }
-            : { command: '' };
-    result.versioning.params = { ...defaults, ...result.versioning.params };
-    result.versioning.cleanupIntervalS ??= 3600;
-    result.versioning.fsPath ??= '';
-  }
   return result;
 }
 const field = (path, label, type = 'text', options) => ({

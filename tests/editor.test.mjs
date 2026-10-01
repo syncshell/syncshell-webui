@@ -176,7 +176,12 @@ test('selecting versioning supplies defaults without replacing existing values',
       fsPath: '/srv/versions',
     },
   };
-  const simple = setValue(original, 'versioning.type', 'simple');
+  const simple = updateFolderEditor(
+    original,
+    'versioning.type',
+    'simple',
+    folderContext,
+  );
   assert.deepEqual(simple.versioning, {
     type: 'simple',
     params: { keep: '5', cleanoutDays: '30' },
@@ -185,7 +190,12 @@ test('selecting versioning supplies defaults without replacing existing values',
   });
   assert.equal(original.versioning.type, '');
 
-  const staggered = setValue({}, 'versioning.type', 'staggered');
+  const staggered = updateFolderEditor(
+    {},
+    'versioning.type',
+    'staggered',
+    folderContext,
+  );
   assert.deepEqual(staggered.versioning, {
     type: 'staggered',
     params: { maxAge: String(365 * 86400) },
@@ -193,7 +203,12 @@ test('selecting versioning supplies defaults without replacing existing values',
     fsPath: '',
   });
 
-  const external = setValue({}, 'versioning.type', 'external');
+  const external = updateFolderEditor(
+    {},
+    'versioning.type',
+    'external',
+    folderContext,
+  );
   assert.deepEqual(external.versioning.params, { command: '' });
 });
 

@@ -80,6 +80,22 @@ export function updateFolderEditor(
   { isNew, defaults, autoPath, config, system },
 ) {
   const next = setValue(draft, path, value);
+  if (path === 'versioning.type' && value) {
+    const versioningDefaults =
+      value === 'simple'
+        ? { keep: '5', cleanoutDays: '0' }
+        : value === 'trashcan'
+          ? { cleanoutDays: '0' }
+          : value === 'staggered'
+            ? { maxAge: String(365 * 86400) }
+            : { command: '' };
+    next.versioning.params = {
+      ...versioningDefaults,
+      ...next.versioning.params,
+    };
+    next.versioning.cleanupIntervalS ??= 3600;
+    next.versioning.fsPath ??= '';
+  }
   if (path === 'type') {
     next.fsWatcherEnabled = value !== 'receiveencrypted';
     if (value === 'receiveencrypted') {
