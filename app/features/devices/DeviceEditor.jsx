@@ -1,10 +1,10 @@
 import { useContext, useRef, useState } from 'preact/hooks';
 import { Dialog } from '../../Dialog.jsx';
-import { EditorField } from '../../EditorField.jsx';
 import { Icon } from '../../Icon.jsx';
 import { Tabs } from '../../Tabs.jsx';
 import { LocaleContext } from '../../core/locale/LocaleContext.jsx';
 import { cloneConfig } from '../../core/config/configValues.mjs';
+import { EditorField } from '../../ui/EditorField.jsx';
 import { ConfirmManagementAction } from '../management/ConfirmManagementAction.jsx';
 import { deviceFieldHelp } from './DeviceDefinitionRow.jsx';
 import { DeviceSharingFields } from './DeviceSharingFields.jsx';
