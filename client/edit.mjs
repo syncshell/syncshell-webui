@@ -1,3 +1,5 @@
+import { deviceEditorFields } from './device-editor.mjs';
+
 export const cloneConfig = (value) => JSON.parse(JSON.stringify(value));
 export const getValue = (object, path) =>
   path.split('.').reduce((value, key) => value?.[key], object);
@@ -29,27 +31,7 @@ const field = (path, label, type = 'text', options) => ({
   options,
 });
 export function editorFields(kind, tab, config, myID) {
-  if (kind === 'device')
-    return tab === 'General'
-      ? [
-          field('deviceID', 'Device ID'),
-          field('name', 'Device Name'),
-          field('group', 'Device Group'),
-        ]
-      : [
-          field('addresses', 'Addresses', 'list'),
-          field('compression', 'Compression', 'select', [
-            { value: 'metadata', label: 'Metadata Only' },
-            { value: 'always', label: 'All Data' },
-            { value: 'never', label: 'Off' },
-          ]),
-          field('introducer', 'Introducer', 'checkbox'),
-          field('autoAcceptFolders', 'Auto Accept', 'checkbox'),
-          field('untrusted', 'Untrusted', 'checkbox'),
-          field('maxRecvKbps', 'Incoming Rate Limit (KiB/s)', 'number'),
-          field('maxSendKbps', 'Outgoing Rate Limit (KiB/s)', 'number'),
-          field('numConnections', 'Number of Connections', 'number'),
-        ];
+  if (kind === 'device') return deviceEditorFields(tab);
   if (kind === 'folder') {
     if (tab === 'General')
       return [
