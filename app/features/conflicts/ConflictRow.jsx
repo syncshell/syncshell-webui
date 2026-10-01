@@ -2,8 +2,8 @@ import { useContext } from 'preact/hooks';
 import { unitPrefixed, timestamp } from '../../../client/format.mjs';
 import { Icon } from '../../Icon.jsx';
 import { LocaleContext } from '../../core/locale/LocaleContext.jsx';
-import { Tooltip } from '../../Tooltip.jsx';
-import { parentPath, missingHelp } from './conflicts.mjs';
+import { ConflictFileChoice } from './ConflictFileChoice.jsx';
+import { parentPath } from './conflicts.mjs';
 
 export function ConflictRow({
   group,
@@ -22,51 +22,6 @@ export function ConflictRow({
     group.copies.find((copy) => copy.path === selected) || group.copies[0];
   const fileAccess = permission(group, file);
   const folderAccess = permission(group, group.current || file);
-  function fileLink(group, file) {
-    if (!file)
-      return (
-        <span class="text-warning">
-          <Tooltip
-            icon="triangle-alert"
-            label="Missing current file"
-            text={t(missingHelp)}
-          />{' '}
-          {t('Missing current file')}
-        </span>
-      );
-    if (!file.available)
-      return (
-        <span
-          class="text-warning"
-          title={t('Waiting for Syncthing to download this file')}
-        >
-          {file.name} · {t('Not available locally')}
-        </span>
-      );
-    const contents = (
-      <>
-        <Icon name="file" class="icon-fixed" />
-        <span class="review-filename">{file.name}</span>
-      </>
-    );
-    return permission(group, file).open ? (
-      <a
-        class="review-file"
-        href="#open-file"
-        title={group.root + '/' + file.path}
-        onClick={(event) => {
-          event.preventDefault();
-          onOpen(group, file);
-        }}
-      >
-        {contents}
-      </a>
-    ) : (
-      <span class="review-file" title={group.root + '/' + file.path}>
-        {contents}
-      </span>
-    );
-  }
   const metadata = (file) => (
     <>
       {unitPrefixed(file.bytes, true)}B · {timestamp(file.modified)}
@@ -85,7 +40,12 @@ export function ConflictRow({
       </td>
       <td class="review-current">
         <span class="review-cell-label">{t('Current file')}</span>
-        {fileLink(group, group.current)}
+        <ConflictFileChoice
+          group={group}
+          file={group.current}
+          permission={permission}
+          onOpen={onOpen}
+        />
         {group.current ? (
           <small class="review-file-meta">{metadata(group.current)}</small>
         ) : (
@@ -115,7 +75,12 @@ export function ConflictRow({
         ) : (
           <span class="review-mobile-label">{t('Conflict files')}</span>
         )}
-        {fileLink(group, file)}
+        <ConflictFileChoice
+          group={group}
+          file={file}
+          permission={permission}
+          onOpen={onOpen}
+        />
         <small class="review-file-meta review-conflict-meta">
           {metadata(file)}
           {!group.current && file.available && (
