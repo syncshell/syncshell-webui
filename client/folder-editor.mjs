@@ -1,5 +1,25 @@
 import { cloneConfig, setValue } from './edit.mjs';
 
+export const newFolderSavePhases = Object.freeze({
+  editing: 'editing',
+  loadingIgnores: 'loading-ignores',
+  editingIgnores: 'editing-ignores',
+  ignoreLoadFailed: 'ignore-load-failed',
+});
+
+export function reduceNewFolderSavePhase(phase, event) {
+  switch (event) {
+    case 'start-ignore-load':
+      return newFolderSavePhases.loadingIgnores;
+    case 'ignore-load-succeeded':
+      return newFolderSavePhases.editingIgnores;
+    case 'ignore-load-failed':
+      return newFolderSavePhases.ignoreLoadFailed;
+    default:
+      return phase;
+  }
+}
+
 const field = (path, label, type = 'text', options) => ({
   path,
   label,

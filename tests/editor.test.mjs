@@ -12,8 +12,10 @@ import {
   folderEditorFieldState,
   folderPath,
   newXattrEntry,
+  newFolderSavePhases,
   normalizeFolderEditor,
   overlappingPath,
+  reduceNewFolderSavePhase,
   saveFolderEditor,
   updateFolderEditor,
   xattrDefault,
@@ -249,6 +251,19 @@ test('ignore text keeps intentional empty and trailing lines', () => {
     '# keep',
     '',
   ]);
+});
+
+test('new folder ignore persistence exposes loading and retry phases', () => {
+  let phase = newFolderSavePhases.editing;
+  phase = reduceNewFolderSavePhase(phase, 'start-ignore-load');
+  assert.equal(phase, newFolderSavePhases.loadingIgnores);
+
+  phase = reduceNewFolderSavePhase(phase, 'ignore-load-failed');
+  assert.equal(phase, newFolderSavePhases.ignoreLoadFailed);
+
+  phase = reduceNewFolderSavePhase(phase, 'start-ignore-load');
+  phase = reduceNewFolderSavePhase(phase, 'ignore-load-succeeded');
+  assert.equal(phase, newFolderSavePhases.editingIgnores);
 });
 
 test('folder normalization removes unfinished attribute rules from a clone', () => {

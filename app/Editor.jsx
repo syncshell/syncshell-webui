@@ -25,7 +25,9 @@ import {
   folderEditorFields,
   folderPath,
   newXattrEntry,
+  newFolderSavePhases,
   overlappingPath,
+  reduceNewFolderSavePhase,
   saveFolderEditor,
   updateFolderEditor,
   xattrDefault,
@@ -52,12 +54,14 @@ export function Editor({ action, state, api, session, onClose, onSaved }) {
   const [addIgnores, setAddIgnores] = useState(false);
   const autoPath = useRef(true);
   const [directories, setDirectories] = useState([]);
-  const [stage, setStage] = useState('edit');
+  const [savePhase, setSavePhase] = useState(newFolderSavePhases.editing);
   const [ignores, setIgnores] = useState('');
   const originalIgnores = useRef([]);
   const [loadedIgnores, setLoadedIgnores] = useState(false);
   const saved = useRef(false);
   const form = useRef();
+  const savingAddedIgnores = savePhase !== newFolderSavePhases.editing;
+  const addedIgnoresReady = savePhase === newFolderSavePhases.editingIgnores;
   const [passwords, setPasswords] = useState(() =>
     Object.fromEntries(
       (draft.devices || []).map((member) => [
@@ -145,7 +149,7 @@ export function Editor({ action, state, api, session, onClose, onSaved }) {
   }, []);
   function tabDisabled(name) {
     return (
-      (stage === 'ignores' && name !== 'Ignore Patterns') ||
+      (savingAddedIgnores && name !== 'Ignore Patterns') ||
       (kind === 'folder' &&
         draft.type === 'receiveencrypted' &&
         name === 'Ignore Patterns')
@@ -165,6 +169,9 @@ export function Editor({ action, state, api, session, onClose, onSaved }) {
     });
   }
   async function loadAddedIgnores() {
+    setSavePhase((phase) =>
+      reduceNewFolderSavePhase(phase, 'start-ignore-load'),
+    );
     setLoadedIgnores(false);
     setBusy(true);
     setError('');
@@ -176,8 +183,14 @@ export function Editor({ action, state, api, session, onClose, onSaved }) {
           : state.config.defaults?.ignores?.lines || [];
       setIgnores(originalIgnores.current.join('\n'));
       setLoadedIgnores(true);
+      setSavePhase((phase) =>
+        reduceNewFolderSavePhase(phase, 'ignore-load-succeeded'),
+      );
       if (data.error) setError(data.error);
     } catch (error) {
+      setSavePhase((phase) =>
+        reduceNewFolderSavePhase(phase, 'ignore-load-failed'),
+      );
       setError(error.message);
     } finally {
       setBusy(false);
@@ -235,8 +248,8 @@ export function Editor({ action, state, api, session, onClose, onSaved }) {
           defaults,
           ignores: ignoreLines(ignores),
         });
-      } else if (stage === 'ignores') {
-        if (!loadedIgnores) return;
+      } else if (savingAddedIgnores) {
+        if (!addedIgnoresReady) return;
         await api.post(
           'db/ignores',
           { ignore: ignoreLines(ignores) },
@@ -252,7 +265,6 @@ export function Editor({ action, state, api, session, onClose, onSaved }) {
         await saveDraft({
           draft: { ...cloneConfig(draft), paused: true },
         });
-        setStage('ignores');
         setTab('Ignore Patterns');
         await loadAddedIgnores();
         return;
@@ -280,7 +292,7 @@ export function Editor({ action, state, api, session, onClose, onSaved }) {
   }
   async function cancel() {
     if (busy) return;
-    if (!saved.current && stage === 'ignores' && loadedIgnores) {
+    if (!saved.current && addedIgnoresReady) {
       saved.current = true;
       try {
         await api.post(
@@ -299,7 +311,7 @@ export function Editor({ action, state, api, session, onClose, onSaved }) {
     <>
       {!defaults &&
         !isNew &&
-        stage === 'edit' &&
+        savePhase === newFolderSavePhases.editing &&
         draft.deviceID !== state.system.myID && (
           <button
             class="btn btn-warning btn-sm pull-left"
@@ -311,7 +323,7 @@ export function Editor({ action, state, api, session, onClose, onSaved }) {
         )}
       <button
         class="btn btn-primary btn-sm"
-        disabled={busy || (stage === 'ignores' && !loadedIgnores)}
+        disabled={busy || (savingAddedIgnores && !addedIgnoresReady)}
         onClick={save}
       >
         <Icon name="check" />
@@ -507,13 +519,13 @@ export function Editor({ action, state, api, session, onClose, onSaved }) {
                     {t('full documentation')}
                   </a>
                 </p>
-                {stage === 'ignores' && (
+                {savingAddedIgnores && (
                   <>
                     <p>
                       {t('Set Ignores on Added Folder')} ·{' '}
                       {draft.label || draft.id}
                     </p>
-                    {!loadedIgnores && (
+                    {!addedIgnoresReady && (
                       <button
                         type="button"
                         class="btn btn-default"
@@ -525,7 +537,7 @@ export function Editor({ action, state, api, session, onClose, onSaved }) {
                     )}
                   </>
                 )}
-                {isNew && stage !== 'ignores' ? (
+                {isNew && !savingAddedIgnores ? (
                   <>
                     <label>
                       <input
