@@ -51,14 +51,14 @@ test('identity links encode text and About lists attribution and paths', async (
   const about = page.getByRole('dialog', { name: 'About', exact: true });
   await expect(about).toContainText('Jakob Borg');
   await about
-    .getByRole('link', { name: 'Included Software', exact: true })
+    .getByRole('tab', { name: 'Included Software', exact: true })
     .click();
   await expect(about).not.toContainText('AngularJS');
   const license = await about
     .getByRole('link', { name: 'MIT license', exact: true })
     .getAttribute('href');
   expect((await page.request.get(license)).status()).toBe(200);
-  await about.getByRole('link', { name: 'Paths', exact: true }).click();
+  await about.getByRole('tab', { name: 'Paths', exact: true }).click();
   const paths = await (await pathsResponse).json();
   await expect(about).toContainText(paths['baseDir-userHome']);
   await page.screenshot({ path: testInfo.outputPath('about-paths.png') });

@@ -3,11 +3,18 @@ import { LocaleContext } from './locale-context.jsx';
 import { Dialog } from './Dialog.jsx';
 import data from '../client/about-data.json';
 import { aboutPaths } from '../client/about.mjs';
+import { Tabs } from './Tabs.jsx';
 export function About({ api, version, onClose }) {
   const { t } = useContext(LocaleContext);
   const [tab, setTab] = useState('Authors');
   const [paths, setPaths] = useState({});
   const [error, setError] = useState('');
+  const tabItems = ['Authors', 'Included Software', 'Paths'].map((name) => ({
+    id: name,
+    tabId: 'about-' + name.toLowerCase().replaceAll(' ', '-') + '-tab',
+    panelId: 'about-panel',
+    label: t(name),
+  }));
   useEffect(() => {
     const controller = new AbortController();
     if (window.metadata?.authenticated)
@@ -103,27 +110,21 @@ export function About({ api, version, onClose }) {
         {t('Syncthing is Free and Open Source Software licensed as MPL v2.0.')}{' '}
         <a href="LICENSE.syncthing">MPL 2.0</a>
       </p>
-      <ul class="nav nav-tabs">
-        {['Authors', 'Included Software', 'Paths'].map((name) => (
-          <li key={name} class={tab === name ? 'active' : ''}>
-            <a
-              href={'#about-' + name}
-              onClick={(event) => {
-                event.preventDefault();
-                setTab(name);
-              }}
-            >
-              {t(name)}
-            </a>
-          </li>
-        ))}
-      </ul>
-      {error && (
-        <p class="text-danger" role="alert">
-          {error}
-        </p>
-      )}
-      {renderPanel()}
+      <Tabs activeId={tab} items={tabItems} onSelect={setTab} />
+      <div
+        id="about-panel"
+        role="tabpanel"
+        aria-labelledby={
+          'about-' + tab.toLowerCase().replaceAll(' ', '-') + '-tab'
+        }
+      >
+        {error && (
+          <p class="text-danger" role="alert">
+            {error}
+          </p>
+        )}
+        {renderPanel()}
+      </div>
     </Dialog>
   );
 }
