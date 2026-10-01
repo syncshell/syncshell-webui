@@ -10,25 +10,27 @@ import {
   saveEditor,
   ignoreLines,
 } from '../client/edit.mjs';
-import {
-  folderPath,
-  updateEditor,
-  editorFieldState,
-  newXattrEntry,
-  xattrDefault,
-  xattrHint,
-  overlappingPath,
-} from '../client/editor-behavior.mjs';
 import { fieldHelp } from '../client/field-help.mjs';
 import { Tooltip } from './Tooltip.jsx';
 import { IdentityControls } from './IdentityControls.jsx';
 import { SharingEntry } from './SharingEntry.jsx';
 import { deviceName } from '../client/devices.mjs';
 import {
+  deviceEditorFieldState,
   deviceEditorFields,
   saveDeviceEditor,
+  updateDeviceEditor,
 } from '../client/device-editor.mjs';
-import { folderEditorFields } from '../client/folder-editor.mjs';
+import {
+  folderEditorFieldState,
+  folderEditorFields,
+  folderPath,
+  newXattrEntry,
+  overlappingPath,
+  updateFolderEditor,
+  xattrDefault,
+  xattrHint,
+} from '../client/folder-editor.mjs';
 import { Icon } from './Icon.jsx';
 
 export function Editor({ action, state, api, session, onClose, onSaved }) {
@@ -86,12 +88,9 @@ export function Editor({ action, state, api, session, onClose, onSaved }) {
     kind === 'device' ? deviceEditorFields(tab) : folderEditorFields(tab);
   const fields = describedFields
     .map((field) =>
-      editorFieldState(field, draft, {
-        kind,
-        isNew,
-        defaults,
-        myID: state.system.myID,
-      }),
+      kind === 'device'
+        ? deviceEditorFieldState(field, draft, state.system.myID)
+        : folderEditorFieldState(field, draft, { isNew, defaults }),
     )
     .filter(
       (field) =>
@@ -154,16 +153,16 @@ export function Editor({ action, state, api, session, onClose, onSaved }) {
   }
   function update(path, value) {
     if (path === 'path') autoPath.current = false;
-    setDraft((previous) =>
-      updateEditor(previous, path, value, {
-        kind,
+    setDraft((previous) => {
+      if (kind === 'device') return updateDeviceEditor(previous, path, value);
+      return updateFolderEditor(previous, path, value, {
         isNew,
         defaults,
         autoPath: autoPath.current,
         config: state.config,
         system: state.system,
-      }),
-    );
+      });
+    });
   }
   async function loadAddedIgnores() {
     setLoadedIgnores(false);

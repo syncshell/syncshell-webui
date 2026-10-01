@@ -9,7 +9,7 @@ import { loadEnglish, translator } from '../client/locale.mjs';
 import { deviceName, groupAndSortItems } from '../client/devices.mjs';
 import { UsageReport } from './UsageReport.jsx';
 import { needsUsageConsent } from '../client/reports.mjs';
-import { updateEditor } from '../client/editor-behavior.mjs';
+import { updateFolderEditor } from '../client/folder-editor.mjs';
 import { notices } from '../client/notices.mjs';
 import { Folder } from './Folder.jsx';
 import { Device } from './Device.jsx';
@@ -120,8 +120,7 @@ function App() {
         )
           Object.assign(
             folder,
-            updateEditor(folder, 'type', 'receiveencrypted', {
-              kind: 'folder',
+            updateFolderEditor(folder, 'type', 'receiveencrypted', {
               isNew: true,
               config: state.config,
               system: state.system,

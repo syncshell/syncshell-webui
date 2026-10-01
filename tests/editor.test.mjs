@@ -11,14 +11,14 @@ import {
   setValue,
 } from '../client/edit.mjs';
 import {
-  editorFieldState,
+  folderEditorFieldState,
   folderPath,
   newXattrEntry,
   overlappingPath,
-  updateEditor,
+  updateFolderEditor,
   xattrDefault,
   xattrHint,
-} from '../client/editor-behavior.mjs';
+} from '../client/folder-editor.mjs';
 import {
   deviceEditorFieldState,
   saveDeviceEditor,
@@ -26,7 +26,6 @@ import {
 } from '../client/device-editor.mjs';
 
 const folderContext = {
-  kind: 'folder',
   isNew: false,
   defaults: false,
   autoPath: false,
@@ -566,7 +565,7 @@ test('folder types apply watcher, rescan, encryption and indexing defaults', () 
     blockIndexing: true,
     versioning: { type: 'simple', params: { keep: '5' } },
   };
-  const encrypted = updateEditor(
+  const encrypted = updateFolderEditor(
     original,
     'type',
     'receiveencrypted',
@@ -581,12 +580,17 @@ test('folder types apply watcher, rescan, encryption and indexing defaults', () 
   assert.equal(original.type, 'sendreceive');
 
   const newFolderContext = { ...folderContext, isNew: true };
-  const sendOnly = updateEditor(original, 'type', 'sendonly', newFolderContext);
+  const sendOnly = updateFolderEditor(
+    original,
+    'type',
+    'sendonly',
+    newFolderContext,
+  );
   assert.equal(sendOnly.fsWatcherEnabled, true);
   assert.equal(sendOnly.rescanIntervalS, 3600);
   assert.equal(sendOnly.blockIndexing, false);
 
-  const receiveOnly = updateEditor(
+  const receiveOnly = updateFolderEditor(
     original,
     'type',
     'receiveonly',
@@ -594,7 +598,7 @@ test('folder types apply watcher, rescan, encryption and indexing defaults', () 
   );
   assert.equal(receiveOnly.blockIndexing, true);
 
-  const defaultFolder = updateEditor(original, 'type', 'sendonly', {
+  const defaultFolder = updateFolderEditor(original, 'type', 'sendonly', {
     ...folderContext,
     defaults: true,
   });
@@ -602,7 +606,7 @@ test('folder types apply watcher, rescan, encryption and indexing defaults', () 
 });
 
 test('watcher changes update standard intervals and leave custom intervals unchanged', () => {
-  const standard = updateEditor(
+  const standard = updateFolderEditor(
     { type: 'sendreceive', fsWatcherEnabled: true, rescanIntervalS: 3600 },
     'fsWatcherEnabled',
     false,
@@ -610,7 +614,7 @@ test('watcher changes update standard intervals and leave custom intervals uncha
   );
   assert.equal(standard.rescanIntervalS, 60);
 
-  const custom = updateEditor(
+  const custom = updateFolderEditor(
     { type: 'sendreceive', fsWatcherEnabled: true, rescanIntervalS: 300 },
     'fsWatcherEnabled',
     false,
@@ -627,21 +631,21 @@ test('new folder names update only an automatic path', () => {
   );
 
   const original = { id: 'photos', label: '', path: '/srv/sync/photos' };
-  const automatic = updateEditor(original, 'label', 'Family photos', {
+  const automatic = updateFolderEditor(original, 'label', 'Family photos', {
     ...folderContext,
     isNew: true,
     autoPath: true,
   });
   assert.equal(automatic.path, '/srv/sync/Family photos');
 
-  const idFallback = updateEditor(original, 'id', 'new-photos', {
+  const idFallback = updateFolderEditor(original, 'id', 'new-photos', {
     ...folderContext,
     isNew: true,
     autoPath: true,
   });
   assert.equal(idFallback.path, '/srv/sync/new-photos');
 
-  const explicit = updateEditor(original, 'label', 'Family photos', {
+  const explicit = updateFolderEditor(original, 'label', 'Family photos', {
     ...folderContext,
     isNew: true,
     autoPath: false,
@@ -654,20 +658,20 @@ test('folder fields reflect type, versioning and ownership restrictions', () => 
     { value: 'sendreceive', label: 'Send & Receive' },
     { value: 'receiveencrypted', label: 'Receive Encrypted' },
   ];
-  const existingType = editorFieldState(
+  const existingType = folderEditorFieldState(
     { path: 'type', options: typeOptions },
     { type: 'sendreceive' },
-    { kind: 'folder', isNew: false, defaults: false },
+    { isNew: false, defaults: false },
   );
   assert.equal(existingType.disabled, false);
   assert.deepEqual(existingType.options, [
     { value: 'sendreceive', label: 'Send & Receive' },
   ]);
 
-  const encryptedType = editorFieldState(
+  const encryptedType = folderEditorFieldState(
     { path: 'type', options: typeOptions },
     { type: 'receiveencrypted' },
-    { kind: 'folder', isNew: false, defaults: false },
+    { isNew: false, defaults: false },
   );
   assert.equal(encryptedType.disabled, true);
   assert.deepEqual(encryptedType.options, typeOptions);
@@ -683,33 +687,31 @@ test('folder fields reflect type, versioning and ownership restrictions', () => 
     'sendXattrs',
   ]) {
     assert.equal(
-      editorFieldState({ path }, encrypted, { kind: 'folder' }).disabled,
+      folderEditorFieldState({ path }, encrypted, {}).disabled,
       true,
       path,
     );
   }
 
   assert.equal(
-    editorFieldState({ path: 'versioning.fsPath' }, encrypted, {
-      kind: 'folder',
-    }).hidden,
+    folderEditorFieldState({ path: 'versioning.fsPath' }, encrypted, {}).hidden,
     true,
   );
   assert.equal(
     Boolean(
-      editorFieldState(
+      folderEditorFieldState(
         { path: 'versioning.fsPath' },
         { type: 'sendreceive', versioning: { type: 'simple' } },
-        { kind: 'folder' },
+        {},
       ).hidden,
     ),
     false,
   );
 
-  const ownership = editorFieldState(
+  const ownership = folderEditorFieldState(
     { path: 'sendOwnership' },
     { type: 'sendreceive', sendOwnership: false, syncOwnership: true },
-    { kind: 'folder' },
+    {},
   );
   assert.equal(ownership.disabled, true);
   assert.equal(ownership.checked, true);
@@ -722,7 +724,7 @@ test('folder fields reflect type, versioning and ownership restrictions', () => 
     [{ type: 'receiveonly' }, 'sendXattrs'],
   ]) {
     assert.equal(
-      editorFieldState({ path }, draft, { kind: 'folder' }).disabled,
+      folderEditorFieldState({ path }, draft, {}).disabled,
       true,
       `${draft.type} ${path}`,
     );
@@ -754,19 +756,19 @@ test('extended attribute rules insert before wildcard and explain the default', 
   );
 
   assert.equal(
-    editorFieldState(
+    folderEditorFieldState(
       { path: 'xattrFilter.maxTotalSize' },
       { type: 'sendreceive', syncXattrs: false, sendXattrs: false },
-      { kind: 'folder' },
+      {},
     ).hidden,
     true,
   );
   assert.equal(
     Boolean(
-      editorFieldState(
+      folderEditorFieldState(
         { path: 'xattrFilter.maxTotalSize' },
         { type: 'sendreceive', syncXattrs: true, sendXattrs: false },
-        { kind: 'folder' },
+        {},
       ).hidden,
     ),
     false,
