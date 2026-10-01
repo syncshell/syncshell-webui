@@ -53,7 +53,7 @@ test('settings drafts survive default editing and ignored-list changes', async (
     .getByLabel('Folder Label', { exact: true })
     .fill('Future folder');
   await defaults
-    .getByRole('link', { name: 'Ignore Patterns', exact: true })
+    .getByRole('tab', { name: 'Ignore Patterns', exact: true })
     .click();
   await defaults
     .getByRole('textbox', { name: 'Ignore Patterns', exact: true })

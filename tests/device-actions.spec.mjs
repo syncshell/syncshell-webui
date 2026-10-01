@@ -58,7 +58,7 @@ test('device actions expose local folders and dismiss menus outside', async ({
   const editor = page.getByRole('dialog', { name: 'Edit Folder', exact: true });
   await expect(
     editor
-      .getByRole('link', { name: 'General', exact: true })
+      .getByRole('tab', { name: 'General', exact: true })
       .locator('xpath=..'),
   ).toHaveClass(/active/);
   await editor.getByRole('button', { name: 'Cancel', exact: true }).click();

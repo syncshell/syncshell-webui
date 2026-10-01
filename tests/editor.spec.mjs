@@ -20,7 +20,7 @@ test('editor enforces folder restrictions and orders attribute rules', async ({
     .getByRole('button', { name: /Edit/ })
     .click();
   const dialog = page.getByRole('dialog', { name: 'Edit Folder', exact: true });
-  await dialog.getByRole('link', { name: 'Advanced', exact: true }).click();
+  await dialog.getByRole('tab', { name: 'Advanced', exact: true }).click();
   const type = dialog.getByRole('combobox', {
     name: 'Folder Type',
     exact: true,
@@ -124,12 +124,12 @@ test('a new folder stays paused through ignore load/save failures and retries', 
   await page.goto('/');
   await page.getByRole('button', { name: /Add Folder/ }).click();
   const dialog = page.getByRole('dialog', { name: 'Add Folder', exact: true });
-  await dialog.getByRole('link', { name: 'Advanced', exact: true }).click();
+  await dialog.getByRole('tab', { name: 'Advanced', exact: true }).click();
   await dialog
     .getByRole('combobox', { name: 'Folder Type', exact: true })
     .selectOption('receiveencrypted');
   await expect(
-    dialog.getByRole('link', { name: 'Ignore Patterns', exact: true }),
+    dialog.getByRole('tab', { name: 'Ignore Patterns', exact: true }),
   ).toHaveAttribute('aria-disabled', 'true');
   await expect(
     dialog.getByRole('checkbox', { name: 'Watch for Changes', exact: true }),
@@ -137,7 +137,7 @@ test('a new folder stays paused through ignore load/save failures and retries', 
   await dialog
     .getByRole('combobox', { name: 'Folder Type', exact: true })
     .selectOption('sendreceive');
-  await dialog.getByRole('link', { name: 'General', exact: true }).click();
+  await dialog.getByRole('tab', { name: 'General', exact: true }).click();
   await dialog
     .getByRole('textbox', { name: 'Folder ID', exact: true })
     .fill('editor-new');
@@ -157,7 +157,7 @@ test('a new folder stays paused through ignore load/save failures and retries', 
     dialog.getByRole('combobox', { name: 'Folder Path', exact: true }),
   ).toHaveValue('/test/explicit');
   await dialog
-    .getByRole('link', { name: 'Ignore Patterns', exact: true })
+    .getByRole('tab', { name: 'Ignore Patterns', exact: true })
     .click();
   const add = dialog.getByRole('checkbox', {
     name: 'Add Ignore Patterns',

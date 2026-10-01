@@ -33,6 +33,7 @@ import {
   xattrHint,
 } from '../client/folder-editor.mjs';
 import { Icon } from './Icon.jsx';
+import { Tabs } from './Tabs.jsx';
 
 export function Editor({ action, state, api, session, onClose, onSaved }) {
   const { t } = useContext(LocaleContext);
@@ -87,6 +88,13 @@ export function Editor({ action, state, api, session, onClose, onSaved }) {
       ? ['General', 'Sharing', 'File Versioning', 'Ignore Patterns', 'Advanced']
       : ['General', 'Sharing', 'Advanced']
   ).filter((name) => !defaults || name !== 'Sharing');
+  const tabItems = tabs.map((name) => ({
+    id: name,
+    tabId: 'editor-' + name.toLowerCase().replaceAll(' ', '-') + '-tab',
+    panelId: 'editor-panel',
+    label: t(name),
+    disabled: tabDisabled(name),
+  }));
   const describedFields =
     kind === 'device' ? deviceEditorFields(tab) : folderEditorFields(tab);
   const fields = describedFields
@@ -368,27 +376,7 @@ export function Editor({ action, state, api, session, onClose, onSaved }) {
             save();
           }}
         >
-          <ul class="nav nav-tabs">
-            {tabs.map((name) => (
-              <li
-                key={name}
-                class={
-                  tab === name ? 'active' : tabDisabled(name) ? 'disabled' : ''
-                }
-              >
-                <a
-                  href={`#editor-${name}`}
-                  aria-disabled={tabDisabled(name)}
-                  onClick={(event) => {
-                    event.preventDefault();
-                    if (!tabDisabled(name)) setTab(name);
-                  }}
-                >
-                  {t(name)}
-                </a>
-              </li>
-            ))}
-          </ul>
+          <Tabs activeId={tab} items={tabItems} onSelect={setTab} />
           {error && (
             <p class="text-danger" role="alert">
               {t(error)}
@@ -410,7 +398,14 @@ export function Editor({ action, state, api, session, onClose, onSaved }) {
               <option key={group} value={group} />
             ))}
           </datalist>
-          <div class="tab-content">
+          <div
+            id="editor-panel"
+            class="tab-content"
+            role="tabpanel"
+            aria-labelledby={
+              'editor-' + tab.toLowerCase().replaceAll(' ', '-') + '-tab'
+            }
+          >
             {tab === 'Sharing' ? (
               <>
                 <div class="folder-actions">
