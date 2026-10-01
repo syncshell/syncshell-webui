@@ -25,6 +25,7 @@ test('dialogs take initial focus and return it after Escape', async ({
   await expect(
     dialog.getByRole('button', { name: 'Full View', exact: true }),
   ).toBeFocused();
+  await expect(dialog).toHaveScreenshot('recent-changes-dialog.png');
 
   await page.keyboard.press('Escape');
   await expect(dialog).toHaveCount(0);

@@ -5,8 +5,13 @@ export default defineConfig({
   testMatch: '*.spec.mjs',
   workers: 1,
   timeout: 30000,
+  expect: {
+    toHaveScreenshot: { maxDiffPixelRatio: 0.01 },
+  },
   use: {
     headless: true,
+    locale: 'en-US',
+    timezoneId: 'Europe/Berlin',
     viewport: { width: 1908, height: 954 },
     launchOptions: process.env.SYNCSHELL_CHROMIUM
       ? { executablePath: process.env.SYNCSHELL_CHROMIUM }

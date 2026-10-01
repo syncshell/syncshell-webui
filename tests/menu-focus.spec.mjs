@@ -14,6 +14,9 @@ test('Escape closes a folder menu and returns focus to its trigger', async ({
   await trigger.click();
   await expect(trigger).toHaveAttribute('aria-expanded', 'true');
   await expect(menu).toHaveClass(/\bopen\b/);
+  await expect(menu.locator('.dropdown-menu')).toHaveScreenshot(
+    'folder-menu.png',
+  );
 
   const item = menu.getByRole('link', {
     name: 'Folder under test',

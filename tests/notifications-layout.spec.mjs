@@ -22,7 +22,7 @@ async function expectColumns(panels, count) {
 test('notification cards form a responsive grid with aligned headers', async ({
   page,
   folderFixture,
-}, testInfo) => {
+}) => {
   await folderFixture({
     folder: { fsWatcherEnabled: true, paused: false },
     model: { watchError: 'watch failed' },
@@ -153,10 +153,9 @@ test('notification cards form a responsive grid with aligned headers', async ({
   expect(titleMetrics.height).toBeGreaterThan(titleMetrics.lineHeight * 1.5);
 
   await expectColumns(panels, 4);
-  await page.screenshot({
-    path: testInfo.outputPath('notifications-four-columns.png'),
-    fullPage: true,
-  });
+  await expect(page.locator('.notification-grid')).toHaveScreenshot(
+    'notifications-light-desktop.png',
+  );
 
   for (const [width, columns] of [
     [1100, 3],
@@ -166,4 +165,11 @@ test('notification cards form a responsive grid with aligned headers', async ({
     await page.setViewportSize({ width, height: 900 });
     await expectColumns(panels, columns);
   }
+
+  await page.emulateMedia({ colorScheme: 'dark' });
+  await expect(page.locator('body')).toHaveCSS(
+    'background-color',
+    'rgb(39, 39, 39)',
+  );
+  await expect(page).toHaveScreenshot('notifications-dark-mobile.png');
 });

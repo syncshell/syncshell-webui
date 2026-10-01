@@ -3,7 +3,7 @@ import { test, expect } from './playwright-fixtures.mjs';
 test('rechecks show activity until completion and clear it after errors', async ({
   page,
   folderFixture,
-}, info) => {
+}) => {
   await folderFixture();
   const copy = 'note.sync-conflict-20260908-120000-ABCDEFG.txt';
   await page.route('**/rest/db/browse?*', (route) =>
@@ -47,7 +47,9 @@ test('rechecks show activity until completion and clear it after errors', async 
     exact: true,
   });
   await expect(row).toBeEnabled();
-  await page.screenshot({ path: info.outputPath('recheck-idle.png') });
+  await expect(page.locator('.conflict-review')).toHaveScreenshot(
+    'conflict-table.png',
+  );
   for (const [button, fail] of [
     [all, false],
     [row, true],
@@ -63,16 +65,10 @@ test('rechecks show activity until completion and clear it after errors', async 
       expect(request.searchParams.get('sub')).toBe('notes');
       await expect(all).toHaveAttribute('aria-busy', 'false');
     } else expect([...request.searchParams]).toEqual([]);
-    await page.screenshot({
-      path: info.outputPath(
-        fail ? 'recheck-folder-active.png' : 'recheck-all-active.png',
-      ),
-    });
     finish(fail);
     await expect(button).toHaveAttribute('aria-busy', 'false');
     await expect(button.locator('.icon-spin')).toHaveCount(0);
     await expect(button).toBeEnabled();
   }
   await expect(page.getByRole('alert')).toBeVisible();
-  await page.screenshot({ path: info.outputPath('recheck-error-cleared.png') });
 });
