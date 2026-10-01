@@ -1,0 +1,666 @@
+import syncshellMark from '../assets/status-default.svg?url';
+import { desktopActions } from '../client/desktop.mjs';
+import { useEffect, useState } from 'preact/hooks';
+import { createApi } from '../client/api.mjs';
+import { runReportedSessionAction } from '../client/session.mjs';
+import { useSyncthingSession } from '../client/use-syncthing-session.mjs';
+import { loadEnglish, translator } from '../client/locale.mjs';
+import { deviceName, groupAndSortItems } from '../client/devices.mjs';
+import { UsageReport } from './UsageReport.jsx';
+import { needsUsageConsent } from '../client/reports.mjs';
+import { reduceFolderDraft } from '../client/folder-editor.mjs';
+import { notices } from '../client/notices.mjs';
+import { Folder } from './Folder.jsx';
+import { Device } from './Device.jsx';
+import { Login } from './Login.jsx';
+import { Notifications } from './Notifications.jsx';
+import { ActionDialog } from './ActionDialog.jsx';
+import { Conflicts } from './Conflicts.jsx';
+import { LocaleContext } from './locale-context.jsx';
+import { Icon } from './Icon.jsx';
+
+const tabs = [
+  { id: 'overview', label: 'Overview' },
+  { id: 'conflicts', label: 'Resolve sync conflicts' },
+  { id: 'notifications', label: 'Notifications' },
+];
+const helpLinks = [
+  {
+    label: 'Introduction',
+    url: 'https://github.com/syncshell/syncshell-webui#readme',
+  },
+  {
+    label: 'Home page',
+    url: 'https://github.com/syncshell/syncshell-webui',
+  },
+  { label: 'Documentation', url: 'https://docs.syncthing.net/' },
+  {
+    label: 'Support',
+    url: 'https://github.com/syncshell/syncshell-webui/issues',
+  },
+  {
+    label: 'Changelog',
+    url: 'https://github.com/syncshell/syncshell-webui/releases',
+  },
+  { label: 'Statistics', url: 'https://data.syncthing.net/' },
+  {
+    label: 'Bugs',
+    url: 'https://github.com/syncshell/syncshell-webui/issues',
+  },
+  {
+    label: 'Source Code',
+    url: 'https://github.com/syncshell/syncshell-webui',
+  },
+];
+const desktop = desktopActions();
+
+export function App() {
+  const [api] = useState(() => createApi());
+  const authenticated = Boolean(window.metadata?.authenticated);
+  const [state, session] = useSyncthingSession(api, {
+    active: authenticated,
+    onAuthExpired: () => location.reload(),
+  });
+  const [locale, setLocale] = useState({ t: translator({}) });
+  const [activeTab, setActiveTab] = useState('overview');
+  const [menu, setMenu] = useState('');
+  const [action, setAction] = useState(null);
+  const [usesMetricRates, setUsesMetricRates] = useState(false);
+  const self = state.config.devices.find(
+    (device) => device.deviceID === state.system.myID,
+  );
+  const others = state.config.devices.filter(
+    (device) => device.deviceID !== state.system.myID,
+  );
+  const folderGroups = groupAndSortItems(state.config.folders, 'label', 'id');
+  const deviceGroups = groupAndSortItems(others, 'name', 'deviceID');
+  const cards = notices(state);
+  const name = deviceName(self) || 'Syncthing';
+  const { t } = locale;
+  function toggleUnits() {
+    setUsesMetricRates((value) => {
+      try {
+        localStorage.setItem('metricRates', String(!value));
+      } catch {
+        // Storage can be unavailable in restricted browser contexts.
+      }
+      return !value;
+    });
+  }
+  async function openAction(next) {
+    setMenu('');
+    try {
+      if (next.type === 'add-device') {
+        const device = await api.get('config/defaults/device');
+        device.deviceID = typeof next.device === 'string' ? next.device : '';
+        device.name = next.pending?.name || '';
+        next = { ...next, device };
+      }
+      if (next.type === 'add-folder') {
+        const folder = await api.get('config/defaults/folder');
+        const random =
+          typeof next.folder === 'string'
+            ? null
+            : (await api.get('svc/random/string', { length: 10 })).random;
+        folder.id =
+          typeof next.folder === 'string'
+            ? next.folder
+            : (random.slice(0, 5) + '-' + random.slice(5)).toLowerCase();
+        folder.label = next.pending?.label || '';
+        folder.devices = [
+          { deviceID: state.system.myID },
+          ...(next.device ? [{ deviceID: next.device }] : []),
+        ];
+        if (
+          Object.values(state.pendingFolders[folder.id]?.offeredBy || {}).some(
+            (offer) => offer.receiveEncrypted,
+          )
+        )
+          Object.assign(
+            folder,
+            reduceFolderDraft(
+              folder,
+              { type: 'set-folder-type', value: 'receiveencrypted' },
+              {
+                isNew: true,
+                config: state.config,
+                system: state.system,
+              },
+            ),
+          );
+        next = { ...next, folder };
+      }
+      if (next.type === 'changes') await session.refreshGlobalChanges();
+      setAction(next);
+    } catch (error) {
+      session.reportError(error);
+    }
+  }
+  useEffect(() => {
+    if (!state.ready) return;
+    const launch = desktop?.takeLaunchAction?.();
+    if (launch?.type !== 'edit-device') return;
+    const device = state.config.devices.find(
+      (candidate) => candidate.deviceID === launch.device,
+    );
+    if (device) openAction({ type: 'edit-device', device });
+  }, [state.ready, state.config.devices]);
+  function tabKey(event) {
+    let index = tabs.findIndex((tab) => tab.id === activeTab);
+    if (event.key === 'ArrowRight') index = (index + 1) % tabs.length;
+    else if (event.key === 'ArrowLeft')
+      index = (index + tabs.length - 1) % tabs.length;
+    else if (event.key === 'Home') index = 0;
+    else if (event.key === 'End') index = tabs.length - 1;
+    else return;
+    event.preventDefault();
+    setActiveTab(tabs[index].id);
+    event.currentTarget.querySelectorAll('[role="tab"]')[index].focus();
+  }
+  useEffect(() => {
+    loadEnglish()
+      .then(setLocale)
+      .catch((error) => session.reportError(error));
+    try {
+      setUsesMetricRates(localStorage.getItem('metricRates') === 'true');
+    } catch {
+      // Storage can be unavailable in restricted browser contexts.
+    }
+    function outside(event) {
+      if (!event.target.closest('.action-menu')) setMenu('');
+    }
+    document.addEventListener('pointerdown', outside);
+    return () => {
+      document.removeEventListener('pointerdown', outside);
+    };
+  }, [session]);
+  useEffect(() => {
+    document.title = name + ' | Syncshell';
+  }, [name]);
+  return (
+    <LocaleContext.Provider value={locale}>
+      <nav class="navbar navbar-top navbar-default" aria-label="Main">
+        <div class="container">
+          <span class="navbar-brand syncshell-brand">
+            <span
+              class="syncshell-mark"
+              aria-hidden="true"
+              style={{ '--syncshell-mark': `url("${syncshellMark}")` }}
+            />
+            <span class="text-success">Syncshell</span>
+          </span>
+          {authenticated && <p class="navbar-text hidden-xs">{name}</p>}
+          <ul class="nav navbar-nav navbar-right">
+            <li class={`dropdown action-menu ${menu === 'help' ? 'open' : ''}`}>
+              <a
+                href="#help"
+                class="dropdown-toggle"
+                aria-expanded={menu === 'help'}
+                onClick={(event) => {
+                  event.preventDefault();
+                  setMenu(menu === 'help' ? '' : 'help');
+                }}
+              >
+                <Icon name="help" /> {t('Help')} <span class="caret" />
+              </a>
+              <ul class="dropdown-menu">
+                {helpLinks.map(({ label, url }) => (
+                  <li key={label}>
+                    <a href={url} target="_blank" rel="noreferrer">
+                      {t(label)}
+                    </a>
+                  </li>
+                ))}
+                <li>
+                  <a
+                    href="#about"
+                    onClick={(event) => {
+                      event.preventDefault();
+                      openAction({ type: 'about' });
+                    }}
+                  >
+                    {t('About')}
+                  </a>
+                </li>
+              </ul>
+            </li>
+            {authenticated && (
+              <li
+                class={`dropdown action-menu ${menu === 'actions' ? 'open' : ''}`}
+              >
+                <a
+                  href="#actions"
+                  class="dropdown-toggle"
+                  aria-expanded={menu === 'actions'}
+                  onClick={(event) => {
+                    event.preventDefault();
+                    setMenu(menu === 'actions' ? '' : 'actions');
+                  }}
+                >
+                  <Icon name="settings" /> {t('Actions')} <span class="caret" />
+                </a>
+                <ul class="dropdown-menu">
+                  <li>
+                    <a
+                      href="#settings"
+                      onClick={(event) => {
+                        event.preventDefault();
+                        openAction({ type: 'settings' });
+                      }}
+                    >
+                      {t('Settings')}
+                    </a>
+                  </li>
+                  <li>
+                    <a
+                      href="#advanced"
+                      onClick={(event) => {
+                        event.preventDefault();
+                        openAction({ type: 'advanced' });
+                      }}
+                    >
+                      {t('Advanced')}
+                    </a>
+                  </li>
+                  <li>
+                    <a
+                      href="#identification"
+                      onClick={(event) => {
+                        event.preventDefault();
+                        openAction({ type: 'identification', device: self });
+                      }}
+                    >
+                      {t('Show ID')}
+                    </a>
+                  </li>
+                  <li>
+                    <a
+                      href="#logs"
+                      onClick={(event) => {
+                        event.preventDefault();
+                        openAction({ type: 'logs' });
+                      }}
+                    >
+                      {t('Logs')}
+                    </a>
+                  </li>
+                  {(state.upgradeInfo?.newer ||
+                    state.upgradeInfo?.majorNewer) && (
+                    <li>
+                      <a
+                        href="#upgrade"
+                        onClick={(event) => {
+                          event.preventDefault();
+                          openAction({ type: 'upgrade' });
+                        }}
+                      >
+                        {t('Upgrade')} {state.upgradeInfo.latest}
+                      </a>
+                    </li>
+                  )}
+                  <li>
+                    <a href="rest/debug/support" target="_blank">
+                      {t('Support Bundle')}
+                    </a>
+                  </li>
+                  {(state.config.gui?.user ||
+                    state.config.gui?.authMode === 'ldap') && (
+                    <li>
+                      <a
+                        href="#logout"
+                        onClick={async (event) => {
+                          event.preventDefault();
+                          await api.post('noauth/auth/logout', {});
+                          location.reload();
+                        }}
+                      >
+                        {t('Log Out')}
+                      </a>
+                    </li>
+                  )}
+                  <li>
+                    <a
+                      href="#restart"
+                      onClick={(event) => {
+                        event.preventDefault();
+                        openAction({ type: 'restart' });
+                      }}
+                    >
+                      {t('Restart')}
+                    </a>
+                  </li>
+                  <li>
+                    <a
+                      href="#shutdown"
+                      onClick={(event) => {
+                        event.preventDefault();
+                        openAction({ type: 'shutdown' });
+                      }}
+                    >
+                      {t('Shut Down')}
+                    </a>
+                  </li>
+                </ul>
+              </li>
+            )}
+          </ul>
+        </div>
+      </nav>
+      <main class="container content">
+        {!authenticated ? (
+          <Login />
+        ) : (
+          <>
+            {state.error &&
+              !['restart', 'shutdown', 'upgrade'].includes(action?.type) && (
+                <div class="alert alert-danger" role="alert">
+                  {state.error.message}
+                </div>
+              )}
+            {!state.configInSync && (
+              <div class="alert alert-warning">
+                {t('Restart Needed')}{' '}
+                <button
+                  class="btn btn-default btn-sm"
+                  onClick={() => openAction({ type: 'restart' })}
+                >
+                  {t('Restart')}
+                </button>
+              </div>
+            )}
+            {!state.ready && <p role="status">{t('Loading data...')}</p>}
+            <div class="dashboard">
+              <ul
+                class="nav nav-tabs dashboard-tabs"
+                role="tablist"
+                onKeyDown={tabKey}
+              >
+                {tabs.map(({ id, label }) => (
+                  <li
+                    key={id}
+                    class={id === activeTab ? 'active' : ''}
+                    role="presentation"
+                  >
+                    <a
+                      id={id + '-tab'}
+                      href={'#dashboard-' + id}
+                      role="tab"
+                      aria-controls={'dashboard-' + id}
+                      aria-selected={id === activeTab}
+                      tabIndex={id === activeTab ? 0 : -1}
+                      onClick={(event) => {
+                        event.preventDefault();
+                        setActiveTab(id);
+                      }}
+                    >
+                      {t(label)}
+                      {id === 'conflicts' ? ' (beta)' : ''}
+                      {id === 'notifications' && (
+                        <span class="notification-indicator">
+                          <Icon
+                            name="dot"
+                            class="text-success"
+                            role="img"
+                            aria-label={t('Pending notifications')}
+                          />
+                          <Icon
+                            name="dot"
+                            class="text-warning"
+                            role="img"
+                            aria-label={t('Pending warnings')}
+                          />
+                          <Icon
+                            name="dot"
+                            class="text-danger"
+                            role="img"
+                            aria-label={t('Pending errors')}
+                          />
+                        </span>
+                      )}
+                    </a>
+                  </li>
+                ))}
+              </ul>
+              <div class="tab-content">
+                <div
+                  id="dashboard-overview"
+                  class={`tab-pane dashboard-primary ${activeTab === 'overview' ? 'active' : ''}`}
+                  role="tabpanel"
+                  aria-labelledby="overview-tab"
+                >
+                  <section
+                    class="dashboard-folders"
+                    aria-labelledby="folder-list"
+                  >
+                    <h3 id="folder-list">
+                      {t('Folders')}
+                      {state.config.folders.length > 1
+                        ? ' (' + state.config.folders.length + ')'
+                        : ''}
+                    </h3>
+                    {folderGroups.map(([group, folders]) => (
+                      <div key={group}>
+                        {group && (
+                          <h4 class="folder-text" title={group}>
+                            {group}
+                            {folders.length > 1
+                              ? ' (' + folders.length + ')'
+                              : ''}
+                          </h4>
+                        )}
+                        <div class="panel-group">
+                          {folders.map((folder) => (
+                            <Folder
+                              key={folder.id}
+                              api={api}
+                              session={session}
+                              state={state}
+                              folder={folder}
+                              progress={state.scanProgress[folder.id]}
+                              info={state.model[folder.id]}
+                              stats={state.folderStats[folder.id]}
+                              rescan={() => session.rescan(folder.id)}
+                              onAction={openAction}
+                            />
+                          ))}
+                        </div>
+                      </div>
+                    ))}
+                    <div class="folder-actions">
+                      {state.config.folders.some(
+                        (folder) => !folder.paused,
+                      ) && (
+                        <button
+                          class="btn btn-sm btn-default"
+                          onClick={() =>
+                            runReportedSessionAction(
+                              () =>
+                                session.setPaused('folders', undefined, true),
+                              session.reportError,
+                            )
+                          }
+                        >
+                          <Icon name="pause" /> {t('Pause All')}
+                        </button>
+                      )}
+                      {state.config.folders.some((folder) => folder.paused) && (
+                        <button
+                          class="btn btn-sm btn-default"
+                          onClick={() =>
+                            runReportedSessionAction(
+                              () =>
+                                session.setPaused('folders', undefined, false),
+                              session.reportError,
+                            )
+                          }
+                        >
+                          <Icon name="play" /> {t('Resume All')}
+                        </button>
+                      )}
+                      {state.config.folders.length > 0 && (
+                        <button
+                          class="btn btn-sm btn-default"
+                          onClick={() =>
+                            runReportedSessionAction(
+                              () => session.rescan(),
+                              session.reportError,
+                            )
+                          }
+                        >
+                          <Icon name="refresh" /> {t('Rescan All')}
+                        </button>
+                      )}
+                      <button
+                        class="btn btn-sm btn-default"
+                        onClick={() => openAction({ type: 'add-folder' })}
+                      >
+                        <Icon name="plus" /> {t('Add Folder')}
+                      </button>
+                    </div>
+                  </section>
+                  <section class="dashboard-devices" aria-label={t('Devices')}>
+                    <div class="dashboard-heading">
+                      <h3>{t('Devices')}</h3>
+                      <button
+                        class="btn btn-sm btn-default"
+                        onClick={() => openAction({ type: 'changes' })}
+                      >
+                        <Icon name="clock" /> {t('Recent Changes')}
+                      </button>
+                    </div>
+                    {self && (
+                      <Device
+                        device={self}
+                        state={state}
+                        session={session}
+                        isLocalDevice
+                        usesMetricRates={usesMetricRates}
+                        toggleUnits={toggleUnits}
+                        onAction={openAction}
+                      />
+                    )}
+                    <div class="dashboard-remotes">
+                      {deviceGroups.map(([group, devices]) => (
+                        <div key={group}>
+                          {group && (
+                            <h4>
+                              {group}
+                              {devices.length > 1
+                                ? ' (' + devices.length + ')'
+                                : ''}
+                            </h4>
+                          )}
+                          <div class="panel-group">
+                            {devices.map((device) => (
+                              <Device
+                                key={device.deviceID}
+                                device={device}
+                                state={state}
+                                session={session}
+                                usesMetricRates={usesMetricRates}
+                                toggleUnits={toggleUnits}
+                                onAction={openAction}
+                              />
+                            ))}
+                          </div>
+                        </div>
+                      ))}
+                      <div class="folder-actions">
+                        {others.some((device) => !device.paused) && (
+                          <button
+                            class="btn btn-sm btn-default"
+                            onClick={() =>
+                              runReportedSessionAction(
+                                () =>
+                                  session.setPaused('devices', undefined, true),
+                                session.reportError,
+                              )
+                            }
+                          >
+                            {t('Pause All')}
+                          </button>
+                        )}
+                        {others.some((device) => device.paused) && (
+                          <button
+                            class="btn btn-sm btn-default"
+                            onClick={() =>
+                              runReportedSessionAction(
+                                () =>
+                                  session.setPaused(
+                                    'devices',
+                                    undefined,
+                                    false,
+                                  ),
+                                session.reportError,
+                              )
+                            }
+                          >
+                            {t('Resume All')}
+                          </button>
+                        )}
+                        <button
+                          class="btn btn-sm btn-default"
+                          onClick={() => openAction({ type: 'add-device' })}
+                        >
+                          {t('Add Remote Device')}
+                        </button>
+                      </div>
+                    </div>
+                  </section>
+                </div>
+                <section
+                  id="dashboard-conflicts"
+                  class={`tab-pane ${activeTab === 'conflicts' ? 'active' : ''}`}
+                  role="tabpanel"
+                  aria-labelledby="conflicts-tab"
+                >
+                  <Conflicts
+                    api={api}
+                    hostActions={desktop || window.syncshellHostActions || null}
+                    device={state.system.myID}
+                    folders={state.config.folders}
+                    ready={state.ready}
+                    active={activeTab === 'conflicts'}
+                  />
+                </section>
+                <section
+                  id="dashboard-notifications"
+                  class={`tab-pane notifications ${activeTab === 'notifications' ? 'active' : ''}`}
+                  role="tabpanel"
+                  aria-labelledby="notifications-tab"
+                >
+                  <Notifications
+                    cards={cards}
+                    session={session}
+                    onAction={openAction}
+                  />
+                </section>
+              </div>
+            </div>
+          </>
+        )}
+      </main>
+      {action && (
+        <ActionDialog
+          key={
+            action.type + (action.device?.deviceID || action.folder?.id || '')
+          }
+          action={action}
+          state={state}
+          api={api}
+          session={session}
+          onClose={() => setAction(null)}
+        />
+      )}
+      {needsUsageConsent(state) && (
+        <UsageReport
+          api={api}
+          session={session}
+          state={state}
+          consent
+          onClose={() => {}}
+        />
+      )}
+    </LocaleContext.Provider>
+  );
+}
