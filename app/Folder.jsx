@@ -1,5 +1,3 @@
-import { ShareStatus } from './ShareStatus.jsx';
-import { recoveryActions, managementActions } from '../client/management.mjs';
 import { useContext, useEffect, useRef, useState } from 'preact/hooks';
 import { LocaleContext } from './locale-context.jsx';
 import {
@@ -27,9 +25,9 @@ import { Field } from './Field.jsx';
 import { Versioning } from './Versioning.jsx';
 import { ItemsDialog } from './ItemsDialog.jsx';
 import { Icon } from './Icon.jsx';
-import { MenuButton } from './MenuButton.jsx';
 import { runReportedSessionAction } from '../client/session.mjs';
 import { FolderHeader } from './features/folders/FolderHeader.jsx';
+import { FolderActions } from './features/folders/FolderActions.jsx';
 
 export function Folder({
   folder,
@@ -75,6 +73,12 @@ export function Folder({
     } finally {
       setScanning(false);
     }
+  }
+  function togglePause() {
+    return runReportedSessionAction(
+      () => session.setPaused('folders', folder.id, !folder.paused),
+      session.reportError,
+    );
   }
   const showItems = (kind) => (event) => {
     event.preventDefault();
@@ -323,112 +327,16 @@ export function Folder({
                 </table>
               </details>
             </div>
-            <div class="panel-footer folder-actions">
-              {recoveryActions(folder, info, status).map((type) => (
-                <button
-                  key={type}
-                  class="btn btn-danger btn-sm"
-                  onClick={() => onAction({ type, folder })}
-                >
-                  {t(managementActions[type].title)}
-                </button>
-              ))}
-              <MenuButton
-                className="folder-sharing pull-left"
-                buttonClass="btn btn-sm btn-default"
-                disabled={
-                  !folder.devices.some(
-                    (device) => device.deviceID !== state.system.myID,
-                  )
-                }
-                label={
-                  <>
-                    <Icon name="share" /> {t('Shared')} <span class="caret" />
-                  </>
-                }
-              >
-                {({ close }) =>
-                  folder.devices
-                    .filter((device) => device.deviceID !== state.system.myID)
-                    .map((member) => {
-                      const device = state.config.devices.find(
-                        (item) => item.deviceID === member.deviceID,
-                      );
-                      return (
-                        <li key={member.deviceID}>
-                          <a
-                            href="#edit-device"
-                            onClick={(event) => {
-                              event.preventDefault();
-                              close();
-                              if (device)
-                                onAction({ type: 'edit-device', device });
-                            }}
-                          >
-                            {device?.name || member.deviceID.slice(0, 7)}{' '}
-                            <ShareStatus
-                              encrypted={
-                                folder.type === 'receiveencrypted' ||
-                                !!member.encryptionPassword
-                              }
-                              remoteState={
-                                state.completion[member.deviceID]?.[folder.id]
-                                  ?.remoteState
-                              }
-                            />
-                          </a>
-                        </li>
-                      );
-                    })
-                }
-              </MenuButton>
-              <button
-                class="btn btn-sm btn-default"
-                onClick={() =>
-                  runReportedSessionAction(
-                    () =>
-                      session.setPaused('folders', folder.id, !folder.paused),
-                    session.reportError,
-                  )
-                }
-              >
-                <Icon name={folder.paused ? 'play' : 'pause'} />{' '}
-                {t(folder.paused ? 'Resume' : 'Pause')}
-              </button>
-              <button
-                class="btn btn-sm btn-default"
-                disabled={
-                  scanning ||
-                  ![
-                    'idle',
-                    'stopped',
-                    'unshared',
-                    'outofsync',
-                    'faileditems',
-                    'localadditions',
-                  ].includes(status)
-                }
-                onClick={scan}
-              >
-                <Icon name="refresh" class="icon-fixed" /> {t('Rescan')}
-              </button>
-              {folder.versioning?.type &&
-                folder.versioning.type !== 'external' && (
-                  <button
-                    class="btn btn-sm btn-default"
-                    disabled={folder.paused}
-                    onClick={() => onAction({ type: 'versions', folder })}
-                  >
-                    <Icon name="undo" /> {t('Versions')}
-                  </button>
-                )}
-              <button
-                class="btn btn-sm btn-default"
-                onClick={() => onAction({ type: 'edit-folder', folder })}
-              >
-                <Icon name="pencil" /> {t('Edit')}
-              </button>
-            </div>
+            <FolderActions
+              folder={folder}
+              info={info}
+              scanning={scanning}
+              state={state}
+              status={status}
+              onAction={onAction}
+              onPause={togglePause}
+              onScan={scan}
+            />
           </div>
         )}
       </div>
