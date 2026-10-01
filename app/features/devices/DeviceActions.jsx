@@ -19,7 +19,7 @@ export function DeviceActions({
     (folder) => !folder.paused,
   );
   return (
-    <div class="panel-footer folder-actions device-actions">
+    <div class="panel-footer action-row device-actions">
       <button
         class="btn btn-sm btn-default"
         onClick={() => openAction('identification')}

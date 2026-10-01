@@ -18,7 +18,7 @@ export function FolderActions({
 }) {
   const { t } = useContext(LocaleContext);
   return (
-    <div class="panel-footer folder-actions">
+    <div class="panel-footer action-row">
       {recoveryActions(folder, info, status).map((type) => (
         <button
           key={type}
@@ -29,7 +29,7 @@ export function FolderActions({
         </button>
       ))}
       <MenuButton
-        className="folder-sharing pull-left"
+        className="action-row-leading pull-left"
         buttonClass="btn btn-sm btn-default"
         disabled={
           !folder.devices.some(

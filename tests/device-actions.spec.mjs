@@ -135,7 +135,7 @@ test('recent changes use compact columns and scroll only when needed', async ({
   expect(Math.abs(alignment.button - alignment.heading)).toBeLessThan(1);
   await expect(
     page
-      .locator('.dashboard-remotes .folder-actions')
+      .locator('.dashboard-remotes .action-row')
       .getByRole('button', { name: 'Recent Changes' }),
   ).toHaveCount(0);
   await heading.getByRole('button', { name: 'Recent Changes' }).click();

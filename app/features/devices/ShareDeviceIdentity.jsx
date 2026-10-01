@@ -53,7 +53,7 @@ export function ShareDeviceIdentity({ device, api }) {
   }
   return (
     <>
-      <div class="folder-actions">
+      <div class="action-row">
         <button
           type="button"
           class="btn btn-default"

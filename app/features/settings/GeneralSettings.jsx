@@ -95,7 +95,7 @@ export function GeneralSettings({
       <p>
         <strong>{t('Default Configuration')}</strong>
       </p>
-      <div class="folder-actions">
+      <div class="action-row">
         <button
           type="button"
           class="btn btn-default"

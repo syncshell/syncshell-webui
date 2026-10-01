@@ -1,19 +1,19 @@
-.folder-actions {
+.action-row {
   display: flex;
   justify-content: flex-end;
   flex-wrap: wrap;
   gap: 5px;
 }
 
-.folder-actions > .pull-right {
+.action-row > .pull-right {
   display: contents;
 }
 
-.folder-actions .folder-sharing {
+.action-row .action-row-leading {
   margin-inline-end: auto;
 }
 
-.folder-actions .btn {
+.action-row .btn {
   font-size: var(--text-small);
   padding: 5px var(--space-2);
   max-width: 100%;
@@ -21,8 +21,8 @@
   overflow-wrap: anywhere;
 }
 
-.folder-actions .clearfix,
-.folder-actions::before,
-.folder-actions::after {
+.action-row .clearfix,
+.action-row::before,
+.action-row::after {
   display: none;
 }

@@ -15,7 +15,7 @@ export function DeviceSharingFields({
 
   return (
     <>
-      <div class="folder-actions">
+      <div class="action-row">
         {[true, false].map((select) => (
           <button
             key={String(select)}

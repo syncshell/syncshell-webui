@@ -172,7 +172,7 @@ export function App() {
                         </div>
                       </div>
                     ))}
-                    <div class="folder-actions">
+                    <div class="action-row">
                       {state.config.folders.some(
                         (folder) => !folder.paused,
                       ) && (
@@ -271,7 +271,7 @@ export function App() {
                           </div>
                         </div>
                       ))}
-                      <div class="folder-actions">
+                      <div class="action-row">
                         {others.some((device) => !device.paused) && (
                           <button
                             class="btn btn-sm btn-default"

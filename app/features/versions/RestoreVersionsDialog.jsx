@@ -174,7 +174,7 @@ export function RestoreVersionsDialog({ api, folder, onClose }) {
                 />
               </label>
             </div>
-            <div class="folder-actions">
+            <div class="action-row">
               {massActions(groups.flatMap(([, files]) => files))}
             </div>
             {groups.map(([parent, files]) => (
@@ -182,7 +182,7 @@ export function RestoreVersionsDialog({ api, folder, onClose }) {
                 <summary>
                   <Icon name="folder" /> {parent || folder.label || folder.id}
                 </summary>
-                <div class="folder-actions">{massActions(files)}</div>
+                <div class="action-row">{massActions(files)}</div>
                 {files.map((file, index) => (
                   <div
                     key={file.path}

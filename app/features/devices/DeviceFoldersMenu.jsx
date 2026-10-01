@@ -16,7 +16,7 @@ export function DeviceFoldersMenu({
   return (
     <MenuButton
       placement="dropup"
-      className="folder-sharing device-folders"
+      className="action-row-leading device-folders"
       buttonClass="btn btn-sm btn-default"
       label={
         <>
