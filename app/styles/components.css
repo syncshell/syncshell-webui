@@ -26,12 +26,6 @@
   min-width: 0;
 }
 
-.folder-items-table .folder-text {
-  display: inline-block;
-  max-width: calc(100% - 36px);
-  vertical-align: middle;
-}
-
 .xattr-rule {
   display: flex;
   align-items: center;

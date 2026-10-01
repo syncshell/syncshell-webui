@@ -7,6 +7,7 @@ import { Tooltip } from '../../ui/Tooltip.jsx';
 import { itemViews, needIcons, pageItems } from './folder-items.mjs';
 import { unitPrefixed } from '../../../client/format.mjs';
 import { Icon } from '../../ui/Icon.jsx';
+import './FolderItemsDialog.css';
 
 export function FolderItemsDialog({
   api,
