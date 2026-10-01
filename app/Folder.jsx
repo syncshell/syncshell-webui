@@ -4,13 +4,11 @@ import { useContext, useEffect, useRef, useState } from 'preact/hooks';
 import { LocaleContext } from './locale-context.jsx';
 import {
   folderStatus,
-  folderClass,
   folderStateClass,
   folderStateDetails,
   syncPercentage,
   progressPercentage,
   folderStatusText,
-  folderStatusIcon,
   folderTypes,
   pullOrders,
   scanRemaining,
@@ -31,6 +29,7 @@ import { ItemsDialog } from './ItemsDialog.jsx';
 import { Icon } from './Icon.jsx';
 import { MenuButton } from './MenuButton.jsx';
 import { runReportedSessionAction } from '../client/session.mjs';
+import { FolderHeader } from './features/folders/FolderHeader.jsx';
 
 export function Folder({
   folder,
@@ -84,46 +83,15 @@ export function Folder({
   return (
     <>
       <div class="panel panel-default">
-        <button
-          class="btn panel-heading"
-          aria-expanded={open}
-          onClick={() => setOpen(!open)}
-        >
-          {['scanning', 'syncing'].includes(status) &&
-            percent !== undefined && (
-              <span class="panel-progress" style={{ width: percent + '%' }} />
-            )}
-          <span class="panel-title">
-            <span class="panel-icon hidden-xs">
-              <Icon
-                name={
-                  {
-                    sendonly: 'upload',
-                    receiveonly: 'download',
-                    receiveencrypted: 'lock',
-                  }[folder.type] || 'folder'
-                }
-                class="icon-fixed"
-              />
-            </span>
-            <span class={`panel-status pull-right text-${folderClass(status)}`}>
-              <span class="hidden-xs">{t(label)}</span>
-              {status === 'scanning' &&
-                percent !== undefined &&
-                ` (${percent}%)`}
-              {status === 'syncing' &&
-                ` (${percent}%, ${unitPrefixed(info.needBytes, true)}B)`}
-              <Icon
-                name={folderStatusIcon(status)}
-                class="visible-xs icon-fixed"
-                label={t(label)}
-              />
-            </span>
-            <span class="panel-title-text" title={folder.label || folder.id}>
-              {folder.label || folder.id}
-            </span>
-          </span>
-        </button>
+        <FolderHeader
+          folder={folder}
+          info={info}
+          label={label}
+          open={open}
+          percent={percent}
+          status={status}
+          onToggle={() => setOpen(!open)}
+        />
         {open && (
           <div class="panel-collapse" ref={panel}>
             <div class="panel-body less-padding">
