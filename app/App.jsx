@@ -1,6 +1,6 @@
 import { desktopActions } from '../client/desktop.mjs';
 import { useEffect, useState } from 'preact/hooks';
-import { createApi } from '../client/api.mjs';
+import { createSyncthingApi } from '../client/api.mjs';
 import { runReportedSessionAction } from '../client/session.mjs';
 import { useSyncthingSession } from '../client/use-syncthing-session.mjs';
 import { loadEnglishCatalog, translator } from './core/locale/translate.mjs';
@@ -24,7 +24,7 @@ import { MainNavigation } from './MainNavigation.jsx';
 const desktop = desktopActions();
 
 export function App() {
-  const [api] = useState(() => createApi());
+  const [api] = useState(() => createSyncthingApi());
   const authenticated = Boolean(window.metadata?.authenticated);
   const [state, session] = useSyncthingSession(api, {
     active: authenticated,

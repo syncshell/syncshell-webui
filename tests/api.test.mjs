@@ -1,9 +1,9 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
-import { createApi, HttpError } from '../client/api.mjs';
+import { createSyncthingApi, HttpError } from '../client/api.mjs';
 
 function client(fetch, cookie = () => '') {
-  return createApi({
+  return createSyncthingApi({
     pageUrl: 'https://localhost/sync/index.html?lang=de',
     metadata: { deviceIDShort: 'DEVICE1' },
     fetch,
@@ -63,7 +63,7 @@ test('HTTP failure exposes status and daemon error; empty success is valid', asy
 
 test('no metadata is required for password login, and credentials stay same-origin', async () => {
   let init;
-  const api = createApi({
+  const api = createSyncthingApi({
     pageUrl: 'https://localhost/',
     metadata: null,
     cookie: () => '',

@@ -15,7 +15,7 @@ export class HttpError extends Error {
   }
 }
 
-export function createApi({
+export function createSyncthingApi({
   pageUrl = location.href,
   metadata = window.metadata,
   fetch: fetcher = globalThis.fetch,
