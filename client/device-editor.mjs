@@ -1,6 +1,7 @@
 import { cloneConfig, setValue } from './edit.mjs';
 
-const field = (path, label, type = 'text', options) => ({
+const field = (action, path, label, type = 'text', options) => ({
+  action,
   path,
   label,
   type,
@@ -10,30 +11,66 @@ const field = (path, label, type = 'text', options) => ({
 export function deviceEditorFields(tab) {
   if (tab === 'General') {
     return [
-      field('deviceID', 'Device ID'),
-      field('name', 'Device Name'),
-      field('group', 'Device Group'),
+      field('set-device-id', 'deviceID', 'Device ID'),
+      field('set-device-name', 'name', 'Device Name'),
+      field('set-device-group', 'group', 'Device Group'),
     ];
   }
   return [
-    field('addresses', 'Addresses', 'list'),
-    field('compression', 'Compression', 'select', [
+    field('set-device-addresses', 'addresses', 'Addresses', 'list'),
+    field('set-device-compression', 'compression', 'Compression', 'select', [
       { value: 'metadata', label: 'Metadata Only' },
       { value: 'always', label: 'All Data' },
       { value: 'never', label: 'Off' },
     ]),
-    field('introducer', 'Introducer', 'checkbox'),
-    field('autoAcceptFolders', 'Auto Accept', 'checkbox'),
-    field('untrusted', 'Untrusted', 'checkbox'),
-    field('maxRecvKbps', 'Incoming Rate Limit (KiB/s)', 'number'),
-    field('maxSendKbps', 'Outgoing Rate Limit (KiB/s)', 'number'),
-    field('numConnections', 'Number of Connections', 'number'),
+    field('set-device-introducer', 'introducer', 'Introducer', 'checkbox'),
+    field(
+      'set-device-auto-accept',
+      'autoAcceptFolders',
+      'Auto Accept',
+      'checkbox',
+    ),
+    field('set-device-untrusted', 'untrusted', 'Untrusted', 'checkbox'),
+    field(
+      'set-device-receive-limit',
+      'maxRecvKbps',
+      'Incoming Rate Limit (KiB/s)',
+      'number',
+    ),
+    field(
+      'set-device-send-limit',
+      'maxSendKbps',
+      'Outgoing Rate Limit (KiB/s)',
+      'number',
+    ),
+    field(
+      'set-device-connection-count',
+      'numConnections',
+      'Number of Connections',
+      'number',
+    ),
   ];
 }
 
-export function updateDeviceEditor(draft, path, value) {
-  const next = setValue(draft, path, value);
-  if (path === 'untrusted' && value) {
+const deviceFieldPaths = {
+  'set-device-id': 'deviceID',
+  'set-device-name': 'name',
+  'set-device-group': 'group',
+  'set-device-addresses': 'addresses',
+  'set-device-compression': 'compression',
+  'set-device-introducer': 'introducer',
+  'set-device-auto-accept': 'autoAcceptFolders',
+  'set-device-untrusted': 'untrusted',
+  'set-device-receive-limit': 'maxRecvKbps',
+  'set-device-send-limit': 'maxSendKbps',
+  'set-device-connection-count': 'numConnections',
+};
+
+export function reduceDeviceDraft(draft, action) {
+  const path = deviceFieldPaths[action.type];
+  if (!path) return draft;
+  const next = setValue(draft, path, action.value);
+  if (action.type === 'set-device-untrusted' && action.value) {
     next.introducer = false;
     next.autoAcceptFolders = false;
   }

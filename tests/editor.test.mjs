@@ -23,8 +23,8 @@ import {
 } from '../client/folder-editor.mjs';
 import {
   deviceEditorFieldState,
+  reduceDeviceDraft,
   saveDeviceEditor,
-  updateDeviceEditor,
 } from '../client/device-editor.mjs';
 
 const folderContext = {
@@ -544,7 +544,10 @@ test('enabling device trust restrictions disables incompatible options', () => {
     introducer: true,
     autoAcceptFolders: true,
   };
-  const updated = updateDeviceEditor(original, 'untrusted', true);
+  const updated = reduceDeviceDraft(original, {
+    type: 'set-device-untrusted',
+    value: true,
+  });
 
   assert.deepEqual(updated, {
     deviceID: 'peer',

@@ -17,8 +17,8 @@ import { deviceName } from '../client/devices.mjs';
 import {
   deviceEditorFieldState,
   deviceEditorFields,
+  reduceDeviceDraft,
   saveDeviceEditor,
-  updateDeviceEditor,
 } from '../client/device-editor.mjs';
 import {
   folderEditorFieldState,
@@ -155,11 +155,13 @@ export function Editor({ action, state, api, session, onClose, onSaved }) {
         name === 'Ignore Patterns')
     );
   }
-  function update(path, value) {
-    if (path === 'path') autoPath.current = false;
+  function updateField(field, value) {
+    if (field.path === 'path') autoPath.current = false;
     setDraft((previous) => {
-      if (kind === 'device') return updateDeviceEditor(previous, path, value);
-      return updateFolderEditor(previous, path, value, {
+      if (kind === 'device') {
+        return reduceDeviceDraft(previous, { type: field.action, value });
+      }
+      return updateFolderEditor(previous, field.path, value, {
         isNew,
         defaults,
         autoPath: autoPath.current,
@@ -167,6 +169,17 @@ export function Editor({ action, state, api, session, onClose, onSaved }) {
         system: state.system,
       });
     });
+  }
+  function updateFolderValue(path, value) {
+    setDraft((previous) =>
+      updateFolderEditor(previous, path, value, {
+        isNew,
+        defaults,
+        autoPath: autoPath.current,
+        config: state.config,
+        system: state.system,
+      }),
+    );
   }
   async function loadAddedIgnores() {
     setSavePhase((phase) =>
@@ -584,8 +597,8 @@ export function Editor({ action, state, api, session, onClose, onSaved }) {
                           }
                           disabled={field.disabled}
                           onChange={(event) =>
-                            update(
-                              field.path,
+                            updateField(
+                              field,
                               changedValue(field, event.currentTarget),
                             )
                           }
@@ -611,7 +624,7 @@ export function Editor({ action, state, api, session, onClose, onSaved }) {
                             value={inputValue(draft, field)}
                             disabled={field.disabled}
                             onChange={(event) =>
-                              update(field.path, event.currentTarget.value)
+                              updateField(field, event.currentTarget.value)
                             }
                           >
                             {field.options.map(({ value, label }) => (
@@ -648,8 +661,8 @@ export function Editor({ action, state, api, session, onClose, onSaved }) {
                             }
                             min={field.type === 'number' ? 0 : undefined}
                             onInput={(event) =>
-                              update(
-                                field.path,
+                              updateField(
+                                field,
                                 changedValue(field, event.currentTarget),
                               )
                             }
@@ -711,7 +724,7 @@ export function Editor({ action, state, api, session, onClose, onSaved }) {
                             : draft.versioning.params?.[key] || ''
                         }
                         onInput={(event) =>
-                          update(
+                          updateFolderValue(
                             'versioning.params.' + key,
                             key === 'maxAge'
                               ? String(
@@ -750,7 +763,7 @@ export function Editor({ action, state, api, session, onClose, onSaved }) {
                               aria-label={t('permit') + ' ' + (index + 1)}
                               checked={entry.permit}
                               onChange={(event) =>
-                                update(
+                                updateFolderValue(
                                   'xattrFilter.entries.' + index + '.permit',
                                   event.currentTarget.checked,
                                 )
@@ -763,7 +776,7 @@ export function Editor({ action, state, api, session, onClose, onSaved }) {
                               }
                               value={entry.match}
                               onInput={(event) =>
-                                update(
+                                updateFolderValue(
                                   'xattrFilter.entries.' + index + '.match',
                                   event.currentTarget.value,
                                 )
@@ -773,7 +786,7 @@ export function Editor({ action, state, api, session, onClose, onSaved }) {
                               type="button"
                               class="btn btn-default"
                               onClick={() =>
-                                update(
+                                updateFolderValue(
                                   'xattrFilter.entries',
                                   draft.xattrFilter.entries.filter(
                                     (_, i) => i !== index,
@@ -790,7 +803,7 @@ export function Editor({ action, state, api, session, onClose, onSaved }) {
                         type="button"
                         class="btn btn-default"
                         onClick={() =>
-                          update(
+                          updateFolderValue(
                             'xattrFilter.entries',
                             newXattrEntry(draft.xattrFilter?.entries),
                           )
