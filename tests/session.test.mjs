@@ -5,7 +5,7 @@ import {
   createInitialState,
   reduceDaemonEvent,
   reduceFolderEvent,
-} from '../client/session-state.mjs';
+} from '../app/core/session/sessionState.mjs';
 
 async function createSessionFixture(testContext) {
   const calls = [];

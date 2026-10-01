@@ -1,5 +1,5 @@
-import { completionTotal } from './connections.mjs';
-import { endedTransfers, transferProgress } from './transfer.mjs';
+import { completionTotal } from '../../../client/connections.mjs';
+import { endedTransfers, transferProgress } from '../../../client/transfer.mjs';
 
 export function createInitialState() {
   return {
