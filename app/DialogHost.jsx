@@ -2,7 +2,6 @@ import { useContext } from 'preact/hooks';
 import { LocaleContext } from './locale-context.jsx';
 import { Dialog } from './Dialog.jsx';
 import { About } from './About.jsx';
-import { IdentityControls } from './IdentityControls.jsx';
 import { ServiceDialog } from './ServiceDialog.jsx';
 import { Logs } from './Logs.jsx';
 import { Editor } from './Editor.jsx';
@@ -13,6 +12,7 @@ import { RestoreVersions } from './RestoreVersions.jsx';
 import { deviceName, sharedFolders } from '../client/devices.mjs';
 import { ServiceHealthDialog } from './ServiceHealthDialog.jsx';
 import { RecentChangesDialog } from './RecentChangesDialog.jsx';
+import { DeviceIdentificationDialog } from './DeviceIdentificationDialog.jsx';
 
 /**
  * @typedef (
@@ -90,27 +90,11 @@ export function DialogHost({ action, state, api, session, onClose }) {
       return <About api={api} version={state.version} onClose={onClose} />;
     case 'identification':
       return (
-        <Dialog
-          title={t('Device Identification') + ' - ' + deviceName(action.device)}
-          large
-          status="info"
-          icon="qrcode"
+        <DeviceIdentificationDialog
+          api={api}
+          device={action.device}
           onClose={onClose}
-        >
-          <div class="text-center">
-            <div class="well well-sm text-monospace">
-              <strong>{action.device.deviceID}</strong>
-            </div>
-            <img
-              class="img-thumbnail"
-              src={'qr/?text=' + encodeURIComponent(action.device.deviceID)}
-              height="328"
-              width="328"
-              alt={t('QR code')}
-            />
-            <IdentityControls device={action.device} api={api} />
-          </div>
-        </Dialog>
+        />
       );
     case 'listeners':
     case 'discovery':
