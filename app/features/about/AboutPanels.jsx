@@ -1,11 +1,10 @@
-import { useContext } from 'preact/hooks';
-import { LocaleContext } from '../../core/locale/LocaleContext.jsx';
+import { useLocale } from '../../core/locale/LocaleContext.jsx';
 import data from './about-data.json';
 import { aboutPaths } from './about.mjs';
 import './AboutPanels.css';
 
 export function AuthorsPanel() {
-  const { t } = useContext(LocaleContext);
+  const { t } = useLocale();
   return (
     <>
       <h4>{t('The Syncthing Authors')}</h4>
@@ -15,7 +14,7 @@ export function AuthorsPanel() {
 }
 
 export function SoftwarePanel() {
-  const { t } = useContext(LocaleContext);
+  const { t } = useLocale();
   return (
     <>
       <p>
@@ -39,7 +38,7 @@ export function SoftwarePanel() {
 }
 
 export function PathsPanel({ paths }) {
-  const { t } = useContext(LocaleContext);
+  const { t } = useLocale();
   return (
     <table class="table table-condensed table-striped about-paths">
       <caption>{t('Internally used paths:')}</caption>

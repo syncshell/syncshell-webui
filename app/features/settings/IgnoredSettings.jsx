@@ -1,10 +1,9 @@
-import { useContext } from 'preact/hooks';
 import { timestamp } from '../../../client/format.mjs';
-import { LocaleContext } from '../../core/locale/LocaleContext.jsx';
+import { useLocale } from '../../core/locale/LocaleContext.jsx';
 import { ignoredFolders, unignore } from './settings.mjs';
 
 export function IgnoredDevicesSettings({ config, onChange }) {
-  const { t } = useContext(LocaleContext);
+  const { t } = useLocale();
   const devices = config.remoteIgnoredDevices || [];
   return (
     <>
@@ -38,7 +37,7 @@ export function IgnoredDevicesSettings({ config, onChange }) {
 }
 
 export function IgnoredFoldersSettings({ config, onChange }) {
-  const { t } = useContext(LocaleContext);
+  const { t } = useLocale();
   const folders = ignoredFolders(config);
   return (
     <>

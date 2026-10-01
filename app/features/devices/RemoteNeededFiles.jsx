@@ -1,6 +1,6 @@
-import { useContext, useEffect, useState } from 'preact/hooks';
+import { useEffect, useState } from 'preact/hooks';
 import { timestamp, unitPrefixed } from '../../../client/format.mjs';
-import { LocaleContext } from '../../core/locale/LocaleContext.jsx';
+import { useLocale } from '../../core/locale/LocaleContext.jsx';
 import { Pagination } from '../../ui/Pagination.jsx';
 import { deviceName } from './device-status.mjs';
 
@@ -34,7 +34,7 @@ function createRemoteNeededRow(file, devices, t) {
 }
 
 export function RemoteNeededFiles({ api, folder, device, state, single }) {
-  const { t } = useContext(LocaleContext);
+  const { t } = useLocale();
   const [page, setPage] = useState(1);
   const [perpage, setPerpage] = useState(10);
   const [files, setFiles] = useState([]);

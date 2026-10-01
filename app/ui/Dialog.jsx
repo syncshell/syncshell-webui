@@ -1,5 +1,5 @@
-import { useContext, useEffect, useRef, useState } from 'preact/hooks';
-import { LocaleContext } from '../core/locale/LocaleContext.jsx';
+import { useEffect, useRef, useState } from 'preact/hooks';
+import { useLocale } from '../core/locale/LocaleContext.jsx';
 import { Icon } from './Icon.jsx';
 import './Dialog.css';
 
@@ -14,7 +14,7 @@ export function Dialog({
   onClose,
   onCancel,
 }) {
-  const { t } = useContext(LocaleContext);
+  const { t } = useLocale();
   const dialog = useRef();
   const returnFocus = useRef();
   const [full, setFull] = useState(false);

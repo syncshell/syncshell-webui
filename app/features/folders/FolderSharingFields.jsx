@@ -1,5 +1,4 @@
-import { useContext } from 'preact/hooks';
-import { LocaleContext } from '../../core/locale/LocaleContext.jsx';
+import { useLocale } from '../../core/locale/LocaleContext.jsx';
 import { deviceName } from '../devices/device-status.mjs';
 import { EncryptedShareField } from '../sharing/EncryptedShareField.jsx';
 
@@ -14,7 +13,7 @@ export function FolderSharingFields({
   onSelected,
   onPassword,
 }) {
-  const { t } = useContext(LocaleContext);
+  const { t } = useLocale();
 
   return (
     <>

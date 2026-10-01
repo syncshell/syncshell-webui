@@ -1,5 +1,4 @@
-import { useContext } from 'preact/hooks';
-import { LocaleContext } from '../../core/locale/LocaleContext.jsx';
+import { useLocale } from '../../core/locale/LocaleContext.jsx';
 import { SettingsFields } from './SettingsFields.jsx';
 
 export function GuiSettings({
@@ -9,7 +8,7 @@ export function GuiSettings({
   fields,
   onUpdate,
 }) {
-  const { t } = useContext(LocaleContext);
+  const { t } = useLocale();
   return (
     <>
       <SettingsFields

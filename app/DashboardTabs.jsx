@@ -1,6 +1,5 @@
-import { useContext } from 'preact/hooks';
 import { Icon } from './ui/Icon.jsx';
-import { LocaleContext } from './core/locale/LocaleContext.jsx';
+import { useLocale } from './core/locale/LocaleContext.jsx';
 import { Tabs } from './ui/Tabs.jsx';
 
 const dashboardTabs = [
@@ -10,7 +9,7 @@ const dashboardTabs = [
 ];
 
 export function DashboardTabs({ activeTab, onSelect }) {
-  const { t } = useContext(LocaleContext);
+  const { t } = useLocale();
   const items = dashboardTabs.map(({ id, label }) => ({
     id,
     tabId: id + '-tab',

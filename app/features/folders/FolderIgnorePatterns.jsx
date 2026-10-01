@@ -1,5 +1,4 @@
-import { useContext } from 'preact/hooks';
-import { LocaleContext } from '../../core/locale/LocaleContext.jsx';
+import { useLocale } from '../../core/locale/LocaleContext.jsx';
 
 export function FolderIgnorePatterns({
   folder,
@@ -14,7 +13,7 @@ export function FolderIgnorePatterns({
   onToggleAdd,
   onInput,
 }) {
-  const { t } = useContext(LocaleContext);
+  const { t } = useLocale();
 
   return (
     <>

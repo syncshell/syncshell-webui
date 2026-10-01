@@ -1,13 +1,12 @@
-import { useContext } from 'preact/hooks';
 import { Icon } from '../../ui/Icon.jsx';
-import { LocaleContext } from '../../core/locale/LocaleContext.jsx';
+import { useLocale } from '../../core/locale/LocaleContext.jsx';
 import { Tooltip } from '../../ui/Tooltip.jsx';
 
 const missingCurrentFileHelp =
   'The latest Syncthing index has no usable file at the original name. Conflict files are ordinary files with a conflict marker in their names. Rename the version you want to keep, or delete unwanted conflict files, then recheck. Rechecking alone does not rename or delete files.';
 
 export function ConflictFileChoice({ group, file, permission, onOpen }) {
-  const { t } = useContext(LocaleContext);
+  const { t } = useLocale();
 
   if (!file)
     return (

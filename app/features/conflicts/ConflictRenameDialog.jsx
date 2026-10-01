@@ -1,6 +1,5 @@
-import { useContext } from 'preact/hooks';
 import { Dialog } from '../../ui/Dialog.jsx';
-import { LocaleContext } from '../../core/locale/LocaleContext.jsx';
+import { useLocale } from '../../core/locale/LocaleContext.jsx';
 
 export function ConflictRenameDialog({
   conflict,
@@ -9,7 +8,7 @@ export function ConflictRenameDialog({
   onCancel,
   onRename,
 }) {
-  const { t } = useContext(LocaleContext);
+  const { t } = useLocale();
 
   return (
     <Dialog

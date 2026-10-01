@@ -1,12 +1,11 @@
-import { useContext } from 'preact/hooks';
 import { duration } from '../../../client/format.mjs';
 import { Icon } from '../../ui/Icon.jsx';
-import { LocaleContext } from '../../core/locale/LocaleContext.jsx';
+import { useLocale } from '../../core/locale/LocaleContext.jsx';
 import { Tooltip } from '../../ui/Tooltip.jsx';
 import { versioningTypes } from './folder-status.mjs';
 
 export function FolderVersioningSummary({ config }) {
-  const { t } = useContext(LocaleContext);
+  const { t } = useLocale();
   const path = config.fsPath || '.stversions';
   const time = (value) => duration(value, 's');
   return (

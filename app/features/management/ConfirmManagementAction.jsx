@@ -1,6 +1,6 @@
-import { useContext, useState } from 'preact/hooks';
+import { useState } from 'preact/hooks';
 import { Dialog } from '../../ui/Dialog.jsx';
-import { LocaleContext } from '../../core/locale/LocaleContext.jsx';
+import { useLocale } from '../../core/locale/LocaleContext.jsx';
 import { managementActions, performManagement } from './management.mjs';
 
 export function ConfirmManagementAction({
@@ -11,7 +11,7 @@ export function ConfirmManagementAction({
   onDone,
   devices = [],
 }) {
-  const { t } = useContext(LocaleContext);
+  const { t } = useLocale();
   const definition = managementActions[action.type];
   const name =
     action.folder?.label ||

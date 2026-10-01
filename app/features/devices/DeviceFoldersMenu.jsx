@@ -1,6 +1,5 @@
-import { useContext } from 'preact/hooks';
 import { Icon } from '../../ui/Icon.jsx';
-import { LocaleContext } from '../../core/locale/LocaleContext.jsx';
+import { useLocale } from '../../core/locale/LocaleContext.jsx';
 import { MenuButton } from '../../ui/MenuButton.jsx';
 import { ShareStatus } from '../sharing/ShareStatus.jsx';
 
@@ -11,7 +10,7 @@ export function DeviceFoldersMenu({
   state,
   onAction,
 }) {
-  const { t } = useContext(LocaleContext);
+  const { t } = useLocale();
   if (folders.length === 0) return null;
   return (
     <MenuButton

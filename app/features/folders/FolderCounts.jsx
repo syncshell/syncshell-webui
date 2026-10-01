@@ -1,11 +1,10 @@
-import { useContext } from 'preact/hooks';
 import { compactNumber, unitPrefixed } from '../../../client/format.mjs';
 import { Icon } from '../../ui/Icon.jsx';
-import { LocaleContext } from '../../core/locale/LocaleContext.jsx';
+import { useLocale } from '../../core/locale/LocaleContext.jsx';
 import { Tooltip } from '../../ui/Tooltip.jsx';
 
 export function FolderCounts({ info, prefix = 'global' }) {
-  const { t } = useContext(LocaleContext);
+  const { t } = useLocale();
   const files = info?.[prefix + 'Files'];
   const folders = info?.[prefix + 'Directories'];
   const bytes = info?.[prefix + 'Bytes'];

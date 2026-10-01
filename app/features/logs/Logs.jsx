@@ -1,12 +1,12 @@
-import { useContext, useEffect, useRef, useState } from 'preact/hooks';
+import { useEffect, useRef, useState } from 'preact/hooks';
 import { Dialog } from '../../ui/Dialog.jsx';
-import { LocaleContext } from '../../core/locale/LocaleContext.jsx';
+import { useLocale } from '../../core/locale/LocaleContext.jsx';
 import { Tabs } from '../../ui/Tabs.jsx';
 import { LoggingFacilities } from './LoggingFacilities.jsx';
 import { useLogTail } from './useLogTail.mjs';
 
 export function Logs({ api, onClose }) {
-  const { t } = useContext(LocaleContext);
+  const { t } = useLocale();
   const area = useRef();
   const [tab, setTab] = useState('Log');
   const { entries, error, setError, paused, setPaused } = useLogTail(api);

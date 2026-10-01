@@ -1,11 +1,11 @@
-import { useContext, useEffect, useState } from 'preact/hooks';
+import { useEffect, useState } from 'preact/hooks';
 import { Dialog } from '../../ui/Dialog.jsx';
-import { LocaleContext } from '../../core/locale/LocaleContext.jsx';
+import { useLocale } from '../../core/locale/LocaleContext.jsx';
 import { Tabs } from '../../ui/Tabs.jsx';
 import { AuthorsPanel, PathsPanel, SoftwarePanel } from './AboutPanels.jsx';
 
 export function About({ api, version, onClose }) {
-  const { t } = useContext(LocaleContext);
+  const { t } = useLocale();
   const [tab, setTab] = useState('Authors');
   const [paths, setPaths] = useState({});
   const [error, setError] = useState('');

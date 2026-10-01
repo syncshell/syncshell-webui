@@ -1,5 +1,5 @@
-import { useContext, useEffect, useState } from 'preact/hooks';
-import { LocaleContext } from '../../core/locale/LocaleContext.jsx';
+import { useEffect, useState } from 'preact/hooks';
+import { useLocale } from '../../core/locale/LocaleContext.jsx';
 import { Dialog } from '../../ui/Dialog.jsx';
 import {
   versionGroups,
@@ -13,7 +13,7 @@ import { Icon } from '../../ui/Icon.jsx';
 import './RestoreVersionsDialog.css';
 
 export function RestoreVersionsDialog({ api, folder, onClose }) {
-  const { t } = useContext(LocaleContext);
+  const { t } = useLocale();
   const [versions, setVersions] = useState(null);
   const [selections, setSelections] = useState({});
   const [errors, setErrors] = useState({});

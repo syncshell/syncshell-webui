@@ -1,5 +1,5 @@
-import { useContext, useEffect, useState } from 'preact/hooks';
-import { LocaleContext } from '../../core/locale/LocaleContext.jsx';
+import { useEffect, useState } from 'preact/hooks';
+import { useLocale } from '../../core/locale/LocaleContext.jsx';
 
 const loggingLevels = [
   { value: 'DEBUG', label: 'Debug' },
@@ -9,7 +9,7 @@ const loggingLevels = [
 ];
 
 export function LoggingFacilities({ api, onError }) {
-  const { t } = useContext(LocaleContext);
+  const { t } = useLocale();
   const [facilities, setFacilities] = useState({ levels: {}, packages: {} });
   const [busy, setBusy] = useState(false);
   useEffect(() => {

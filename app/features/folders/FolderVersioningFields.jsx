@@ -1,8 +1,7 @@
-import { useContext } from 'preact/hooks';
-import { LocaleContext } from '../../core/locale/LocaleContext.jsx';
+import { useLocale } from '../../core/locale/LocaleContext.jsx';
 
 export function FolderVersioningFields({ draft, dispatch }) {
-  const { t } = useContext(LocaleContext);
+  const { t } = useLocale();
   if (!draft.versioning.type) return null;
 
   const fields =

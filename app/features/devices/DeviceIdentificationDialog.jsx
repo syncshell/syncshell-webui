@@ -1,11 +1,10 @@
-import { useContext } from 'preact/hooks';
 import { Dialog } from '../../ui/Dialog.jsx';
-import { LocaleContext } from '../../core/locale/LocaleContext.jsx';
+import { useLocale } from '../../core/locale/LocaleContext.jsx';
 import { deviceName } from './device-status.mjs';
 import { ShareDeviceIdentity } from './ShareDeviceIdentity.jsx';
 
 export function DeviceIdentificationDialog({ api, device, onClose }) {
-  const { t } = useContext(LocaleContext);
+  const { t } = useLocale();
   return (
     <Dialog
       title={t('Device Identification') + ' - ' + deviceName(device)}

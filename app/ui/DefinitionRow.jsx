@@ -1,6 +1,5 @@
-import { useContext } from 'preact/hooks';
 import { unitPrefixed } from '../../client/format.mjs';
-import { LocaleContext } from '../core/locale/LocaleContext.jsx';
+import { useLocale } from '../core/locale/LocaleContext.jsx';
 import { Tooltip } from './Tooltip.jsx';
 import './DefinitionRow.css';
 
@@ -13,7 +12,7 @@ export function DefinitionRow({
   totalBytes,
   children,
 }) {
-  const { t } = useContext(LocaleContext);
+  const { t } = useLocale();
   const field = {
     icon: icon || definition.icon || 'info',
     help: help || definition.help || '',

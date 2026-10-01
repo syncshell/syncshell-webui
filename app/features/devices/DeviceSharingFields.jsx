@@ -1,5 +1,4 @@
-import { useContext } from 'preact/hooks';
-import { LocaleContext } from '../../core/locale/LocaleContext.jsx';
+import { useLocale } from '../../core/locale/LocaleContext.jsx';
 import { EncryptedShareField } from '../sharing/EncryptedShareField.jsx';
 
 export function DeviceSharingFields({
@@ -11,7 +10,7 @@ export function DeviceSharingFields({
   onSelectAll,
   onChange,
 }) {
-  const { t } = useContext(LocaleContext);
+  const { t } = useLocale();
 
   return (
     <>

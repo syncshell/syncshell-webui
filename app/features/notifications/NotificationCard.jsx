@@ -1,8 +1,7 @@
-import { useContext } from 'preact/hooks';
 import { timestamp } from '../../../client/format.mjs';
 import { DeviceIdenticon } from '../devices/DeviceIdenticon.jsx';
 import { Icon } from '../../ui/Icon.jsx';
-import { LocaleContext } from '../../core/locale/LocaleContext.jsx';
+import { useLocale } from '../../core/locale/LocaleContext.jsx';
 
 const defaultActionPresentation = { tone: 'default', icon: 'check' };
 const actionPresentations = {
@@ -20,7 +19,7 @@ const actionPresentations = {
 };
 
 export function NotificationCard({ card, onAction }) {
-  const { t } = useContext(LocaleContext);
+  const { t } = useLocale();
   return (
     <div class={`panel panel-${card.severity}`}>
       <div class="panel-heading">

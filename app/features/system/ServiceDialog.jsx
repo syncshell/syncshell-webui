@@ -1,10 +1,10 @@
-import { useContext, useEffect, useState } from 'preact/hooks';
+import { useEffect, useState } from 'preact/hooks';
 import { Dialog } from '../../ui/Dialog.jsx';
-import { LocaleContext } from '../../core/locale/LocaleContext.jsx';
+import { useLocale } from '../../core/locale/LocaleContext.jsx';
 import { servicePresentation } from './servicePresentation.mjs';
 
 export function ServiceDialog({ kind, state, session, onClose }) {
-  const { t } = useContext(LocaleContext);
+  const { t } = useLocale();
   const [started] = useState(state.system.startTime);
   const [phase, setPhase] = useState('confirm');
   const [error, setError] = useState('');

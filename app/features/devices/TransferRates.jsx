@@ -1,7 +1,6 @@
-import { useContext } from 'preact/hooks';
 import { unitPrefixed } from '../../../client/format.mjs';
 import { DeviceDefinitionRow } from './DeviceDefinitionRow.jsx';
-import { LocaleContext } from '../../core/locale/LocaleContext.jsx';
+import { useLocale } from '../../core/locale/LocaleContext.jsx';
 
 export function TransferRates({
   connection,
@@ -11,7 +10,7 @@ export function TransferRates({
   usesMetricRates,
   onToggleUnits,
 }) {
-  const { t } = useContext(LocaleContext);
+  const { t } = useLocale();
   const rate = (bytes) =>
     unitPrefixed(usesMetricRates ? bytes * 8 : bytes, !usesMetricRates) +
     (usesMetricRates ? 'bps' : 'B/s');

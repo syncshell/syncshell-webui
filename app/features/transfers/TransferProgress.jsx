@@ -1,10 +1,9 @@
-import { useContext } from 'preact/hooks';
 import { unitPrefixed } from '../../../client/format.mjs';
-import { LocaleContext } from '../../core/locale/LocaleContext.jsx';
+import { useLocale } from '../../core/locale/LocaleContext.jsx';
 import { transferSegments } from './transferPresentation.mjs';
 
 export function TransferProgress({ progress, legend = false }) {
-  const { t } = useContext(LocaleContext);
+  const { t } = useLocale();
   return (
     <div
       class="progress"

@@ -1,7 +1,6 @@
 import syncshellMark from '../assets/status-default.svg?url';
-import { useContext } from 'preact/hooks';
 import { Icon } from './ui/Icon.jsx';
-import { LocaleContext } from './core/locale/LocaleContext.jsx';
+import { useLocale } from './core/locale/LocaleContext.jsx';
 import { MenuButton } from './ui/MenuButton.jsx';
 import './MainNavigation.css';
 
@@ -25,7 +24,7 @@ export function MainNavigation({
   self,
   upgradeInfo,
 }) {
-  const { t } = useContext(LocaleContext);
+  const { t } = useLocale();
   function open(event, action, close) {
     event.preventDefault();
     close();

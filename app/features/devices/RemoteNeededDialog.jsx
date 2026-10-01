@@ -1,11 +1,10 @@
-import { useContext } from 'preact/hooks';
 import { Dialog } from '../../ui/Dialog.jsx';
-import { LocaleContext } from '../../core/locale/LocaleContext.jsx';
+import { useLocale } from '../../core/locale/LocaleContext.jsx';
 import { deviceName, sharedFolders } from './device-status.mjs';
 import { RemoteNeededFiles } from './RemoteNeededFiles.jsx';
 
 export function RemoteNeededDialog({ api, device, state, onClose }) {
-  const { t } = useContext(LocaleContext);
+  const { t } = useLocale();
   const folders = sharedFolders(state.config, device.deviceID).filter(
     (folder) => {
       const completion = state.completion[device.deviceID]?.[folder.id];

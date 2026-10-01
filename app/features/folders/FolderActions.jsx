@@ -1,7 +1,6 @@
-import { useContext } from 'preact/hooks';
 import { managementActions } from '../management/management.mjs';
 import { Icon } from '../../ui/Icon.jsx';
-import { LocaleContext } from '../../core/locale/LocaleContext.jsx';
+import { useLocale } from '../../core/locale/LocaleContext.jsx';
 import { MenuButton } from '../../ui/MenuButton.jsx';
 import { ShareStatus } from '../sharing/ShareStatus.jsx';
 import { recoveryActions } from './folder-status.mjs';
@@ -16,7 +15,7 @@ export function FolderActions({
   onPause,
   onScan,
 }) {
-  const { t } = useContext(LocaleContext);
+  const { t } = useLocale();
   return (
     <div class="panel-footer action-row">
       {recoveryActions(folder, info, status).map((type) => (

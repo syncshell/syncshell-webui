@@ -1,7 +1,6 @@
-import { useContext } from 'preact/hooks';
 import { unitPrefixed, timestamp } from '../../../client/format.mjs';
 import { Icon } from '../../ui/Icon.jsx';
-import { LocaleContext } from '../../core/locale/LocaleContext.jsx';
+import { useLocale } from '../../core/locale/LocaleContext.jsx';
 import { ConflictFileChoice } from './ConflictFileChoice.jsx';
 import { parentPath } from './conflictFilename.mjs';
 
@@ -17,7 +16,7 @@ export function ConflictRow({
   onRename,
   onRecheck,
 }) {
-  const { t } = useContext(LocaleContext);
+  const { t } = useLocale();
   const file =
     group.copies.find((copy) => copy.path === selected) || group.copies[0];
   const fileAccess = permission(group, file);

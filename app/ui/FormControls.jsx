@@ -1,5 +1,4 @@
-import { useContext } from 'preact/hooks';
-import { LocaleContext } from '../core/locale/LocaleContext.jsx';
+import { useLocale } from '../core/locale/LocaleContext.jsx';
 
 export function CheckboxFormControl({
   id,
@@ -8,7 +7,7 @@ export function CheckboxFormControl({
   describedBy,
   onChange,
 }) {
-  const { t } = useContext(LocaleContext);
+  const { t } = useLocale();
   return (
     <label for={id}>
       <input
@@ -31,7 +30,7 @@ export function SelectFormControl({
   describedBy,
   onChange,
 }) {
-  const { t } = useContext(LocaleContext);
+  const { t } = useLocale();
   return (
     <>
       <label for={id}>{t(label)}</label>
@@ -59,7 +58,7 @@ export function MultilineFormControl({
   describedBy,
   onInput,
 }) {
-  const { t } = useContext(LocaleContext);
+  const { t } = useLocale();
   return (
     <>
       <label for={id}>{t(label)}</label>
@@ -84,7 +83,7 @@ export function NumberFormControl({
   describedBy,
   onInput,
 }) {
-  const { t } = useContext(LocaleContext);
+  const { t } = useLocale();
   return (
     <>
       <label for={id}>{t(label)}</label>
@@ -112,7 +111,7 @@ export function TextFormControl({
   describedBy,
   onInput,
 }) {
-  const { t } = useContext(LocaleContext);
+  const { t } = useLocale();
   return (
     <>
       <label for={id}>{t(label)}</label>

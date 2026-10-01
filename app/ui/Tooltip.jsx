@@ -1,5 +1,5 @@
-import { useContext, useRef } from 'preact/hooks';
-import { LocaleContext } from '../core/locale/LocaleContext.jsx';
+import { useRef } from 'preact/hooks';
+import { useLocale } from '../core/locale/LocaleContext.jsx';
 import { Icon } from './Icon.jsx';
 import { useTooltip } from './useTooltip.mjs';
 import './Tooltip.css';
@@ -15,7 +15,7 @@ export function Tooltip({
   tail = false,
   children,
 }) {
-  const { t } = useContext(LocaleContext);
+  const { t } = useLocale();
   const trigger = useRef();
   const tip = useRef();
   useTooltip(trigger, tip);

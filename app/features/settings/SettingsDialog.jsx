@@ -1,11 +1,11 @@
-import { useContext, useEffect, useRef, useState } from 'preact/hooks';
+import { useEffect, useRef, useState } from 'preact/hooks';
 import { cloneConfig, setValue } from '../../core/config/configValues.mjs';
 import { settingsTabs, settingsFields, upgradeMode } from './settings.mjs';
 import { buildAdvancedConfigSections } from './advancedConfigFields.mjs';
 import { loadSettingsOptions } from './loadSettingsOptions.mjs';
 import { prepareSettingsForSave } from './prepareSettingsForSave.mjs';
 import { Dialog } from '../../ui/Dialog.jsx';
-import { LocaleContext } from '../../core/locale/LocaleContext.jsx';
+import { useLocale } from '../../core/locale/LocaleContext.jsx';
 import { Tabs } from '../../ui/Tabs.jsx';
 import { DeviceEditor } from '../devices/DeviceEditor.jsx';
 import { FolderEditor } from '../folders/FolderEditor.jsx';
@@ -25,7 +25,7 @@ export function SettingsDialog({
   onClose,
   advanced = false,
 }) {
-  const { t } = useContext(LocaleContext);
+  const { t } = useLocale();
   const form = useRef();
   const [initial] = useState(() => cloneConfig(state.config));
   const [draft, setDraft] = useState(() => cloneConfig(initial));

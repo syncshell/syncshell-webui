@@ -1,6 +1,6 @@
-import { useContext, useState } from 'preact/hooks';
+import { useState } from 'preact/hooks';
 import { Icon } from '../../ui/Icon.jsx';
-import { LocaleContext } from '../../core/locale/LocaleContext.jsx';
+import { useLocale } from '../../core/locale/LocaleContext.jsx';
 import { ShareStatus } from './ShareStatus.jsx';
 
 function passwordPlaceholder({ isEncrypted, isSelected, isPasswordRequired }) {
@@ -23,7 +23,7 @@ export function EncryptedShareField({
   onSelected,
   onPassword,
 }) {
-  const { t } = useContext(LocaleContext);
+  const { t } = useLocale();
   const [plain, setPlain] = useState(false);
   return (
     <div class="form-group">

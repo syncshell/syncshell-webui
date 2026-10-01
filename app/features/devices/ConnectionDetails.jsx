@@ -1,9 +1,8 @@
-import { useContext } from 'preact/hooks';
 import { addressError, connectionLabels } from './connections.mjs';
 import { timestamp } from '../../../client/format.mjs';
 import { serviceHealth } from '../system/serviceHealth.mjs';
 import { DeviceDefinitionRow } from './DeviceDefinitionRow.jsx';
-import { LocaleContext } from '../../core/locale/LocaleContext.jsx';
+import { useLocale } from '../../core/locale/LocaleContext.jsx';
 import { lastSeenDays } from './device-status.mjs';
 
 export function ConnectionDetails({
@@ -14,7 +13,7 @@ export function ConnectionDetails({
   type,
   onAction,
 }) {
-  const { t } = useContext(LocaleContext);
+  const { t } = useLocale();
   const age = lastSeenDays(state.deviceStats[device.deviceID]?.lastSeen);
   const listeners = serviceHealth(state.system.connectionServiceStatus);
   const discovery = serviceHealth(state.system.discoveryStatus);

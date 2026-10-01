@@ -1,5 +1,5 @@
-import { useContext, useEffect, useRef, useState } from 'preact/hooks';
-import { LocaleContext } from '../../core/locale/LocaleContext.jsx';
+import { useEffect, useRef, useState } from 'preact/hooks';
+import { useLocale } from '../../core/locale/LocaleContext.jsx';
 import {
   deviceName,
   sharedFolders,
@@ -33,7 +33,7 @@ export function DeviceCard({
   toggleUnits,
   onAction,
 }) {
-  const { t } = useContext(LocaleContext);
+  const { t } = useLocale();
   const [open, setOpen] = useState(isLocalDevice);
   const panel = useRef();
   useEffect(() => {

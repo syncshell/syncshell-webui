@@ -1,9 +1,8 @@
-import { useContext } from 'preact/hooks';
 import { connectionIcons } from './connections.mjs';
 import { unitPrefixed } from '../../../client/format.mjs';
 import { Icon } from '../../ui/Icon.jsx';
 import { DeviceIdenticon } from './DeviceIdenticon.jsx';
-import { LocaleContext } from '../../core/locale/LocaleContext.jsx';
+import { useLocale } from '../../core/locale/LocaleContext.jsx';
 import {
   deviceColor,
   deviceIcons,
@@ -21,7 +20,7 @@ export function DeviceHeader({
   type,
   onToggle,
 }) {
-  const { t } = useContext(LocaleContext);
+  const { t } = useLocale();
   return (
     <button class="btn panel-heading" aria-expanded={open} onClick={onToggle}>
       {!isLocalDevice && status === 'syncing' && (

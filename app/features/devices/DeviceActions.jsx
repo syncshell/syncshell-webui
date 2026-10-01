@@ -1,7 +1,6 @@
-import { useContext } from 'preact/hooks';
 import { runReportedSessionAction } from '../../core/session/createSession.mjs';
 import { Icon } from '../../ui/Icon.jsx';
-import { LocaleContext } from '../../core/locale/LocaleContext.jsx';
+import { useLocale } from '../../core/locale/LocaleContext.jsx';
 import { DeviceFoldersMenu } from './DeviceFoldersMenu.jsx';
 
 export function DeviceActions({
@@ -13,7 +12,7 @@ export function DeviceActions({
   state,
   onAction,
 }) {
-  const { t } = useContext(LocaleContext);
+  const { t } = useLocale();
   const openAction = (type) => onAction({ type, device });
   const hasRunningFolders = state.config.folders.some(
     (folder) => !folder.paused,

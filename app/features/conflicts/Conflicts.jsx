@@ -1,6 +1,6 @@
 import { ConflictRow } from './ConflictRow.jsx';
-import { useContext, useState } from 'preact/hooks';
-import { LocaleContext } from '../../core/locale/LocaleContext.jsx';
+import { useState } from 'preact/hooks';
+import { useLocale } from '../../core/locale/LocaleContext.jsx';
 import './conflicts.css';
 import { desktopHelp } from '../../../client/desktop.mjs';
 import { Icon } from '../../ui/Icon.jsx';
@@ -15,7 +15,7 @@ export function Conflicts({
   hostActions = null,
   device,
 }) {
-  const { t } = useContext(LocaleContext);
+  const { t } = useLocale();
   const [search, setSearch] = useState('');
   const [selected, setSelected] = useState({});
   const {

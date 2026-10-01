@@ -1,5 +1,5 @@
-import { useContext, useEffect, useState } from 'preact/hooks';
-import { LocaleContext } from '../../core/locale/LocaleContext.jsx';
+import { useEffect, useState } from 'preact/hooks';
+import { useLocale } from '../../core/locale/LocaleContext.jsx';
 import { Pagination } from '../../ui/Pagination.jsx';
 import { Dialog } from '../../ui/Dialog.jsx';
 import { TransferProgress } from '../transfers/TransferProgress.jsx';
@@ -19,7 +19,7 @@ export function FolderItemsDialog({
   progressEnabled = false,
   onClose,
 }) {
-  const { t } = useContext(LocaleContext);
+  const { t } = useLocale();
   const [page, setPage] = useState(1);
   const [perpage, setPerpage] = useState(10);
   const [items, setItems] = useState([]);

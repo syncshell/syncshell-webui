@@ -1,8 +1,8 @@
-import { useContext, useEffect, useRef, useState } from 'preact/hooks';
+import { useEffect, useRef, useState } from 'preact/hooks';
 import { Dialog } from '../../ui/Dialog.jsx';
 import { Icon } from '../../ui/Icon.jsx';
 import { Tabs } from '../../ui/Tabs.jsx';
-import { LocaleContext } from '../../core/locale/LocaleContext.jsx';
+import { useLocale } from '../../core/locale/LocaleContext.jsx';
 import { cloneConfig } from '../../core/config/configValues.mjs';
 import { EditorField } from '../../ui/EditorField.jsx';
 import { ConfirmManagementAction } from '../management/ConfirmManagementAction.jsx';
@@ -31,7 +31,7 @@ export function FolderEditor({
   onClose,
   onSaved,
 }) {
-  const { t } = useContext(LocaleContext);
+  const { t } = useLocale();
   const defaults = !!action.defaults;
   const isNew = action.type === 'add-folder';
   const [draft, setDraft] = useState(() => cloneConfig(action.folder));

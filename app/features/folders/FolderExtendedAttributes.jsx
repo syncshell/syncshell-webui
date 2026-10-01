@@ -1,10 +1,9 @@
-import { useContext } from 'preact/hooks';
-import { LocaleContext } from '../../core/locale/LocaleContext.jsx';
+import { useLocale } from '../../core/locale/LocaleContext.jsx';
 import { xattrDefault, xattrHint } from './folder-editor.mjs';
 import './FolderExtendedAttributes.css';
 
 export function FolderExtendedAttributes({ draft, dispatch }) {
-  const { t } = useContext(LocaleContext);
+  const { t } = useLocale();
 
   return (
     <>

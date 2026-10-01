@@ -1,4 +1,3 @@
-import { useContext } from 'preact/hooks';
 import {
   compactNumber,
   duration,
@@ -6,7 +5,7 @@ import {
   unitPrefixed,
 } from '../../../client/format.mjs';
 import { Icon } from '../../ui/Icon.jsx';
-import { LocaleContext } from '../../core/locale/LocaleContext.jsx';
+import { useLocale } from '../../core/locale/LocaleContext.jsx';
 import { Tooltip } from '../../ui/Tooltip.jsx';
 import { FolderCounts } from './FolderCounts.jsx';
 import { FolderVersioningSummary } from './FolderVersioningSummary.jsx';
@@ -32,7 +31,7 @@ export function FolderDetails({
   onAction,
   onShowItems,
 }) {
-  const { t } = useContext(LocaleContext);
+  const { t } = useLocale();
   const summaries = folderStateDetails(folder, info) ? ['global', 'local'] : [];
   const watcherFailed =
     folder.fsWatcherEnabled &&

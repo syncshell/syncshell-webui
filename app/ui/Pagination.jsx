@@ -1,9 +1,8 @@
-import { useContext } from 'preact/hooks';
-import { LocaleContext } from '../core/locale/LocaleContext.jsx';
+import { useLocale } from '../core/locale/LocaleContext.jsx';
 import { paginationPages } from './pagination.mjs';
 
 export function Pagination({ page, perpage, total, onPage, onSize }) {
-  const { t } = useContext(LocaleContext);
+  const { t } = useLocale();
   const pages = paginationPages(page, total, perpage);
   const last = Math.ceil(total / perpage);
   function change(event, next) {

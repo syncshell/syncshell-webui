@@ -1,8 +1,8 @@
-import { useContext, useEffect, useRef, useState } from 'preact/hooks';
-import { LocaleContext } from '../../core/locale/LocaleContext.jsx';
+import { useEffect, useRef, useState } from 'preact/hooks';
+import { useLocale } from '../../core/locale/LocaleContext.jsx';
 
 export function Login({ api }) {
-  const { t } = useContext(LocaleContext);
+  const { t } = useLocale();
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [stayLoggedIn, setStayLoggedIn] = useState(false);

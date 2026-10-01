@@ -1,10 +1,10 @@
-import { useContext, useEffect, useState } from 'preact/hooks';
+import { useEffect, useState } from 'preact/hooks';
 import { Dialog } from '../../ui/Dialog.jsx';
-import { LocaleContext } from '../../core/locale/LocaleContext.jsx';
+import { useLocale } from '../../core/locale/LocaleContext.jsx';
 import { decideUsage, usageReport } from './reports.mjs';
 
 export function UsageReport({ api, session, state, consent = false, onClose }) {
-  const { t } = useContext(LocaleContext);
+  const { t } = useLocale();
   const [maximum] = useState(state.system.urVersionMax || 2);
   const [version, setVersion] = useState(maximum);
   const [diff, setDiff] = useState(false);

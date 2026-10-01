@@ -1,5 +1,4 @@
-import { useContext } from 'preact/hooks';
-import { LocaleContext } from '../core/locale/LocaleContext.jsx';
+import { useLocale } from '../core/locale/LocaleContext.jsx';
 import { getValue } from '../core/config/configValues.mjs';
 import { Tooltip } from './Tooltip.jsx';
 import { changedValue, inputValue } from './formValues.mjs';
@@ -13,7 +12,7 @@ export function EditorField({
   defaults,
   onChange,
 }) {
-  const { t } = useContext(LocaleContext);
+  const { t } = useLocale();
   const descriptions = [];
   if (help) descriptions.push('editor-' + field.path + '-help');
   if (hasError) descriptions.push('editor-error');
