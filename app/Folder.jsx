@@ -23,7 +23,7 @@ import { Tooltip } from './Tooltip.jsx';
 import { Counts } from './Counts.jsx';
 import { Field } from './Field.jsx';
 import { Versioning } from './Versioning.jsx';
-import { ItemsDialog } from './ItemsDialog.jsx';
+import { FolderItemsDialog } from './features/folders/FolderItemsDialog.jsx';
 import { Icon } from './Icon.jsx';
 import { runReportedSessionAction } from '../client/session.mjs';
 import { FolderHeader } from './features/folders/FolderHeader.jsx';
@@ -341,7 +341,7 @@ export function Folder({
         )}
       </div>
       {itemsKind && (
-        <ItemsDialog
+        <FolderItemsDialog
           api={api}
           folder={folder}
           kind={itemsKind}
