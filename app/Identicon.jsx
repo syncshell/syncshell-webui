@@ -1,4 +1,4 @@
-import { identiconRects } from '../client/devices.mjs';
+import { identiconRects } from './features/devices/identicon.mjs';
 export function Identicon({ id }) {
   return (
     <span class="panel-icon">
