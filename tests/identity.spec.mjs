@@ -2,7 +2,7 @@ import { test, expect } from '@playwright/test';
 
 test('identity links encode text and About lists attribution and paths', async ({
   page,
-}, testInfo) => {
+}) => {
   const pathsResponse = page.waitForResponse(
     (response) =>
       new URL(response.url()).pathname === '/rest/system/paths' &&
@@ -31,7 +31,6 @@ test('identity links encode text and About lists attribution and paths', async (
     '\r\n\r\n' + id + '\r\n\r\n',
   );
   expect(emailURL.searchParams.get('subject')).not.toContain('{{');
-  await page.screenshot({ path: testInfo.outputPath('identity-email.png') });
   await email.getByRole('button', { name: 'Cancel', exact: true }).click();
   await identity
     .getByRole('button', { name: 'Share by SMS', exact: true })
@@ -61,5 +60,4 @@ test('identity links encode text and About lists attribution and paths', async (
   await about.getByRole('tab', { name: 'Paths', exact: true }).click();
   const paths = await (await pathsResponse).json();
   await expect(about).toContainText(paths['baseDir-userHome']);
-  await page.screenshot({ path: testInfo.outputPath('about-paths.png') });
 });

@@ -9,7 +9,7 @@ async function openFolder(page, query = '') {
 test('accepted fields, compact values and icon-only help stay readable in English', async ({
   page,
   folderFixture,
-}, testInfo) => {
+}) => {
   await folderFixture();
   await openFolder(page, '?lang=de');
   const summary = page.locator('.folder-state-summary');
@@ -43,13 +43,12 @@ test('accepted fields, compact values and icon-only help stay readable in Englis
       () => document.documentElement.scrollWidth <= innerWidth,
     ),
   ).toBe(true);
-  await page.screenshot({ path: testInfo.outputPath('english-folder.png') });
 });
 
 test('divergence exposes compact child rows and a working paged error dialog', async ({
   page,
   folderFixture,
-}, testInfo) => {
+}) => {
   await folderFixture({
     model: {
       localFiles: 109000,
@@ -102,7 +101,6 @@ test('divergence exposes compact child rows and a working paged error dialog', a
   await dialog.getByRole('link', { name: 'Next', exact: true }).click();
   await expect.poll(() => requests.at(-1)?.page).toBe('2');
   await expect(dialog.locator('table')).toHaveAttribute('aria-busy', 'false');
-  await page.screenshot({ path: testInfo.outputPath('failed-items.png') });
   await dialog.getByRole('link', { name: '25', exact: true }).click();
   await expect.poll(() => requests.at(-1)?.perpage).toBe('25');
   await expect.poll(() => requests.at(-1)?.page).toBe('1');
@@ -116,7 +114,7 @@ test('divergence exposes compact child rows and a working paged error dialog', a
 test('configuration fields and scanning estimate follow visibility rules', async ({
   page,
   folderFixture,
-}, testInfo) => {
+}) => {
   await folderFixture({
     folder: {
       ignorePerms: true,
@@ -147,5 +145,4 @@ test('configuration fields and scanning estimate follow visibility rules', async
   ).toBeDisabled();
   await page.getByRole('img', { name: 'File Versioning', exact: true }).hover();
   await expect(page.getByRole('tooltip')).toContainText('Keeps older copies');
-  await page.screenshot({ path: testInfo.outputPath('versioning-scan.png') });
 });

@@ -123,7 +123,6 @@ try {
       .fill('version.txt');
     const time = await select.locator('option').nth(1).getAttribute('value');
     await select.selectOption(time);
-    await page.screenshot({ path: join(root, name + '-versions-browser.png') });
     await dialog
       .getByRole('button', { name: 'Restore (1)', exact: true })
       .click();

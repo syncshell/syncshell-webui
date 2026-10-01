@@ -14,7 +14,7 @@ async function openSettings(page, advanced = false) {
 test('settings drafts survive default editing and ignored-list changes', async ({
   page,
   folderFixture,
-}, testInfo) => {
+}) => {
   let original, saved;
   await folderFixture();
   await page.route('**/rest/config', async (route) => {
@@ -77,7 +77,6 @@ test('settings drafts survive default editing and ignored-list changes', async (
     .getByRole('tab', { name: 'Ignored Folders', exact: true })
     .click();
   await dialog.getByRole('button', { name: 'Unignore', exact: true }).click();
-  await page.screenshot({ path: testInfo.outputPath('settings-ignored.png') });
   await dialog.getByRole('button', { name: 'Save', exact: true }).click();
   await expect(dialog).toHaveCount(0);
   expect(saved.remoteIgnoredDevices).toEqual([]);
@@ -126,7 +125,7 @@ test('settings controls keep labels and associate save errors', async ({
 test('advanced changes stay in the draft until save or explicit discard', async ({
   page,
   folderFixture,
-}, testInfo) => {
+}) => {
   let saved;
   await folderFixture();
   await page.route('**/rest/config', async (route) => {
@@ -160,7 +159,6 @@ test('advanced changes stay in the draft until save or explicit discard', async 
     .click();
   await expect(interval).toHaveValue(initial);
   await interval.fill('17');
-  await page.screenshot({ path: testInfo.outputPath('advanced-options.png') });
   await dialog.getByRole('button', { name: 'Save', exact: true }).click();
   await expect(dialog).toHaveCount(0);
   expect(saved.options.reconnectionIntervalS).toBe(17);

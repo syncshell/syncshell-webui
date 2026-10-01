@@ -3,7 +3,7 @@ import { test, expect } from './playwright-fixtures.mjs';
 test('needed files show event progress, prioritize a file and refresh when it finishes', async ({
   page,
   folderFixture,
-}, testInfo) => {
+}) => {
   await folderFixture({ model: { needTotalItems: 2, needBytes: 2048 } });
   const path = 'nested/file & review.txt';
   let pending,
@@ -68,7 +68,6 @@ test('needed files show event progress, prioritize a file and refresh when it fi
   await expect(bar).toContainText('512 B / 2 KiB');
   await dialog.getByRole('button', { name: 'Move to top of queue' }).click();
   expect(priority).toBe('queued.txt');
-  await page.screenshot({ path: testInfo.outputPath('transfer-progress.png') });
   await expect.poll(() => !!pending).toBe(true);
   finished = true;
   await pending.fulfill({
@@ -83,7 +82,7 @@ test('needed files show event progress, prioritize a file and refresh when it fi
 test('logs render literal text, update logging levels and cancel polling on close', async ({
   page,
   folderFixture,
-}, testInfo) => {
+}) => {
   await folderFixture();
   let levels = { api: 'INFO' },
     writes = 0,
@@ -128,7 +127,6 @@ test('logs render literal text, update logging levels and cancel polling on clos
     dialog.getByRole('combobox', { name: 'api', exact: true }),
   ).toHaveValue('WARN');
   expect(writes).toBe(1);
-  await page.screenshot({ path: testInfo.outputPath('logging-levels.png') });
   await dialog.getByRole('button', { name: /Close/ }).click();
   const before = reads;
   await page.waitForTimeout(2200);

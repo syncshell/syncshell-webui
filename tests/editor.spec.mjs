@@ -3,7 +3,7 @@ import { test, expect } from './playwright-fixtures.mjs';
 test('editor enforces folder restrictions and orders attribute rules', async ({
   page,
   folderFixture,
-}, testInfo) => {
+}) => {
   let saved;
   await folderFixture({ folder: { blockIndexing: true } });
   await page.route('**/rest/config', async (route) => {
@@ -72,7 +72,6 @@ test('editor enforces folder restrictions and orders attribute rules', async ({
   await expect(
     dialog.getByRole('textbox', { name: 'Active filter rules 2', exact: true }),
   ).toHaveValue('*');
-  await page.screenshot({ path: testInfo.outputPath('attribute-rules.png') });
   await dialog.getByRole('button', { name: /Save/ }).click();
   await expect(dialog).toHaveCount(0);
   expect(saved.folders[0].xattrFilter.entries).toEqual([

@@ -3,7 +3,7 @@ import { test, expect } from './playwright-fixtures.mjs';
 test('version restore sends selected REST values and recovers from errors', async ({
   page,
   folderFixture,
-}, testInfo) => {
+}) => {
   await page.emulateMedia({ colorScheme: 'dark' });
   await folderFixture({
     folder: {
@@ -67,9 +67,6 @@ test('version restore sends selected REST values and recovers from errors', asyn
   await dialog.getByRole('button', { name: 'Yes', exact: true }).click();
   await expect(dialog).toContainText('permission denied');
   expect(requests).toEqual([{ [path]: versions[1].versionTime }]);
-  await page.screenshot({
-    path: testInfo.outputPath('version-error-dark.png'),
-  });
   await dialog
     .getByRole('button', { name: 'Restore (1)', exact: true })
     .click();

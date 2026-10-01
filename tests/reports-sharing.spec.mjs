@@ -69,7 +69,7 @@ for (const [accepted, answer, result] of [
 test('report version comparison and major upgrades expose their warnings', async ({
   page,
   folderFixture,
-}, testInfo) => {
+}) => {
   await folderFixture();
   await page.route('**/rest/system/status', async (route) =>
     route.fulfill({
@@ -115,7 +115,6 @@ test('report version comparison and major upgrades expose their warnings', async
     })
     .check();
   await expect(report.locator('pre')).not.toContainText('common');
-  await page.screenshot({ path: testInfo.outputPath('usage-difference.png') });
   await report.getByRole('button', { name: 'Close', exact: true }).click();
   await page
     .getByRole('dialog', { name: 'Settings', exact: true })
@@ -131,7 +130,7 @@ test('report version comparison and major upgrades expose their warnings', async
 test('pending encrypted sharing keeps its password across device toggles', async ({
   page,
   folderFixture,
-}, testInfo) => {
+}) => {
   await folderFixture();
   let peer;
   const config = await configFixture(page, async (value, route) => {
@@ -199,7 +198,6 @@ test('pending encrypted sharing keeps its password across device toggles', async
   await dialog
     .getByRole('button', { name: 'Hide password', exact: true })
     .click();
-  await page.screenshot({ path: testInfo.outputPath('encrypted-share.png') });
   await dialog.getByRole('button', { name: /Save/ }).click();
   await expect(dialog).toHaveCount(0);
   expect(
@@ -212,7 +210,7 @@ test('pending encrypted sharing keeps its password across device toggles', async
 test('notification severity changes from danger through warning and success to empty', async ({
   page,
   folderFixture,
-}, testInfo) => {
+}) => {
   await folderFixture();
   const push = await events(page);
   const config = await configFixture(page, (value) => {
@@ -256,9 +254,6 @@ test('notification severity changes from danger through warning and success to e
     .filter({ hasText: 'Temporary test notice' });
   await notice.getByRole('button', { name: /OK/ }).click();
   await expect(indicator.locator('.text-success')).toBeVisible();
-  await page.screenshot({
-    path: testInfo.outputPath('remaining-notification.png'),
-  });
   await page
     .locator('.notifications .panel')
     .getByRole('button', { name: /OK/ })
