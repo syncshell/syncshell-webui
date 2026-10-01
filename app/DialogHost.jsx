@@ -11,9 +11,8 @@ import { ConfirmAction } from './ConfirmAction.jsx';
 import { RemoteFiles } from './RemoteFiles.jsx';
 import { RestoreVersions } from './RestoreVersions.jsx';
 import { deviceName, sharedFolders } from '../client/devices.mjs';
-import { timestamp } from '../client/format.mjs';
-import { Tooltip } from './Tooltip.jsx';
 import { ServiceHealthDialog } from './ServiceHealthDialog.jsx';
+import { RecentChangesDialog } from './RecentChangesDialog.jsx';
 
 /**
  * @typedef (
@@ -34,14 +33,6 @@ import { ServiceHealthDialog } from './ServiceHealthDialog.jsx';
 /** @param {{action: DialogRequest, state: object, api: object, session: object, onClose: function}} props */
 export function DialogHost({ action, state, api, session, onClose }) {
   const { t } = useContext(LocaleContext);
-  const friendly = (id) =>
-    deviceName(
-      state.config.devices.find((device) =>
-        device.deviceID.startsWith(id || '\0'),
-      ),
-    ) ||
-    id ||
-    t('Unknown');
   if (['restart', 'shutdown', 'upgrade'].includes(action.type))
     return (
       <ServiceDialog
@@ -146,63 +137,6 @@ export function DialogHost({ action, state, api, session, onClose }) {
     );
   }
   if (action.type === 'changes')
-    return (
-      <Dialog
-        title="Recent Changes"
-        large
-        expandable
-        icon="info"
-        onClose={onClose}
-      >
-        <div class="table-responsive">
-          <table class="table table-condensed table-striped recent-changes-table">
-            <colgroup>
-              <col class="recent-device" />
-              <col class="recent-action" />
-              <col class="recent-type" />
-              <col class="recent-folder" />
-              <col class="recent-path" />
-              <col class="recent-time" />
-            </colgroup>
-            <thead>
-              <tr>
-                {['Device', 'Action', 'Type', 'Folder', 'Path', 'Time'].map(
-                  (label) => (
-                    <th key={label}>{t(label)}</th>
-                  ),
-                )}
-              </tr>
-            </thead>
-            <tbody>
-              {state.globalChanges.map((event) => {
-                const folder =
-                  state.config.folders.find(
-                    (item) => item.id === event.data.folder,
-                  )?.label || event.data.folder;
-                return (
-                  <tr key={event.id}>
-                    <td title={friendly(event.data.modifiedBy)}>
-                      {friendly(event.data.modifiedBy)}
-                    </td>
-                    <td>{t(event.data.action)}</td>
-                    <td>{t(event.data.type)}</td>
-                    <td title={folder}>{folder}</td>
-                    <td>
-                      <Tooltip
-                        label={event.data.path}
-                        text={event.data.path}
-                        triggerText={event.data.path}
-                        tail
-                      />
-                    </td>
-                    <td>{timestamp(event.time)}</td>
-                  </tr>
-                );
-              })}
-            </tbody>
-          </table>
-        </div>
-      </Dialog>
-    );
+    return <RecentChangesDialog state={state} onClose={onClose} />;
   return null;
 }
