@@ -30,11 +30,10 @@ import {
   reduceNewFolderSavePhase,
   reduceFolderDraft,
   saveFolderEditor,
-  xattrDefault,
-  xattrHint,
 } from './features/folders/folder-editor.mjs';
 import { Icon } from './Icon.jsx';
 import { Tabs } from './Tabs.jsx';
+import { FolderExtendedAttributes } from './features/folders/FolderExtendedAttributes.jsx';
 import { FolderVersioningFields } from './features/folders/FolderVersioningFields.jsx';
 
 export function Editor({ action, state, api, session, onClose, onSaved }) {
@@ -724,81 +723,10 @@ export function Editor({ action, state, api, session, onClose, onSaved }) {
                 {kind === 'folder' &&
                   tab === 'Advanced' &&
                   (draft.syncXattrs || draft.sendXattrs) && (
-                    <>
-                      <p>
-                        {t('Extended Attributes Filter')} ·{' '}
-                        <a
-                          href="https://docs.syncthing.net/advanced/folder-xattr-filter.html"
-                          target="_blank"
-                          rel="noreferrer"
-                        >
-                          {t('Help')}
-                        </a>
-                      </p>
-                      <p>
-                        {t(
-                          'To permit a rule, have the checkbox checked. To deny a rule, leave it unchecked.',
-                        )}
-                      </p>
-                      {(draft.xattrFilter?.entries || []).map(
-                        (entry, index) => (
-                          <div class="xattr-rule" key={index}>
-                            <input
-                              type="checkbox"
-                              aria-label={t('permit') + ' ' + (index + 1)}
-                              checked={entry.permit}
-                              onChange={(event) =>
-                                dispatchFolder({
-                                  type: 'set-folder-xattr-permit',
-                                  index,
-                                  value: event.currentTarget.checked,
-                                })
-                              }
-                            />
-                            <input
-                              class="form-control"
-                              aria-label={
-                                t('Active filter rules') + ' ' + (index + 1)
-                              }
-                              value={entry.match}
-                              onInput={(event) =>
-                                dispatchFolder({
-                                  type: 'set-folder-xattr-match',
-                                  index,
-                                  value: event.currentTarget.value,
-                                })
-                              }
-                            />
-                            <button
-                              type="button"
-                              class="btn btn-default"
-                              onClick={() =>
-                                dispatchFolder({
-                                  type: 'remove-folder-xattr-rule',
-                                  index,
-                                })
-                              }
-                            >
-                              {t('Remove')}
-                            </button>
-                          </div>
-                        ),
-                      )}
-                      <button
-                        type="button"
-                        class="btn btn-default"
-                        onClick={() =>
-                          dispatchFolder({ type: 'add-folder-xattr-rule' })
-                        }
-                      >
-                        {t('Add filter entry')}
-                      </button>
-                      <p>
-                        {t('Default')}:{' '}
-                        {t(xattrDefault(draft.xattrFilter?.entries))}
-                      </p>
-                      <p>{t(xattrHint(draft.xattrFilter?.entries))}</p>
-                    </>
+                    <FolderExtendedAttributes
+                      draft={draft}
+                      dispatch={dispatchFolder}
+                    />
                   )}
               </>
             )}
