@@ -94,6 +94,34 @@ test('settings drafts survive default editing and ignored-list changes', async (
   ).toBe(true);
 });
 
+test('settings controls keep labels and associate save errors', async ({
+  page,
+}) => {
+  await folderFixture(page);
+  await page.goto('/');
+  const dialog = await openSettings(page);
+  await dialog.getByRole('tab', { name: 'GUI', exact: true }).click();
+
+  const startBrowser = dialog.getByRole('checkbox', {
+    name: 'Start Browser',
+    exact: true,
+  });
+  const checkboxId = await startBrowser.getAttribute('id');
+  expect(checkboxId).toBeTruthy();
+  await expect(dialog.locator(`label[for="${checkboxId}"]`)).toHaveCount(1);
+
+  const address = dialog.getByRole('textbox', {
+    name: 'GUI Listen Address',
+    exact: true,
+  });
+  await address.fill('127.0.0.1:80');
+  await dialog.getByRole('button', { name: 'Save', exact: true }).click();
+
+  const error = dialog.getByRole('alert');
+  await expect(error).toHaveAttribute('id', 'settings-error');
+  await expect(address).toHaveAttribute('aria-describedby', 'settings-error');
+});
+
 test('advanced changes stay in the draft until save or explicit discard', async ({
   page,
 }, testInfo) => {

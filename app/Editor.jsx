@@ -371,6 +371,7 @@ export function Editor({ action, state, api, session, onClose, onSaved }) {
       >
         <form
           ref={form}
+          aria-describedby={error ? 'editor-error' : undefined}
           onSubmit={(event) => {
             event.preventDefault();
             save();
@@ -378,7 +379,7 @@ export function Editor({ action, state, api, session, onClose, onSaved }) {
         >
           <Tabs activeId={tab} items={tabItems} onSelect={setTab} />
           {error && (
-            <p class="text-danger" role="alert">
+            <p id="editor-error" class="text-danger" role="alert">
               {t(error)}
             </p>
           )}

@@ -134,13 +134,14 @@ export function Settings({ state, api, session, onClose, advanced = false }) {
       >
         <form
           ref={form}
+          aria-describedby={error ? 'settings-error' : undefined}
           onSubmit={(event) => {
             event.preventDefault();
             save();
           }}
         >
           {error && (
-            <p class="text-danger" role="alert">
+            <p id="settings-error" class="text-danger" role="alert">
               {t(error)}
             </p>
           )}
@@ -158,6 +159,7 @@ export function Settings({ state, api, session, onClose, advanced = false }) {
                     <summary class="panel-heading">{t(section.label)}</summary>
                     <div class="panel-body">
                       <FormFields
+                        describedBy={error ? 'settings-error' : undefined}
                         draft={draft}
                         fields={section.fields}
                         onChange={update}
@@ -263,6 +265,7 @@ export function Settings({ state, api, session, onClose, advanced = false }) {
                   ) : (
                     <>
                       <FormFields
+                        describedBy={error ? 'settings-error' : undefined}
                         draft={draft}
                         fields={fields}
                         onChange={update}

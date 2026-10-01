@@ -1,21 +1,47 @@
 import { useContext } from 'preact/hooks';
 import { LocaleContext } from './locale-context.jsx';
 
-export function CheckboxFormControl({ label, checked, onChange }) {
+export function CheckboxFormControl({
+  id,
+  label,
+  checked,
+  describedBy,
+  onChange,
+}) {
   const { t } = useContext(LocaleContext);
   return (
-    <label>
-      <input type="checkbox" checked={checked} onChange={onChange} /> {t(label)}
+    <label for={id}>
+      <input
+        id={id}
+        type="checkbox"
+        checked={checked}
+        aria-describedby={describedBy}
+        onChange={onChange}
+      />{' '}
+      {t(label)}
     </label>
   );
 }
 
-export function SelectFormControl({ id, label, value, options, onChange }) {
+export function SelectFormControl({
+  id,
+  label,
+  value,
+  options,
+  describedBy,
+  onChange,
+}) {
   const { t } = useContext(LocaleContext);
   return (
     <>
       <label for={id}>{t(label)}</label>
-      <select id={id} class="form-control" value={value} onChange={onChange}>
+      <select
+        id={id}
+        class="form-control"
+        value={value}
+        aria-describedby={describedBy}
+        onChange={onChange}
+      >
         {options.map((option) => (
           <option key={option.value} value={option.value}>
             {t(option.label)}
@@ -26,7 +52,13 @@ export function SelectFormControl({ id, label, value, options, onChange }) {
   );
 }
 
-export function MultilineFormControl({ id, label, value, onInput }) {
+export function MultilineFormControl({
+  id,
+  label,
+  value,
+  describedBy,
+  onInput,
+}) {
   const { t } = useContext(LocaleContext);
   return (
     <>
@@ -36,6 +68,7 @@ export function MultilineFormControl({ id, label, value, onInput }) {
         class="form-control"
         rows="6"
         value={value}
+        aria-describedby={describedBy}
         onInput={onInput}
       />
     </>
@@ -48,6 +81,7 @@ export function NumberFormControl({
   value,
   min,
   required,
+  describedBy,
   onInput,
 }) {
   const { t } = useContext(LocaleContext);
@@ -62,6 +96,7 @@ export function NumberFormControl({
         min={min}
         required={required}
         value={value}
+        aria-describedby={describedBy}
         onInput={onInput}
       />
     </>
@@ -74,6 +109,7 @@ export function TextFormControl({
   type = 'text',
   value,
   required,
+  describedBy,
   onInput,
 }) {
   const { t } = useContext(LocaleContext);
@@ -86,6 +122,7 @@ export function TextFormControl({
         type={type}
         required={required}
         value={value}
+        aria-describedby={describedBy}
         onInput={onInput}
       />
     </>
