@@ -63,6 +63,5 @@ Omarchy palette values to the included template. Its Go bridge provides optional
 local file actions. Without a plugin grant, ordinary Syncthing operations remain
 available and local file actions report unavailable access.
 
-See [RELEASES.md](RELEASES.md) for packaging and automated plugin updates. This
-is a third-party Syncthing interface. Original authors and dependency licenses
-remain credited in About and in the release.
+This is a third-party Syncthing interface. Original authors and dependency
+licenses remain credited in About and in the release.
