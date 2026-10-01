@@ -9,6 +9,9 @@
   --text-small: 12px;
   --text-body: 14px;
   --text-heading: 16px;
+  --dialog-inline-size: 600px;
+  --dialog-large-inline-size: 900px;
+  --content-max-inline-size: 1395px;
   --radius-small: 2px;
   --motion-fast: 100ms;
   --motion-normal: 200ms;

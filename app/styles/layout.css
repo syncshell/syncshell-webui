@@ -1,6 +1,6 @@
 @media (min-width: 1400px) {
   .dashboard-primary.active {
-    max-width: 1395px;
+    max-inline-size: var(--content-max-inline-size);
     grid-template-columns: minmax(0, 1fr) minmax(0, 2fr);
     column-gap: var(--space-7);
   }

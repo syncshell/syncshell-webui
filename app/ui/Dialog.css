@@ -5,7 +5,7 @@
     position: fixed;
     inset: 30px 0 auto;
     margin: 0 auto;
-    width: 600px;
+    inline-size: var(--dialog-inline-size);
     max-width: calc(100vw - 20px);
     max-height: calc(100vh - 60px);
     padding: 0;
@@ -14,7 +14,7 @@
   }
 
   .dialog.large {
-    width: 900px;
+    inline-size: var(--dialog-large-inline-size);
   }
 
   .dialog.expandable .modal-content {
