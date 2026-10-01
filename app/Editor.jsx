@@ -11,7 +11,7 @@ import {
 } from '../client/edit.mjs';
 import { fieldHelp } from '../client/field-help.mjs';
 import { Tooltip } from './Tooltip.jsx';
-import { IdentityControls } from './IdentityControls.jsx';
+import { ShareDeviceIdentity } from './features/devices/ShareDeviceIdentity.jsx';
 import { SharingEntry } from './SharingEntry.jsx';
 import { deviceName } from './features/devices/device-status.mjs';
 import {
@@ -591,7 +591,7 @@ export function Editor({ action, state, api, session, onClose, onSaved }) {
             ) : (
               <>
                 {kind === 'device' && tab === 'General' && !defaults && (
-                  <IdentityControls device={draft} api={api} />
+                  <ShareDeviceIdentity device={draft} api={api} />
                 )}
                 {fields.map((field) => (
                   <div class="form-group" key={field.path}>

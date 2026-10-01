@@ -1,7 +1,7 @@
 import { useContext } from 'preact/hooks';
 import { deviceName } from './features/devices/device-status.mjs';
+import { ShareDeviceIdentity } from './features/devices/ShareDeviceIdentity.jsx';
 import { Dialog } from './Dialog.jsx';
-import { IdentityControls } from './IdentityControls.jsx';
 import { LocaleContext } from './locale-context.jsx';
 
 export function DeviceIdentificationDialog({ api, device, onClose }) {
@@ -25,7 +25,7 @@ export function DeviceIdentificationDialog({ api, device, onClose }) {
           width="328"
           alt={t('QR code')}
         />
-        <IdentityControls device={device} api={api} />
+        <ShareDeviceIdentity device={device} api={api} />
       </div>
     </Dialog>
   );

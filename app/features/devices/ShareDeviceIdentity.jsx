@@ -1,9 +1,10 @@
 import { useContext, useState } from 'preact/hooks';
-import { LocaleContext } from './locale-context.jsx';
-import { Dialog } from './Dialog.jsx';
-import { identityMessage } from '../client/identity.mjs';
-import { Icon } from './Icon.jsx';
-export function IdentityControls({ device, api }) {
+import { identityMessage } from '../../../client/identity.mjs';
+import { Dialog } from '../../Dialog.jsx';
+import { Icon } from '../../Icon.jsx';
+import { LocaleContext } from '../../locale-context.jsx';
+
+export function ShareDeviceIdentity({ device, api }) {
   const { t } = useContext(LocaleContext);
   const [method, setMethod] = useState('');
   const [validated, setValidated] = useState(null);
