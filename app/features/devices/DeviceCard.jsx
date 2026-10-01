@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'preact/hooks';
+import { useState } from 'preact/hooks';
 import { useLocale } from '../../core/locale/LocaleContext.jsx';
 import {
   deviceName,
@@ -14,7 +14,6 @@ import {
   compactNumber,
   duration,
 } from '../../../client/format.mjs';
-import { stripeSections } from '../../../client/stripes.mjs';
 import { DeviceDefinitionRow } from './DeviceDefinitionRow.jsx';
 import { FolderCounts } from '../folders/FolderCounts.jsx';
 import { Tooltip } from '../../ui/Tooltip.jsx';
@@ -35,10 +34,6 @@ export function DeviceCard({
 }) {
   const { t } = useLocale();
   const [open, setOpen] = useState(isLocalDevice);
-  const panel = useRef();
-  useEffect(() => {
-    if (open) return stripeSections(panel.current);
-  }, [open]);
   const conn = isLocalDevice
     ? state.connectionsTotal
     : state.connections[device.deviceID] || {};
@@ -68,7 +63,7 @@ export function DeviceCard({
         onToggle={() => setOpen(!open)}
       />
       {open && (
-        <div class="panel-collapse" ref={panel}>
+        <div class="panel-collapse">
           <div class="panel-body less-padding">
             {!isLocalDevice && (
               <table class="table table-condensed visible-xs remote-status">
@@ -88,7 +83,7 @@ export function DeviceCard({
               completion._needItems > 0) && (
               <details class="device-details" open>
                 <summary>{t('Current activity')}</summary>
-                <table class="table table-condensed table-auto">
+                <table class="table table-condensed table-striped table-auto">
                   <tbody>
                     {!isLocalDevice &&
                       !conn.connected &&
@@ -156,7 +151,7 @@ export function DeviceCard({
             />
             <details class="device-details">
               <summary>{t('Device information')}</summary>
-              <table class="table table-condensed table-auto">
+              <table class="table table-condensed table-striped table-auto">
                 <tbody>
                   {isLocalDevice ? (
                     <>

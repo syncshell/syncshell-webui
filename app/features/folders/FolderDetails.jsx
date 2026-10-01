@@ -50,7 +50,7 @@ export function FolderDetails({
     <div class="panel-body less-padding">
       <details class="folder-details" open>
         <summary>{t('Current activity')}</summary>
-        <table class="table table-condensed table-auto">
+        <table class="table table-condensed table-striped table-auto">
           <tbody>
             {!folder.paused && info?.state && (
               <tr class="folder-state-summary">
@@ -194,7 +194,7 @@ export function FolderDetails({
       </details>
       <details class="folder-details">
         <summary>{t('Configuration')}</summary>
-        <table class="table table-condensed table-auto">
+        <table class="table table-condensed table-striped table-auto">
           <tbody>
             <FolderDefinitionRow label="Rescans">
               <span title={watcherFailed || ''}>
@@ -236,7 +236,7 @@ export function FolderDetails({
       </details>
       <details class="folder-details">
         <summary>{t('Folder information')}</summary>
-        <table class="table table-condensed table-auto">
+        <table class="table table-condensed table-striped table-auto">
           <tbody>
             <FolderDefinitionRow label="Folder Path">
               <Tooltip

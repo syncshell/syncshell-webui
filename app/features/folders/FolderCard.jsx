@@ -1,6 +1,5 @@
-import { useEffect, useRef, useState } from 'preact/hooks';
+import { useState } from 'preact/hooks';
 import { runReportedSessionAction } from '../../core/session/createSession.mjs';
-import { stripeSections } from '../../../client/stripes.mjs';
 import { FolderActions } from './FolderActions.jsx';
 import { FolderDetails } from './FolderDetails.jsx';
 import { FolderHeader } from './FolderHeader.jsx';
@@ -27,10 +26,6 @@ export function FolderCard({
   const [open, setOpen] = useState(false);
   const [scanning, setScanning] = useState(false);
   const [itemsKind, setItemsKind] = useState('');
-  const panel = useRef();
-  useEffect(() => {
-    if (open) return stripeSections(panel.current);
-  }, [open]);
   const status = folderStatus(folder, info);
   const label = folderStatusText(status);
   const percent =
@@ -66,7 +61,7 @@ export function FolderCard({
           onToggle={() => setOpen(!open)}
         />
         {open && (
-          <div class="panel-collapse" ref={panel}>
+          <div class="panel-collapse">
             <FolderDetails
               folder={folder}
               info={info}

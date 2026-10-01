@@ -33,7 +33,7 @@ export function ConnectionDetails({
   return (
     <details class="device-details" open>
       <summary>{t('Connectivity')}</summary>
-      <table class="table table-condensed table-auto">
+      <table class="table table-condensed table-striped table-auto">
         <tbody>
           {isLocalDevice ? (
             <>
