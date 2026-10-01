@@ -1,7 +1,7 @@
 import { About } from './features/about/About.jsx';
 import { ServiceDialog } from './features/system/ServiceDialog.jsx';
 import { Logs } from './features/logs/Logs.jsx';
-import { Editor } from './Editor.jsx';
+import { FolderEditor } from './features/folders/FolderEditor.jsx';
 import { SettingsDialog } from './features/settings/SettingsDialog.jsx';
 import { ConfirmManagementAction } from './features/management/ConfirmManagementAction.jsx';
 import { RestoreVersionsDialog } from './features/versions/RestoreVersionsDialog.jsx';
@@ -68,7 +68,7 @@ export function DialogHost({ action, state, api, session, onClose }) {
     case 'add-folder':
     case 'edit-folder':
       return (
-        <Editor
+        <FolderEditor
           action={action}
           state={state}
           api={api}

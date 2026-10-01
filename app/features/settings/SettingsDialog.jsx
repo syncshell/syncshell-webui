@@ -5,9 +5,10 @@ import { buildAdvancedConfigSections } from './advancedConfigFields.mjs';
 import { loadSettingsOptions } from './loadSettingsOptions.mjs';
 import { prepareSettingsForSave } from './prepareSettingsForSave.mjs';
 import { Dialog } from '../../Dialog.jsx';
-import { Editor } from '../../Editor.jsx';
 import { LocaleContext } from '../../core/locale/LocaleContext.jsx';
 import { Tabs } from '../../Tabs.jsx';
+import { DeviceEditor } from '../devices/DeviceEditor.jsx';
+import { FolderEditor } from '../folders/FolderEditor.jsx';
 import { UsageReport } from '../reports/UsageReport.jsx';
 import {
   IgnoredDevicesSettings,
@@ -36,6 +37,7 @@ export function SettingsDialog({
   const [nested, setNested] = useState(null);
   const [report, setReport] = useState(null);
   const [discard, setDiscard] = useState(false);
+  const NestedEditor = nested?.folder ? FolderEditor : DeviceEditor;
   const fields = settingsFields(tab, draft, state.system.myID, options.themes);
   const tabItems = settingsTabs.map((name) => ({
     id: name,
@@ -233,7 +235,7 @@ export function SettingsDialog({
         </form>
       </Dialog>
       {nested && (
-        <Editor
+        <NestedEditor
           action={nested}
           state={state}
           api={api}

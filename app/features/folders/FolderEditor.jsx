@@ -1,9 +1,12 @@
 import { useContext, useEffect, useRef, useState } from 'preact/hooks';
-import { LocaleContext } from './core/locale/LocaleContext.jsx';
-import { Dialog } from './Dialog.jsx';
-import { ConfirmManagementAction } from './features/management/ConfirmManagementAction.jsx';
-import { cloneConfig, ignoreLines } from '../client/edit.mjs';
-import { folderFieldHelp } from './features/folders/FolderDefinitionRow.jsx';
+import { cloneConfig, ignoreLines } from '../../../client/edit.mjs';
+import { Dialog } from '../../Dialog.jsx';
+import { EditorField } from '../../EditorField.jsx';
+import { Icon } from '../../Icon.jsx';
+import { Tabs } from '../../Tabs.jsx';
+import { LocaleContext } from '../../core/locale/LocaleContext.jsx';
+import { ConfirmManagementAction } from '../management/ConfirmManagementAction.jsx';
+import { folderFieldHelp } from './FolderDefinitionRow.jsx';
 import {
   folderEditorFieldState,
   folderEditorFields,
@@ -13,16 +16,20 @@ import {
   reduceNewFolderSavePhase,
   reduceFolderDraft,
   saveFolderEditor,
-} from './features/folders/folder-editor.mjs';
-import { Icon } from './Icon.jsx';
-import { Tabs } from './Tabs.jsx';
-import { FolderExtendedAttributes } from './features/folders/FolderExtendedAttributes.jsx';
-import { FolderIgnorePatterns } from './features/folders/FolderIgnorePatterns.jsx';
-import { FolderSharingFields } from './features/folders/FolderSharingFields.jsx';
-import { FolderVersioningFields } from './features/folders/FolderVersioningFields.jsx';
-import { EditorField } from './EditorField.jsx';
+} from './folder-editor.mjs';
+import { FolderExtendedAttributes } from './FolderExtendedAttributes.jsx';
+import { FolderIgnorePatterns } from './FolderIgnorePatterns.jsx';
+import { FolderSharingFields } from './FolderSharingFields.jsx';
+import { FolderVersioningFields } from './FolderVersioningFields.jsx';
 
-export function Editor({ action, state, api, session, onClose, onSaved }) {
+export function FolderEditor({
+  action,
+  state,
+  api,
+  session,
+  onClose,
+  onSaved,
+}) {
   const { t } = useContext(LocaleContext);
   const defaults = !!action.defaults;
   const isNew = action.type === 'add-folder';
