@@ -1,36 +1,45 @@
 // Copyright (C) 2014 The Syncthing Authors.
 // SPDX-License-Identifier: MPL-2.0
 
+const compactUnits = [
+  { threshold: 1e9, suffix: 'B' },
+  { threshold: 1e6, suffix: 'M' },
+  { threshold: 1e3, suffix: 'k' },
+];
+
+const durationUnits = [
+  { label: 'd', seconds: 86400 },
+  { label: 'h', seconds: 3600 },
+  { label: 'm', seconds: 60 },
+  { label: 's', seconds: 1 },
+];
+
 export function compactNumber(input) {
   if (!Number.isFinite(input) || input < 0) {
     return '-';
   }
-  var units = [
-    [1e9, 'B'],
-    [1e6, 'M'],
-    [1e3, 'k'],
-  ];
-  for (var i = 0; i < units.length; i++) {
-    if (input >= units[i][0]) {
-      return (
-        (Math.floor(input / (units[i][0] / 10)) / 10).toFixed(1) + units[i][1]
-      );
+  for (const { threshold, suffix } of compactUnits) {
+    if (input >= threshold) {
+      const value = Math.floor(input / (threshold / 10)) / 10;
+      return value.toFixed(1) + suffix;
     }
   }
   return input.toLocaleString();
 }
 
 export function unitPrefixed(input, binary) {
-  if (input === undefined || isNaN(input)) return '0 ';
+  // Preserve Syncthing's coercion and strict unit boundaries for existing data.
+  const numericInput = Number(input);
+  if (Number.isNaN(numericInput)) return '0 ';
   const factor = binary ? 1024 : 1000;
-  for (const [power, suffix] of [
-    [4, 'T'],
-    [3, 'G'],
-    [2, 'M'],
-    [1, binary ? 'K' : 'k'],
+  for (const { power, suffix } of [
+    { power: 4, suffix: 'T' },
+    { power: 3, suffix: 'G' },
+    { power: 2, suffix: 'M' },
+    { power: 1, suffix: binary ? 'K' : 'k' },
   ]) {
-    if (input <= factor ** power) continue;
-    const value = input / factor ** power;
+    if (numericInput <= factor ** power) continue;
+    const value = numericInput / factor ** power;
     const whole = power === 4 ? value > 1000 : binary && value >= 1000;
     return (
       value.toLocaleString(
@@ -42,24 +51,18 @@ export function unitPrefixed(input, binary) {
       (binary ? 'i' : '')
     );
   }
-  return Math.round(input).toLocaleString() + ' ';
+  return Math.round(numericInput).toLocaleString() + ' ';
 }
 
 export function duration(input, precision = 's') {
-  const units = [
-    ['d', 86400],
-    ['h', 3600],
-    ['m', 60],
-    ['s', 1],
-  ];
-  const end = units.findIndex(([unit]) => unit === precision);
+  const end = durationUnits.findIndex(({ label }) => label === precision);
   if (end < 0) throw new RangeError('Duration precision must be d, h, m or s');
-  let remaining = Math.abs(parseInt(input, 10)) || 0;
+  let remaining = Math.abs(Number.parseInt(input, 10)) || 0;
   const parts = [];
-  for (const [unit, seconds] of units.slice(0, end + 1)) {
+  for (const { label, seconds } of durationUnits.slice(0, end + 1)) {
     const value = Math.floor(remaining / seconds);
-    if (value || (unit === precision && remaining > 0))
-      parts.push(value + unit);
+    if (value || (label === precision && remaining > 0))
+      parts.push(value + label);
     remaining %= seconds;
   }
   return parts.join(' ') || '0' + precision;
