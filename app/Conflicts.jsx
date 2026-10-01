@@ -1,6 +1,6 @@
 import { ConflictRow } from './ConflictRow.jsx';
 import { useContext, useEffect, useRef, useState } from 'preact/hooks';
-import { LocaleContext } from './locale-context.jsx';
+import { LocaleContext } from './core/locale/LocaleContext.jsx';
 import {
   listConflicts,
   recheckConflicts,

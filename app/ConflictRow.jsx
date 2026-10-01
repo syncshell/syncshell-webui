@@ -1,5 +1,5 @@
 import { useContext } from 'preact/hooks';
-import { LocaleContext } from './locale-context.jsx';
+import { LocaleContext } from './core/locale/LocaleContext.jsx';
 import { parentPath, missingHelp } from '../client/conflicts.mjs';
 import { unitPrefixed, timestamp } from '../client/format.mjs';
 import { Tooltip } from './Tooltip.jsx';

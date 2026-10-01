@@ -1,6 +1,6 @@
 import { useContext, useState } from 'preact/hooks';
 import { Icon } from '../../Icon.jsx';
-import { LocaleContext } from '../../locale-context.jsx';
+import { LocaleContext } from '../../core/locale/LocaleContext.jsx';
 import { ShareStatus } from './ShareStatus.jsx';
 
 function passwordPlaceholder({ isEncrypted, isSelected, isPasswordRequired }) {

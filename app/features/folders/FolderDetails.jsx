@@ -6,7 +6,7 @@ import {
   unitPrefixed,
 } from '../../../client/format.mjs';
 import { Icon } from '../../Icon.jsx';
-import { LocaleContext } from '../../locale-context.jsx';
+import { LocaleContext } from '../../core/locale/LocaleContext.jsx';
 import { Tooltip } from '../../Tooltip.jsx';
 import { FolderCounts } from './FolderCounts.jsx';
 import { FolderVersioningSummary } from './FolderVersioningSummary.jsx';

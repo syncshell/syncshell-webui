@@ -1,6 +1,6 @@
 import { useContext, useEffect, useState } from 'preact/hooks';
 import { Dialog } from '../../Dialog.jsx';
-import { LocaleContext } from '../../locale-context.jsx';
+import { LocaleContext } from '../../core/locale/LocaleContext.jsx';
 import { decideUsage, usageReport } from './reports.mjs';
 
 export function UsageReport({ api, session, state, consent = false, onClose }) {

@@ -1,5 +1,5 @@
 import { useContext } from 'preact/hooks';
-import { LocaleContext } from './locale-context.jsx';
+import { LocaleContext } from './core/locale/LocaleContext.jsx';
 import { paginationPages } from '../client/pagination.mjs';
 
 export function Pagination({ page, perpage, total, onPage, onSize }) {

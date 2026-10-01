@@ -1,7 +1,7 @@
 import { useContext } from 'preact/hooks';
 import { runReportedSessionAction } from '../../../client/session.mjs';
 import { Icon } from '../../Icon.jsx';
-import { LocaleContext } from '../../locale-context.jsx';
+import { LocaleContext } from '../../core/locale/LocaleContext.jsx';
 import { DeviceFoldersMenu } from './DeviceFoldersMenu.jsx';
 
 export function DeviceActions({

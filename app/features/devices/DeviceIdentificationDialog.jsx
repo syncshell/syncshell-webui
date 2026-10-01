@@ -1,6 +1,6 @@
 import { useContext } from 'preact/hooks';
 import { Dialog } from '../../Dialog.jsx';
-import { LocaleContext } from '../../locale-context.jsx';
+import { LocaleContext } from '../../core/locale/LocaleContext.jsx';
 import { deviceName } from './device-status.mjs';
 import { ShareDeviceIdentity } from './ShareDeviceIdentity.jsx';
 

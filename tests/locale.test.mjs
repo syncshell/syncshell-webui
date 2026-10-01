@@ -1,6 +1,9 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
-import { loadEnglishCatalog, translator } from '../client/locale.mjs';
+import {
+  loadEnglishCatalog,
+  translator,
+} from '../app/core/locale/translate.mjs';
 
 test('English text resolves nested keys and keeps substituted values literal', () => {
   const t = translator({

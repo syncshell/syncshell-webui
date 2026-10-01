@@ -6,7 +6,7 @@ import { loadSettingsOptions } from './loadSettingsOptions.mjs';
 import { prepareSettingsForSave } from './prepareSettingsForSave.mjs';
 import { Dialog } from '../../Dialog.jsx';
 import { Editor } from '../../Editor.jsx';
-import { LocaleContext } from '../../locale-context.jsx';
+import { LocaleContext } from '../../core/locale/LocaleContext.jsx';
 import { Tabs } from '../../Tabs.jsx';
 import { UsageReport } from '../reports/UsageReport.jsx';
 import {

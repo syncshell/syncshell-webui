@@ -1,6 +1,6 @@
 import { useContext } from 'preact/hooks';
 import { runReportedSessionAction } from '../../../client/session.mjs';
-import { LocaleContext } from '../../locale-context.jsx';
+import { LocaleContext } from '../../core/locale/LocaleContext.jsx';
 import { NotificationCard } from './NotificationCard.jsx';
 import { noticeAction } from './notices.mjs';
 

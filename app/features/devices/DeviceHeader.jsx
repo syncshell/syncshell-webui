@@ -3,7 +3,7 @@ import { connectionIcons } from '../../../client/connections.mjs';
 import { unitPrefixed } from '../../../client/format.mjs';
 import { Icon } from '../../Icon.jsx';
 import { DeviceIdenticon } from './DeviceIdenticon.jsx';
-import { LocaleContext } from '../../locale-context.jsx';
+import { LocaleContext } from '../../core/locale/LocaleContext.jsx';
 import {
   deviceColor,
   deviceIcons,

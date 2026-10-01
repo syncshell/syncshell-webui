@@ -1,5 +1,5 @@
 import { useContext, useEffect, useRef, useState } from 'preact/hooks';
-import { LocaleContext } from './locale-context.jsx';
+import { LocaleContext } from './core/locale/LocaleContext.jsx';
 import { Dialog } from './Dialog.jsx';
 import { ConfirmManagementAction } from './features/management/ConfirmManagementAction.jsx';
 import {

@@ -1,6 +1,6 @@
 import { useContext, useEffect, useRef, useState } from 'preact/hooks';
 import { Dialog } from '../../Dialog.jsx';
-import { LocaleContext } from '../../locale-context.jsx';
+import { LocaleContext } from '../../core/locale/LocaleContext.jsx';
 import { Tabs } from '../../Tabs.jsx';
 import { LoggingFacilities } from './LoggingFacilities.jsx';
 import { useLogTail } from './useLogTail.mjs';

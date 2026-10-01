@@ -1,6 +1,6 @@
 import { useContext } from 'preact/hooks';
 import { timestamp } from '../../../client/format.mjs';
-import { LocaleContext } from '../../locale-context.jsx';
+import { LocaleContext } from '../../core/locale/LocaleContext.jsx';
 import { ignoredFolders, unignore } from './settings.mjs';
 
 export function IgnoredDevicesSettings({ config, onChange }) {

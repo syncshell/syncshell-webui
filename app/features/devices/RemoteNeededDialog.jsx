@@ -1,6 +1,6 @@
 import { useContext } from 'preact/hooks';
 import { Dialog } from '../../Dialog.jsx';
-import { LocaleContext } from '../../locale-context.jsx';
+import { LocaleContext } from '../../core/locale/LocaleContext.jsx';
 import { deviceName, sharedFolders } from './device-status.mjs';
 import { RemoteNeededFiles } from './RemoteNeededFiles.jsx';
 

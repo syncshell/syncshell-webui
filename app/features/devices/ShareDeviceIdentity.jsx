@@ -5,7 +5,7 @@ import {
 } from '../../../client/identity.mjs';
 import { Dialog } from '../../Dialog.jsx';
 import { Icon } from '../../Icon.jsx';
-import { LocaleContext } from '../../locale-context.jsx';
+import { LocaleContext } from '../../core/locale/LocaleContext.jsx';
 
 const shareBuilders = {
   email: createEmailShare,

@@ -6,7 +6,7 @@ import {
 } from '../../../client/connections.mjs';
 import { timestamp } from '../../../client/format.mjs';
 import { DeviceDefinitionRow } from './DeviceDefinitionRow.jsx';
-import { LocaleContext } from '../../locale-context.jsx';
+import { LocaleContext } from '../../core/locale/LocaleContext.jsx';
 import { lastSeenDays } from './device-status.mjs';
 
 export function ConnectionDetails({

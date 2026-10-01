@@ -1,6 +1,6 @@
 import { useContext, useEffect, useState } from 'preact/hooks';
 import { servicePresentation } from '../client/service.mjs';
-import { LocaleContext } from './locale-context.jsx';
+import { LocaleContext } from './core/locale/LocaleContext.jsx';
 import { Dialog } from './Dialog.jsx';
 
 export function ServiceDialog({ kind, state, session, onClose }) {

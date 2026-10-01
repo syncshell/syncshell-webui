@@ -1,7 +1,7 @@
 import { useContext } from 'preact/hooks';
 import { compactNumber, unitPrefixed } from '../../../client/format.mjs';
 import { Icon } from '../../Icon.jsx';
-import { LocaleContext } from '../../locale-context.jsx';
+import { LocaleContext } from '../../core/locale/LocaleContext.jsx';
 import { Tooltip } from '../../Tooltip.jsx';
 
 export function FolderCounts({ info, prefix = 'global' }) {

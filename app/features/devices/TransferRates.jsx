@@ -1,7 +1,7 @@
 import { useContext } from 'preact/hooks';
 import { unitPrefixed } from '../../../client/format.mjs';
 import { DeviceDefinitionRow } from './DeviceDefinitionRow.jsx';
-import { LocaleContext } from '../../locale-context.jsx';
+import { LocaleContext } from '../../core/locale/LocaleContext.jsx';
 
 export function TransferRates({
   connection,

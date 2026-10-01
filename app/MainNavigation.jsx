@@ -1,7 +1,7 @@
 import syncshellMark from '../assets/status-default.svg?url';
 import { useContext } from 'preact/hooks';
 import { Icon } from './Icon.jsx';
-import { LocaleContext } from './locale-context.jsx';
+import { LocaleContext } from './core/locale/LocaleContext.jsx';
 import { MenuButton } from './MenuButton.jsx';
 
 const helpLinks = [

@@ -1,5 +1,5 @@
 import { useContext } from 'preact/hooks';
-import { LocaleContext } from '../../locale-context.jsx';
+import { LocaleContext } from '../../core/locale/LocaleContext.jsx';
 import { SettingsFields } from './SettingsFields.jsx';
 
 export function GuiSettings({

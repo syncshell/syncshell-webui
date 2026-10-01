@@ -1,5 +1,5 @@
 import { useContext, useEffect, useState } from 'preact/hooks';
-import { LocaleContext } from '../../locale-context.jsx';
+import { LocaleContext } from '../../core/locale/LocaleContext.jsx';
 
 const loggingLevels = [
   { value: 'DEBUG', label: 'Debug' },
