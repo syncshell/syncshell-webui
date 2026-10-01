@@ -6,7 +6,7 @@ import {
   NumberFormControl,
   SelectFormControl,
   TextFormControl,
-} from '../../FormControls.jsx';
+} from '../../ui/FormControls.jsx';
 
 function FormControl({ describedBy, draft, field, onChange }) {
   const id = 'config-' + field.path;
