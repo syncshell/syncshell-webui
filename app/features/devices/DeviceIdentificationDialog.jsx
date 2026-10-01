@@ -1,8 +1,8 @@
 import { useContext } from 'preact/hooks';
-import { deviceName } from './features/devices/device-status.mjs';
-import { ShareDeviceIdentity } from './features/devices/ShareDeviceIdentity.jsx';
-import { Dialog } from './Dialog.jsx';
-import { LocaleContext } from './locale-context.jsx';
+import { Dialog } from '../../Dialog.jsx';
+import { LocaleContext } from '../../locale-context.jsx';
+import { deviceName } from './device-status.mjs';
+import { ShareDeviceIdentity } from './ShareDeviceIdentity.jsx';
 
 export function DeviceIdentificationDialog({ api, device, onClose }) {
   const { t } = useContext(LocaleContext);

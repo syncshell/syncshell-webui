@@ -1,11 +1,8 @@
 import { useContext } from 'preact/hooks';
-import {
-  deviceName,
-  sharedFolders,
-} from './features/devices/device-status.mjs';
-import { Dialog } from './Dialog.jsx';
-import { LocaleContext } from './locale-context.jsx';
-import { RemoteNeededFiles } from './features/devices/RemoteNeededFiles.jsx';
+import { Dialog } from '../../Dialog.jsx';
+import { LocaleContext } from '../../locale-context.jsx';
+import { deviceName, sharedFolders } from './device-status.mjs';
+import { RemoteNeededFiles } from './RemoteNeededFiles.jsx';
 
 export function RemoteNeededDialog({ api, device, state, onClose }) {
   const { t } = useContext(LocaleContext);

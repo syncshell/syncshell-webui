@@ -7,8 +7,8 @@ import { ConfirmManagementAction } from './features/management/ConfirmManagement
 import { RestoreVersionsDialog } from './features/versions/RestoreVersionsDialog.jsx';
 import { ServiceHealthDialog } from './ServiceHealthDialog.jsx';
 import { RecentChangesDialog } from './RecentChangesDialog.jsx';
-import { DeviceIdentificationDialog } from './DeviceIdentificationDialog.jsx';
-import { RemoteNeededDialog } from './RemoteNeededDialog.jsx';
+import { DeviceIdentificationDialog } from './features/devices/DeviceIdentificationDialog.jsx';
+import { RemoteNeededDialog } from './features/devices/RemoteNeededDialog.jsx';
 
 /**
  * @typedef (
