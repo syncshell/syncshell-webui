@@ -14,6 +14,7 @@ import {
   IgnoredDevicesSettings,
   IgnoredFoldersSettings,
 } from './IgnoredSettings.jsx';
+import { GeneralSettings } from './GeneralSettings.jsx';
 
 export function SettingsDialog({
   state,
@@ -193,6 +194,21 @@ export function SettingsDialog({
                       config={draft}
                       onChange={setDraft}
                     />
+                  ) : tab === 'General' ? (
+                    <GeneralSettings
+                      describedBy={error ? 'settings-error' : undefined}
+                      draft={draft}
+                      fields={fields}
+                      mode={mode}
+                      options={options}
+                      system={state.system}
+                      version={state.version}
+                      onDefaults={defaults}
+                      onGenerateKey={generateKey}
+                      onMode={setMode}
+                      onPreview={preview}
+                      onUpdate={update}
+                    />
                   ) : (
                     <>
                       <FormFields
@@ -207,131 +223,6 @@ export function SettingsDialog({
                             'The GUI address is overridden by startup options. Changes here will not take effect while the override is in place.',
                           )}
                         </p>
-                      )}
-                      {tab === 'General' && (
-                        <>
-                          <label for="settings-api-key">{t('API Key')}</label>
-                          <div class="input-group">
-                            <input
-                              id="settings-api-key"
-                              class="form-control"
-                              type="text"
-                              readOnly
-                              value={draft.gui.apiKey}
-                            />
-                            <span class="input-group-btn">
-                              <button
-                                type="button"
-                                class="btn btn-default"
-                                onClick={generateKey}
-                              >
-                                {t('Generate')}
-                              </button>
-                            </span>
-                          </div>
-                          <div class="form-group">
-                            <label for="settings-usage">
-                              {t('Anonymous Usage Reporting')}
-                            </label>{' '}
-                            <button
-                              type="button"
-                              class="btn btn-link btn-sm"
-                              onClick={preview}
-                            >
-                              {t('Preview')}
-                            </button>
-                            {mode === 'candidate' ||
-                            state.version.isCandidate ? (
-                              <p>
-                                {t(
-                                  'Usage reporting is always enabled for candidate releases.',
-                                )}
-                              </p>
-                            ) : (
-                              <select
-                                id="settings-usage"
-                                class="form-control"
-                                value={draft.options.urAccepted}
-                                onChange={(event) =>
-                                  update(
-                                    'options.urAccepted',
-                                    Number(event.currentTarget.value),
-                                  )
-                                }
-                              >
-                                {Array.from(
-                                  {
-                                    length: Math.max(
-                                      0,
-                                      (state.system.urVersionMax || 1) - 1,
-                                    ),
-                                  },
-                                  (_, i) => state.system.urVersionMax - i,
-                                ).map((version) => (
-                                  <option key={version} value={version}>
-                                    {t('Version')} {version}
-                                  </option>
-                                ))}
-                                <option value={0}>
-                                  {t('Undecided (will prompt)')}
-                                </option>
-                                <option value={-1}>{t('Disabled')}</option>
-                              </select>
-                            )}
-                          </div>
-                          <div class="form-group">
-                            <label for="settings-upgrades">
-                              {t('Automatic upgrades')}
-                            </label>
-                            {options.upgrade ? (
-                              <select
-                                id="settings-upgrades"
-                                class="form-control"
-                                value={mode}
-                                onChange={(event) =>
-                                  setMode(event.currentTarget.value)
-                                }
-                              >
-                                {!state.version.isCandidate && (
-                                  <option value="none">
-                                    {t('No upgrades')}
-                                  </option>
-                                )}
-                                <option value="stable">
-                                  {t('Stable releases only')}
-                                </option>
-                                <option value="candidate">
-                                  {t('Stable releases and release candidates')}
-                                </option>
-                              </select>
-                            ) : (
-                              <p>
-                                {t(
-                                  'Unavailable/Disabled by administrator or maintainer',
-                                )}
-                              </p>
-                            )}
-                          </div>
-                          <p>
-                            <strong>{t('Default Configuration')}</strong>
-                          </p>
-                          <div class="folder-actions">
-                            <button
-                              type="button"
-                              class="btn btn-default"
-                              onClick={() => defaults('folder')}
-                            >
-                              {t('Edit Folder Defaults')}
-                            </button>
-                            <button
-                              type="button"
-                              class="btn btn-default"
-                              onClick={() => defaults('device')}
-                            >
-                              {t('Edit Device Defaults')}
-                            </button>
-                          </div>
-                        </>
                       )}
                     </>
                   )}
