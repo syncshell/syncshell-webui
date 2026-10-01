@@ -54,6 +54,16 @@ export function FolderEditor({
   const [loadedIgnores, setLoadedIgnores] = useState(false);
   const saved = useRef(false);
   const form = useRef();
+  const initialSetup = useRef({
+    api,
+    defaults,
+    isNew,
+    folderId: draft.id,
+    folderType: draft.type,
+    defaultPath: state.config.defaults.folder.path,
+    defaultIgnores: state.config.defaults.ignores.lines,
+    pathSeparator: state.system.pathSeparator,
+  });
   const savingAddedIgnores = savePhase !== newFolderSavePhases.editing;
   const addedIgnoresReady = savePhase === newFolderSavePhases.editingIgnores;
   const [passwords, setPasswords] = useState(() =>
@@ -104,24 +114,25 @@ export function FolderEditor({
     return () => controller.abort();
   }, [api, isNew, defaults, draft.path]);
   useEffect(() => {
-    if (isNew && state.config.defaults.folder.path)
+    const setup = initialSetup.current;
+    if (setup.isNew && setup.defaultPath)
       setDraft((previous) => ({
         ...previous,
         path: folderPath(
-          state.config.defaults.folder.path,
+          setup.defaultPath,
           previous.label || previous.id,
-          state.system.pathSeparator,
+          setup.pathSeparator,
         ),
       }));
-    if (defaults) {
-      originalIgnores.current = state.config.defaults.ignores.lines;
+    if (setup.defaults) {
+      originalIgnores.current = setup.defaultIgnores;
       setIgnores(originalIgnores.current.join('\n'));
       setLoadedIgnores(true);
       return;
     }
-    if (!isNew && draft.type !== 'receiveencrypted') {
-      api
-        .get('db/ignores', { query: { folder: draft.id } })
+    if (!setup.isNew && setup.folderType !== 'receiveencrypted') {
+      setup.api
+        .get('db/ignores', { query: { folder: setup.folderId } })
         .then((data) => {
           originalIgnores.current = data.ignore || [];
           setIgnores(originalIgnores.current.join('\n'));

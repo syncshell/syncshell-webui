@@ -1,5 +1,5 @@
 import { desktopActions } from '../client/desktop.mjs';
-import { useEffect, useState } from 'preact/hooks';
+import { useCallback, useEffect, useState } from 'preact/hooks';
 import { createSyncthingApi } from './core/http/syncthingApi.mjs';
 import { runReportedSessionAction } from './core/session/createSession.mjs';
 import { useSyncthingSession } from './core/session/useSyncthingSession.mjs';
@@ -55,20 +55,23 @@ export function App() {
       return !value;
     });
   }
-  async function openAction(next) {
-    try {
-      if (next.type === 'add-device') {
-        next = await prepareDeviceEditorAction(api, next);
+  const openAction = useCallback(
+    async (next) => {
+      try {
+        if (next.type === 'add-device') {
+          next = await prepareDeviceEditorAction(api, next);
+        }
+        if (next.type === 'add-folder') {
+          next = await prepareFolderEditorAction(api, state, next);
+        }
+        if (next.type === 'changes') await session.refreshGlobalChanges();
+        setAction(next);
+      } catch (error) {
+        session.reportError(error);
       }
-      if (next.type === 'add-folder') {
-        next = await prepareFolderEditorAction(api, state, next);
-      }
-      if (next.type === 'changes') await session.refreshGlobalChanges();
-      setAction(next);
-    } catch (error) {
-      session.reportError(error);
-    }
-  }
+    },
+    [api, session, state],
+  );
   useEffect(() => {
     if (!state.ready) return;
     const launch = desktop?.takeLaunchAction?.();
@@ -77,7 +80,7 @@ export function App() {
       (candidate) => candidate.deviceID === launch.device,
     );
     if (device) openAction({ type: 'edit-device', device });
-  }, [state.ready, state.config.devices]);
+  }, [openAction, state.ready, state.config.devices]);
   useEffect(() => {
     loadEnglishCatalog()
       .then(setLocale)

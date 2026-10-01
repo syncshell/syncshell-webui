@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'preact/hooks';
+import { useCallback, useEffect, useState } from 'preact/hooks';
 import { Dialog } from '../../ui/Dialog.jsx';
 import { useLocale } from '../../core/locale/LocaleContext.jsx';
 import { servicePresentation } from './servicePresentation.mjs';
@@ -10,19 +10,7 @@ export function ServiceDialog({ kind, state, session, onClose }) {
   const [error, setError] = useState('');
   const major = state.upgradeInfo?.majorNewer;
   const presentation = servicePresentation(kind, phase, error, major);
-  useEffect(() => {
-    if (kind !== 'upgrade') apply();
-  }, []);
-  useEffect(() => {
-    if (
-      phase !== 'confirm' &&
-      started &&
-      state.online &&
-      state.system.startTime !== started
-    )
-      onClose();
-  }, [phase, started, state.online, state.system.startTime]);
-  async function apply() {
+  const apply = useCallback(async () => {
     setPhase('working');
     setError('');
     try {
@@ -36,7 +24,19 @@ export function ServiceDialog({ kind, state, session, onClose }) {
     } catch (error) {
       setError(error.message);
     }
-  }
+  }, [kind, session, state.config.gui.useTLS]);
+  useEffect(() => {
+    if (kind !== 'upgrade') apply();
+  }, [apply, kind]);
+  useEffect(() => {
+    if (
+      phase !== 'confirm' &&
+      started &&
+      state.online &&
+      state.system.startTime !== started
+    )
+      onClose();
+  }, [onClose, phase, started, state.online, state.system.startTime]);
   function renderFooter() {
     if (error)
       return (
