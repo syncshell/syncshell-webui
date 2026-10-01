@@ -2,8 +2,8 @@
 // SPDX-License-Identifier: MIT
 // see licenses/angular-utils-pagination.txt
 
-export function paginationPages(current, length, perPage) {
-  const total = Math.ceil(length / perPage);
+export function paginationPages(current, itemCount, perPage) {
+  const total = Math.ceil(itemCount / perPage);
   const range = 9;
   const half = 5;
   const start =

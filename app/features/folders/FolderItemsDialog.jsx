@@ -1,6 +1,6 @@
 import { useContext, useEffect, useState } from 'preact/hooks';
 import { LocaleContext } from '../../core/locale/LocaleContext.jsx';
-import { Pagination } from '../../Pagination.jsx';
+import { Pagination } from '../../ui/Pagination.jsx';
 import { Dialog } from '../../ui/Dialog.jsx';
 import { TransferProgress } from '../transfers/TransferProgress.jsx';
 import { Tooltip } from '../../ui/Tooltip.jsx';

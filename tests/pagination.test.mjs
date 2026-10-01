@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
-import { paginationPages } from '../client/pagination.mjs';
+import { paginationPages } from '../app/ui/pagination.mjs';
 
 test('pagination keeps the ends and a nine-item window around the active page', () => {
   for (const [page, total, expected] of [

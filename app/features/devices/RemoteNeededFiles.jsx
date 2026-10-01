@@ -1,7 +1,7 @@
 import { useContext, useEffect, useState } from 'preact/hooks';
 import { timestamp, unitPrefixed } from '../../../client/format.mjs';
 import { LocaleContext } from '../../core/locale/LocaleContext.jsx';
-import { Pagination } from '../../Pagination.jsx';
+import { Pagination } from '../../ui/Pagination.jsx';
 import { deviceName } from './device-status.mjs';
 
 function loadRemoteNeededFiles(api, folderId, deviceId, page, perpage, signal) {
