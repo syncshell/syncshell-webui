@@ -1,9 +1,6 @@
 import { test, expect } from './playwright-fixtures.mjs';
 
-test('rechecks show activity until completion and clear it after errors', async ({
-  page,
-  syncthing,
-}) => {
+async function openConflictReview(page, syncthing) {
   syncthing.configure();
   const copy = 'note.sync-conflict-20260908-120000-ABCDEFG.txt';
   await page.route('**/rest/db/browse?*', (route) =>
@@ -25,50 +22,85 @@ test('rechecks show activity until completion and clear it after errors', async 
     };
     return route.fulfill({ json: { global: file, local: file } });
   });
-  let finish, request;
-  await page.route('**/rest/db/scan*', async (route) => {
-    request = new URL(route.request().url());
-    const fail = await new Promise((resolve) => {
-      finish = resolve;
-    });
-    await route.fulfill({
-      status: fail ? 500 : 200,
-      body: fail ? 'scan failed' : '',
-    });
-  });
   await page.goto('/');
   await page.getByRole('tab', { name: 'Resolve sync conflicts' }).click();
-  const all = page.getByRole('button', {
-    name: 'Recheck all files',
-    exact: true,
+  return {
+    all: page.getByRole('button', {
+      name: 'Recheck all files',
+      exact: true,
+    }),
+    row: page.getByRole('button', {
+      name: 'Recheck files in folder',
+      exact: true,
+    }),
+  };
+}
+
+async function deferScan(page, failed = false) {
+  let release;
+  let startedResolve;
+  const started = new Promise((resolve) => {
+    startedResolve = resolve;
   });
-  const row = page.getByRole('button', {
-    name: 'Recheck files in folder',
-    exact: true,
+  await page.route('**/rest/db/scan*', async (route) => {
+    startedResolve(new URL(route.request().url()));
+    await new Promise((resolve) => {
+      release = resolve;
+    });
+    await route.fulfill({
+      status: failed ? 500 : 200,
+      body: failed ? 'scan failed' : '',
+    });
   });
+  return {
+    started,
+    finish() {
+      release();
+    },
+  };
+}
+
+test('rechecking all conflicts shows activity until the scan completes', async ({
+  page,
+  syncthing,
+}) => {
+  const scan = await deferScan(page);
+  const { all, row } = await openConflictReview(page, syncthing);
   await expect(row).toBeEnabled();
   await expect(page.locator('.conflict-review')).toHaveScreenshot(
     'conflict-table.png',
   );
-  for (const [button, fail] of [
-    [all, false],
-    [row, true],
-  ]) {
-    finish = null;
-    await button.click();
-    await expect.poll(() => typeof finish).toBe('function');
-    await expect(button).toHaveAttribute('aria-busy', 'true');
-    await expect(button.locator('.text-warning .icon-spin')).toBeVisible();
-    await expect(button).toBeDisabled();
-    if (fail) {
-      expect(request.searchParams.get('folder')).toBe('test-folder');
-      expect(request.searchParams.get('sub')).toBe('notes');
-      await expect(all).toHaveAttribute('aria-busy', 'false');
-    } else expect([...request.searchParams]).toEqual([]);
-    finish(fail);
-    await expect(button).toHaveAttribute('aria-busy', 'false');
-    await expect(button.locator('.icon-spin')).toHaveCount(0);
-    await expect(button).toBeEnabled();
-  }
+
+  await all.click();
+  const request = await scan.started;
+  await expect(all).toHaveAttribute('aria-busy', 'true');
+  await expect(all.locator('.text-warning .icon-spin')).toBeVisible();
+  await expect(all).toBeDisabled();
+  expect([...request.searchParams]).toEqual([]);
+  scan.finish();
+  await expect(all).toHaveAttribute('aria-busy', 'false');
+  await expect(all.locator('.icon-spin')).toHaveCount(0);
+  await expect(all).toBeEnabled();
+});
+
+test('a failed directory recheck clears activity and reports the error', async ({
+  page,
+  syncthing,
+}) => {
+  const scan = await deferScan(page, true);
+  const { all, row } = await openConflictReview(page, syncthing);
+
+  await row.click();
+  const request = await scan.started;
+  await expect(row).toHaveAttribute('aria-busy', 'true');
+  await expect(row.locator('.text-warning .icon-spin')).toBeVisible();
+  await expect(row).toBeDisabled();
+  expect(request.searchParams.get('folder')).toBe('test-folder');
+  expect(request.searchParams.get('sub')).toBe('notes');
+  await expect(all).toHaveAttribute('aria-busy', 'false');
+  scan.finish();
+  await expect(row).toHaveAttribute('aria-busy', 'false');
+  await expect(row.locator('.icon-spin')).toHaveCount(0);
+  await expect(row).toBeEnabled();
   await expect(page.getByRole('alert')).toBeVisible();
 });
