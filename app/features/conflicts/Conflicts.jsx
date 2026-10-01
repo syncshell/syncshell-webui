@@ -6,10 +6,10 @@ import {
   recheckConflicts,
   replaceDirectory,
 } from './conflicts.mjs';
-import { Dialog } from '../../Dialog.jsx';
 import './conflicts.css';
 import { desktopHelp } from '../../../client/desktop.mjs';
 import { Icon } from '../../Icon.jsx';
+import { ConflictRenameDialog } from './ConflictRenameDialog.jsx';
 
 export function Conflicts({
   api,
@@ -227,55 +227,13 @@ export function Conflicts({
         )}
       </section>
       {rename && (
-        <Dialog
-          title={t('Restore original name')}
-          onClose={() => setRename(null)}
-          onCancel={() => {
-            if (!loading) setRename(null);
-          }}
-          footer={
-            <>
-              <button
-                class="btn btn-default"
-                disabled={loading}
-                onClick={() => setRename(null)}
-              >
-                {t('Cancel')}
-              </button>
-              <button
-                class="btn btn-default"
-                disabled={loading}
-                onClick={restore}
-              >
-                <span class="text-warning">{t('Rename')}</span>
-              </button>
-            </>
-          }
-        >
-          <p>
-            {t(
-              'The selected file keeps its contents and takes the original name shown below. Its conflict filename disappears; other conflict files remain.',
-            )}
-          </p>
-          <p>
-            {t(
-              'If a file already exists at the destination, nothing is renamed or replaced.',
-            )}
-          </p>
-          <strong>{t('From')}:</strong>
-          <p class="review-confirm-path">
-            {rename.group.root}/{rename.file.path}
-          </p>
-          <strong>{t('To')}:</strong>
-          <p class="review-confirm-path">
-            {rename.group.root}/{rename.group.path}
-          </p>
-          {errors.map((error) => (
-            <p key={error} class="text-danger" role="alert">
-              {error}
-            </p>
-          ))}
-        </Dialog>
+        <ConflictRenameDialog
+          conflict={rename}
+          errors={errors}
+          loading={loading}
+          onCancel={() => setRename(null)}
+          onRename={restore}
+        />
       )}
     </>
   );
