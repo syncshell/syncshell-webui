@@ -88,9 +88,7 @@ li.hidden-xs:hover,
 }
 
 .section-stripe,
-.table-striped > tbody > tr:nth-of-type(odd),
-.fancytree-container tr:hover,
-.fancytree-focused {
+.table-striped > tbody > tr:nth-of-type(odd) {
   background-color: {{surface_dark}} !important;
 }
 
@@ -169,11 +167,6 @@ li.hidden-xs:hover,
 
 .text-danger {
   color: {{red}} !important;
-}
-
-code.ng-binding {
-  color: {{orange}} !important;
-  background-color: {{surface}} !important;
 }
 
 .identicon rect {
