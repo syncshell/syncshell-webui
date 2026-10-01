@@ -1,11 +1,27 @@
 // Copyright (C) 2026 The Syncshell Authors.
 // SPDX-License-Identifier: MPL-2.0
 
+function versionDateBound(value, fallback) {
+  if (!value) return { valid: true, time: fallback };
+  const time = new Date(value).getTime();
+  return { valid: Number.isFinite(time), time };
+}
+
+export function versionDateBounds(start = '', end = '') {
+  const minimum = versionDateBound(start, -Infinity);
+  const maximum = versionDateBound(end, Infinity);
+  return {
+    valid: minimum.valid && maximum.valid && minimum.time <= maximum.time,
+    minimum: minimum.time,
+    maximum: maximum.time,
+  };
+}
+
 export function versionGroups(versions, search = '', start = '', end = '') {
   const groups = new Map();
   const query = search.toLowerCase().replaceAll('\\', '/');
-  const minimum = start ? new Date(start).getTime() : -Infinity;
-  const maximum = end ? new Date(end).getTime() : Infinity;
+  const bounds = versionDateBounds(start, end);
+  if (!bounds.valid) return [];
   for (const [path, entries] of Object.entries(versions || {}).sort(
     ([a], [b]) => a.localeCompare(b),
   )) {
@@ -13,7 +29,7 @@ export function versionGroups(versions, search = '', start = '', end = '') {
     const visible = entries
       .filter((entry) => {
         const time = new Date(entry.versionTime).getTime();
-        return time >= minimum && time <= maximum;
+        return time >= bounds.minimum && time <= bounds.maximum;
       })
       .sort((a, b) => new Date(b.versionTime) - new Date(a.versionTime));
     if (!visible.length) continue;

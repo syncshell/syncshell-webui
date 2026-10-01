@@ -1,6 +1,22 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
-import { restoreVersionSelection } from '../app/features/versions/versions.mjs';
+import {
+  restoreVersionSelection,
+  versionDateBounds,
+} from '../app/features/versions/versions.mjs';
+
+test('version date bounds reject invalid and reversed ranges', () => {
+  assert.equal(versionDateBounds('not-a-date', '').valid, false);
+  assert.equal(
+    versionDateBounds('2026-09-02T00:00', '2026-09-01T00:00').valid,
+    false,
+  );
+  assert.deepEqual(versionDateBounds('', ''), {
+    valid: true,
+    minimum: -Infinity,
+    maximum: Infinity,
+  });
+});
 
 test('successful version restoration completes without reloading versions', async () => {
   const calls = [];
