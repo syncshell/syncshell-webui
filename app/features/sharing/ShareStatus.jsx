@@ -1,4 +1,4 @@
-import { Tooltip } from '../../Tooltip.jsx';
+import { Tooltip } from '../../ui/Tooltip.jsx';
 
 export function ShareStatus({ isEncrypted = false, remoteState = '' }) {
   return (

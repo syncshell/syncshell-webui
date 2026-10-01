@@ -7,7 +7,7 @@ import {
 } from '../../../client/format.mjs';
 import { Icon } from '../../Icon.jsx';
 import { LocaleContext } from '../../core/locale/LocaleContext.jsx';
-import { Tooltip } from '../../Tooltip.jsx';
+import { Tooltip } from '../../ui/Tooltip.jsx';
 import { FolderCounts } from './FolderCounts.jsx';
 import { FolderVersioningSummary } from './FolderVersioningSummary.jsx';
 import {
