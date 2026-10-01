@@ -1,4 +1,4 @@
-export function Tabs({ activeId, className = '', items, onSelect }) {
+export function Tabs({ activeId, items, onSelect, className = '' }) {
   function handleKeyDown(event) {
     const enabled = items.filter((item) => !item.disabled);
     let index = enabled.findIndex((item) => item.id === activeId);

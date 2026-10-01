@@ -1,7 +1,7 @@
 import { useContext, useEffect, useRef, useState } from 'preact/hooks';
 import { Dialog } from '../../ui/Dialog.jsx';
 import { Icon } from '../../Icon.jsx';
-import { Tabs } from '../../Tabs.jsx';
+import { Tabs } from '../../ui/Tabs.jsx';
 import { LocaleContext } from '../../core/locale/LocaleContext.jsx';
 import { cloneConfig } from '../../core/config/configValues.mjs';
 import { EditorField } from '../../ui/EditorField.jsx';

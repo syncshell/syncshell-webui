@@ -1,7 +1,7 @@
 import { useContext } from 'preact/hooks';
 import { Icon } from './Icon.jsx';
 import { LocaleContext } from './core/locale/LocaleContext.jsx';
-import { Tabs } from './Tabs.jsx';
+import { Tabs } from './ui/Tabs.jsx';
 
 const dashboardTabs = [
   { id: 'overview', label: 'Overview' },
