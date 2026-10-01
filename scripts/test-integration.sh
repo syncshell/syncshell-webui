@@ -27,7 +27,7 @@ export SYNCSHELL_WEBUI_URL="http://127.0.0.1:${SYNCSHELL_TEST_PORT:-18401}"
 export SYNCSHELL_TEST_RUNTIME="$runtime/peers/primary"
 export SYNCSHELL_TEST_PEER="$runtime/peers/peer"
 npm run test:browser
-node tests/live-auth.mjs
+node --test tests/live-auth.mjs
 node --test tests/live-config.mjs
 node tests/live-versions.mjs
 node --test tests/installed.mjs

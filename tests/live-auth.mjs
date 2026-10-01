@@ -2,17 +2,13 @@ import { chromium, expect } from '@playwright/test';
 import { readFile, mkdir, writeFile } from 'node:fs/promises';
 import { join } from 'node:path';
 import { randomUUID } from 'node:crypto';
+import { after, before, test } from 'node:test';
 
-const runtime = process.env.SYNCSHELL_TEST_RUNTIME;
-if (!runtime)
-  throw new Error('Set SYNCSHELL_TEST_RUNTIME to a disposable fixture');
-await readFile(join(runtime, '.syncshell-test-fixture'));
-const xml = await readFile(join(runtime, 'home/config.xml'), 'utf8');
-const key = xml.match(/<apikey>(.*?)<\/apikey>/)[1];
-const address = xml.match(/<gui\b[\s\S]*?<address>(.*?)<\/address>/)[1];
-if (!/^127\.0\.0\.1:\d+$/.test(address))
-  throw new Error('Authentication fixture must use loopback');
-const url = 'http://' + address + '/';
+let browser;
+let key;
+let original;
+let url;
+
 async function api(body) {
   const response = await fetch(url + 'rest/config/gui', {
     method: body ? 'PUT' : 'GET',
@@ -27,9 +23,7 @@ async function api(body) {
   const text = await response.text();
   return body ? null : JSON.parse(text);
 }
-const original = await api();
-if (original.user)
-  throw new Error('Authentication fixture must start without a login user');
+
 function ignoreListenerRestart() {
   // Applying authentication may close the old GUI listener before it replies.
 }
@@ -44,13 +38,63 @@ async function setGUI(value) {
     )
     .toBe(true);
 }
-const browser = await chromium.launch({
-  headless: true,
-  ...(process.env.SYNCSHELL_CHROMIUM
-    ? { executablePath: process.env.SYNCSHELL_CHROMIUM }
-    : {}),
+
+before(async () => {
+  const runtime = process.env.SYNCSHELL_TEST_RUNTIME;
+  if (!runtime)
+    throw new Error('Set SYNCSHELL_TEST_RUNTIME to a disposable fixture');
+  await readFile(join(runtime, '.syncshell-test-fixture'));
+  const xml = await readFile(join(runtime, 'home/config.xml'), 'utf8');
+  key = xml.match(/<apikey>(.*?)<\/apikey>/)[1];
+  const address = xml.match(/<gui\b[\s\S]*?<address>(.*?)<\/address>/)[1];
+  if (!/^127\.0\.0\.1:\d+$/.test(address))
+    throw new Error('Authentication fixture must use loopback');
+  url = 'http://' + address + '/';
+  original = await api();
+  if (original.user)
+    throw new Error('Authentication fixture must start without a login user');
+  browser = await chromium.launch({
+    headless: true,
+    ...(process.env.SYNCSHELL_CHROMIUM
+      ? { executablePath: process.env.SYNCSHELL_CHROMIUM }
+      : {}),
+  });
 });
-try {
+
+after(async () => {
+  let failure;
+  if (original) {
+    try {
+      await expect
+        .poll(() =>
+          api().then(
+            () => true,
+            () => false,
+          ),
+        )
+        .toBe(true);
+      await setGUI(original);
+      await expect
+        .poll(() =>
+          api().then(
+            () => true,
+            () => false,
+          ),
+        )
+        .toBe(true);
+    } catch (error) {
+      failure = error;
+    }
+  }
+  try {
+    if (browser) await browser.close();
+  } catch (error) {
+    failure ||= error;
+  }
+  if (failure) throw failure;
+});
+
+test('live authentication rejects bad credentials and accepts the configured login', async () => {
   const password = randomUUID();
   await setGUI({ ...original, user: 'fixture-user', password });
   await expect
@@ -94,24 +138,4 @@ try {
       2,
     ) + '\n',
   );
-  console.log('real frontend authentication passed');
-} finally {
-  await expect
-    .poll(() =>
-      api().then(
-        () => true,
-        () => false,
-      ),
-    )
-    .toBe(true);
-  await setGUI(original);
-  await expect
-    .poll(() =>
-      api().then(
-        () => true,
-        () => false,
-      ),
-    )
-    .toBe(true);
-  await browser.close();
-}
+});
