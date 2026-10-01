@@ -34,6 +34,7 @@ test('hovered tooltips remain open across the pointer gap and stay in view', asy
   page,
   folderFixture,
 }) => {
+  await page.clock.install();
   await folderFixture();
   await page.goto('/');
   await page.getByRole('button', { name: /Folder under test/ }).click();
@@ -42,6 +43,7 @@ test('hovered tooltips remain open across the pointer gap and stay in view', asy
     .locator('.folder-state-summary')
     .getByRole('img', { name: 'Files', exact: true });
   await trigger.hover();
+  await page.clock.runFor(400);
   await expect(trigger).toHaveAttribute(
     'aria-describedby',
     /^syncshell-tooltip-\d+$/,
@@ -50,7 +52,7 @@ test('hovered tooltips remain open across the pointer gap and stay in view', asy
   const tooltip = page.locator(`#${tooltipId}`);
   await expect(tooltip).toBeVisible();
   await tooltip.hover();
-  await page.waitForTimeout(150);
+  await page.clock.runFor(150);
   await expect(tooltip).toBeVisible();
 
   const bounds = await tooltip.boundingBox();

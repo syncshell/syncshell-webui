@@ -83,6 +83,7 @@ test('logs render literal text, update logging levels and cancel polling on clos
   page,
   folderFixture,
 }) => {
+  await page.clock.install();
   await folderFixture();
   let levels = { api: 'INFO' },
     writes = 0,
@@ -128,8 +129,9 @@ test('logs render literal text, update logging levels and cancel polling on clos
   ).toHaveValue('WARN');
   expect(writes).toBe(1);
   await dialog.getByRole('button', { name: /Close/ }).click();
+  await expect(dialog).toHaveCount(0);
   const before = reads;
-  await page.waitForTimeout(2200);
+  await page.clock.runFor(2200);
   expect(reads).toBe(before);
 });
 
