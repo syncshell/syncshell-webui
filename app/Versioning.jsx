@@ -1,7 +1,7 @@
 import { useContext } from 'preact/hooks';
 import { LocaleContext } from './locale-context.jsx';
 import { duration } from '../client/format.mjs';
-import { versioningTypes } from '../client/folder-view.mjs';
+import { versioningTypes } from './features/folders/folder-status.mjs';
 import { Tooltip } from './Tooltip.jsx';
 import { Icon } from './Icon.jsx';
 

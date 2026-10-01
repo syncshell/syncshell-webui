@@ -3,7 +3,7 @@
 
 import { notificationCards } from './notification-cards.mjs';
 import { deviceName } from './devices.mjs';
-import { folderStatus } from './folders.mjs';
+import { folderStatus } from '../app/features/folders/folder-status.mjs';
 
 export function notices(state) {
   const cards = [];

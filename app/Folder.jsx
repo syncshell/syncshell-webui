@@ -9,14 +9,12 @@ import {
   folderStateDetails,
   syncPercentage,
   progressPercentage,
-} from '../client/folders.mjs';
-import {
   folderStatusText,
   folderStatusIcon,
   folderTypes,
   pullOrders,
   scanRemaining,
-} from '../client/folder-view.mjs';
+} from './features/folders/folder-status.mjs';
 import {
   compactNumber,
   unitPrefixed,

@@ -16,7 +16,7 @@ import {
   remoteGui,
   serviceHealth,
 } from '../client/devices.mjs';
-import { localStateTotal } from '../client/folders.mjs';
+import { localStateTotal } from './features/folders/folder-status.mjs';
 import {
   unitPrefixed,
   compactNumber,

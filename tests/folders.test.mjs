@@ -6,7 +6,7 @@ import {
   folderStateClass,
   folderStateDetails,
   syncPercentage,
-} from '../client/folders.mjs';
+} from '../app/features/folders/folder-status.mjs';
 import { compactNumber, unitPrefixed } from '../client/format.mjs';
 
 const folder = { id: 'folder', devices: [{}, {}], type: 'sendreceive' };
