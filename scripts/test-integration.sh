@@ -29,5 +29,5 @@ export SYNCSHELL_TEST_PEER="$runtime/peers/peer"
 npm run test:browser
 node --test tests/live-auth.mjs
 node --test tests/live-config.mjs
-node tests/live-versions.mjs
+node --test tests/live-versions.mjs
 node --test tests/installed.mjs
