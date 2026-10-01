@@ -1,8 +1,8 @@
 import { useContext } from 'preact/hooks';
-import { timestamp } from '../client/format.mjs';
-import { DeviceIdenticon } from './features/devices/DeviceIdenticon.jsx';
-import { Icon } from './Icon.jsx';
-import { LocaleContext } from './locale-context.jsx';
+import { timestamp } from '../../../client/format.mjs';
+import { DeviceIdenticon } from '../devices/DeviceIdenticon.jsx';
+import { Icon } from '../../Icon.jsx';
+import { LocaleContext } from '../../locale-context.jsx';
 
 const defaultActionPresentation = { tone: 'default', icon: 'check' };
 const actionPresentations = {

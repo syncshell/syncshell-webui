@@ -1,9 +1,9 @@
 // Copyright (C) 2014 The Syncthing Authors.
 // SPDX-License-Identifier: MPL-2.0
 
-import { notificationCards } from './notification-cards.mjs';
-import { deviceName } from '../app/features/devices/device-status.mjs';
-import { folderStatus } from '../app/features/folders/folder-status.mjs';
+import { deviceName } from '../devices/device-status.mjs';
+import { folderStatus } from '../folders/folder-status.mjs';
+import { notificationCards } from './notification-definitions.mjs';
 
 export function notices(state) {
   const cards = [];

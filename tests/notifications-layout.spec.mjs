@@ -1,5 +1,5 @@
 import { test, expect } from '@playwright/test';
-import { notificationCards } from '../client/notification-cards.mjs';
+import { notificationCards } from '../app/features/notifications/notification-definitions.mjs';
 import { folderFixture } from './folder-fixture.mjs';
 
 const peer = 'PEER-DEVICE-IDENTIFIER';

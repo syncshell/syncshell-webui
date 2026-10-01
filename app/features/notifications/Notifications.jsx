@@ -1,8 +1,8 @@
 import { useContext } from 'preact/hooks';
-import { LocaleContext } from './locale-context.jsx';
-import { noticeAction } from '../client/notices.mjs';
-import { runReportedSessionAction } from '../client/session.mjs';
+import { runReportedSessionAction } from '../../../client/session.mjs';
+import { LocaleContext } from '../../locale-context.jsx';
 import { NotificationCard } from './NotificationCard.jsx';
+import { noticeAction } from './notices.mjs';
 
 export function Notifications({ cards, session, onAction }) {
   const { t } = useContext(LocaleContext);

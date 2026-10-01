@@ -1,6 +1,9 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
-import { noticeAction, notices } from '../client/notices.mjs';
+import {
+  noticeAction,
+  notices,
+} from '../app/features/notifications/notices.mjs';
 
 const localID = 'LOCAL-DEVICE';
 const peerID = 'PEER-DEVICE';
