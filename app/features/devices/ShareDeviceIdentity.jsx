@@ -1,8 +1,16 @@
 import { useContext, useState } from 'preact/hooks';
-import { identityMessage } from '../../../client/identity.mjs';
+import {
+  createEmailShare,
+  createTextMessageShare,
+} from '../../../client/identity.mjs';
 import { Dialog } from '../../Dialog.jsx';
 import { Icon } from '../../Icon.jsx';
 import { LocaleContext } from '../../locale-context.jsx';
+
+const shareBuilders = {
+  email: createEmailShare,
+  sms: createTextMessageShare,
+};
 
 export function ShareDeviceIdentity({ device, api }) {
   const { t } = useContext(LocaleContext);
@@ -10,7 +18,9 @@ export function ShareDeviceIdentity({ device, api }) {
   const [validated, setValidated] = useState(null);
   const [copied, setCopied] = useState(false);
   const [error, setError] = useState('');
-  const message = validated ? identityMessage(validated, method, t) : null;
+  const message = validated
+    ? shareBuilders[method]?.(validated, t) || null
+    : null;
   async function runIdentityAction(action) {
     setError('');
     try {
