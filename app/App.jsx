@@ -31,7 +31,6 @@ export function App() {
   });
   const [locale, setLocale] = useState({ t: translator({}) });
   const [activeTab, setActiveTab] = useState('overview');
-  const [menu, setMenu] = useState('');
   const [action, setAction] = useState(null);
   const [usesMetricRates, setUsesMetricRates] = useState(false);
   const self = state.config.devices.find(
@@ -56,7 +55,6 @@ export function App() {
     });
   }
   async function openAction(next) {
-    setMenu('');
     try {
       if (next.type === 'add-device') {
         next = await prepareDeviceEditorAction(api, next);
@@ -88,13 +86,6 @@ export function App() {
     } catch {
       // Storage can be unavailable in restricted browser contexts.
     }
-    function outside(event) {
-      if (!event.target.closest('.action-menu')) setMenu('');
-    }
-    document.addEventListener('pointerdown', outside);
-    return () => {
-      document.removeEventListener('pointerdown', outside);
-    };
   }, [session]);
   useEffect(() => {
     document.title = name + ' | Syncshell';
@@ -105,10 +96,8 @@ export function App() {
         api={api}
         authenticated={authenticated}
         config={state.config}
-        menu={menu}
         name={name}
         onAction={openAction}
-        onMenuChange={setMenu}
         self={self}
         upgradeInfo={state.upgradeInfo}
       />

@@ -2,6 +2,7 @@ import syncshellMark from '../assets/status-default.svg?url';
 import { useContext } from 'preact/hooks';
 import { Icon } from './Icon.jsx';
 import { LocaleContext } from './locale-context.jsx';
+import { MenuButton } from './MenuButton.jsx';
 
 const helpLinks = [
   ['Introduction', 'https://github.com/syncshell/syncshell-webui#readme'],
@@ -18,16 +19,15 @@ export function MainNavigation({
   api,
   authenticated,
   config,
-  menu,
   name,
   onAction,
-  onMenuChange,
   self,
   upgradeInfo,
 }) {
   const { t } = useContext(LocaleContext);
-  function open(event, action) {
+  function open(event, action, close) {
     event.preventDefault();
+    close();
     onAction(action);
   }
 
@@ -44,133 +44,147 @@ export function MainNavigation({
         </span>
         {authenticated && <p class="navbar-text hidden-xs">{name}</p>}
         <ul class="nav navbar-nav navbar-right">
-          <li class={`dropdown action-menu ${menu === 'help' ? 'open' : ''}`}>
-            <a
-              href="#help"
-              class="dropdown-toggle"
-              aria-expanded={menu === 'help'}
-              onClick={(event) => {
-                event.preventDefault();
-                onMenuChange(menu === 'help' ? '' : 'help');
-              }}
-            >
-              <Icon name="help" /> {t('Help')} <span class="caret" />
-            </a>
-            <ul class="dropdown-menu">
-              {helpLinks.map(({ label, url }) => (
-                <li key={label}>
-                  <a href={url} target="_blank" rel="noreferrer">
-                    {t(label)}
+          <MenuButton
+            as="li"
+            className="action-menu"
+            triggerAs="a"
+            triggerHref="#help"
+            label={
+              <>
+                <Icon name="help" /> {t('Help')} <span class="caret" />
+              </>
+            }
+          >
+            {({ close }) => (
+              <>
+                {helpLinks.map(({ label, url }) => (
+                  <li key={label}>
+                    <a href={url} target="_blank" rel="noreferrer">
+                      {t(label)}
+                    </a>
+                  </li>
+                ))}
+                <li>
+                  <a
+                    href="#about"
+                    onClick={(event) => open(event, { type: 'about' }, close)}
+                  >
+                    {t('About')}
                   </a>
                 </li>
-              ))}
-              <li>
-                <a
-                  href="#about"
-                  onClick={(event) => open(event, { type: 'about' })}
-                >
-                  {t('About')}
-                </a>
-              </li>
-            </ul>
-          </li>
+              </>
+            )}
+          </MenuButton>
           {authenticated && (
-            <li
-              class={`dropdown action-menu ${menu === 'actions' ? 'open' : ''}`}
+            <MenuButton
+              as="li"
+              className="action-menu"
+              triggerAs="a"
+              triggerHref="#actions"
+              label={
+                <>
+                  <Icon name="settings" /> {t('Actions')} <span class="caret" />
+                </>
+              }
             >
-              <a
-                href="#actions"
-                class="dropdown-toggle"
-                aria-expanded={menu === 'actions'}
-                onClick={(event) => {
-                  event.preventDefault();
-                  onMenuChange(menu === 'actions' ? '' : 'actions');
-                }}
-              >
-                <Icon name="settings" /> {t('Actions')} <span class="caret" />
-              </a>
-              <ul class="dropdown-menu">
-                <li>
-                  <a
-                    href="#settings"
-                    onClick={(event) => open(event, { type: 'settings' })}
-                  >
-                    {t('Settings')}
-                  </a>
-                </li>
-                <li>
-                  <a
-                    href="#advanced"
-                    onClick={(event) => open(event, { type: 'advanced' })}
-                  >
-                    {t('Advanced')}
-                  </a>
-                </li>
-                <li>
-                  <a
-                    href="#identification"
-                    onClick={(event) =>
-                      open(event, { type: 'identification', device: self })
-                    }
-                  >
-                    {t('Show ID')}
-                  </a>
-                </li>
-                <li>
-                  <a
-                    href="#logs"
-                    onClick={(event) => open(event, { type: 'logs' })}
-                  >
-                    {t('Logs')}
-                  </a>
-                </li>
-                {(upgradeInfo?.newer || upgradeInfo?.majorNewer) && (
+              {({ close }) => (
+                <>
                   <li>
                     <a
-                      href="#upgrade"
-                      onClick={(event) => open(event, { type: 'upgrade' })}
+                      href="#settings"
+                      onClick={(event) =>
+                        open(event, { type: 'settings' }, close)
+                      }
                     >
-                      {t('Upgrade')} {upgradeInfo.latest}
+                      {t('Settings')}
                     </a>
                   </li>
-                )}
-                <li>
-                  <a href="rest/debug/support" target="_blank">
-                    {t('Support Bundle')}
-                  </a>
-                </li>
-                {(config.gui?.user || config.gui?.authMode === 'ldap') && (
                   <li>
                     <a
-                      href="#logout"
-                      onClick={async (event) => {
-                        event.preventDefault();
-                        await api.post('noauth/auth/logout', {});
-                        location.reload();
-                      }}
+                      href="#advanced"
+                      onClick={(event) =>
+                        open(event, { type: 'advanced' }, close)
+                      }
                     >
-                      {t('Log Out')}
+                      {t('Advanced')}
                     </a>
                   </li>
-                )}
-                <li>
-                  <a
-                    href="#restart"
-                    onClick={(event) => open(event, { type: 'restart' })}
-                  >
-                    {t('Restart')}
-                  </a>
-                </li>
-                <li>
-                  <a
-                    href="#shutdown"
-                    onClick={(event) => open(event, { type: 'shutdown' })}
-                  >
-                    {t('Shut Down')}
-                  </a>
-                </li>
-              </ul>
-            </li>
+                  <li>
+                    <a
+                      href="#identification"
+                      onClick={(event) =>
+                        open(
+                          event,
+                          { type: 'identification', device: self },
+                          close,
+                        )
+                      }
+                    >
+                      {t('Show ID')}
+                    </a>
+                  </li>
+                  <li>
+                    <a
+                      href="#logs"
+                      onClick={(event) => open(event, { type: 'logs' }, close)}
+                    >
+                      {t('Logs')}
+                    </a>
+                  </li>
+                  {(upgradeInfo?.newer || upgradeInfo?.majorNewer) && (
+                    <li>
+                      <a
+                        href="#upgrade"
+                        onClick={(event) =>
+                          open(event, { type: 'upgrade' }, close)
+                        }
+                      >
+                        {t('Upgrade')} {upgradeInfo.latest}
+                      </a>
+                    </li>
+                  )}
+                  <li>
+                    <a href="rest/debug/support" target="_blank">
+                      {t('Support Bundle')}
+                    </a>
+                  </li>
+                  {(config.gui?.user || config.gui?.authMode === 'ldap') && (
+                    <li>
+                      <a
+                        href="#logout"
+                        onClick={async (event) => {
+                          event.preventDefault();
+                          await api.post('noauth/auth/logout', {});
+                          location.reload();
+                        }}
+                      >
+                        {t('Log Out')}
+                      </a>
+                    </li>
+                  )}
+                  <li>
+                    <a
+                      href="#restart"
+                      onClick={(event) =>
+                        open(event, { type: 'restart' }, close)
+                      }
+                    >
+                      {t('Restart')}
+                    </a>
+                  </li>
+                  <li>
+                    <a
+                      href="#shutdown"
+                      onClick={(event) =>
+                        open(event, { type: 'shutdown' }, close)
+                      }
+                    >
+                      {t('Shut Down')}
+                    </a>
+                  </li>
+                </>
+              )}
+            </MenuButton>
           )}
         </ul>
       </div>
