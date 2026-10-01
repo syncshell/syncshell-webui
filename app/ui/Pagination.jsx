@@ -25,23 +25,24 @@ export function Pagination({ page, perpage, total, onPage, onSize }) {
               &lsaquo;
             </a>
           </li>
-          {pages.map((number, index) => (
-            <li
-              key={index}
-              class={
-                number === page ? 'active' : number === '...' ? 'disabled' : ''
-              }
-            >
-              <a
-                href={`#page-${index}`}
-                aria-current={number === page ? 'page' : undefined}
-                aria-disabled={number === '...'}
-                onClick={(event) => change(event, number)}
+          {pages.map((item) => {
+            const number = item.type === 'page' ? item.number : null;
+            return (
+              <li
+                key={number ?? item.position}
+                class={number === page ? 'active' : number ? '' : 'disabled'}
               >
-                {number}
-              </a>
-            </li>
-          ))}
+                <a
+                  href={number ? `#page-${number}` : '#page-gap'}
+                  aria-current={number === page ? 'page' : undefined}
+                  aria-disabled={!number}
+                  onClick={(event) => change(event, number)}
+                >
+                  {number ?? '...'}
+                </a>
+              </li>
+            );
+          })}
           <li class={page === last ? 'disabled' : ''}>
             <a
               href="#next"
