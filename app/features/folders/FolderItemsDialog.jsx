@@ -5,7 +5,7 @@ import { Dialog } from '../../Dialog.jsx';
 import { TransferProgress } from '../transfers/TransferProgress.jsx';
 import { needIcons } from '../../../client/transfer.mjs';
 import { Tooltip } from '../../Tooltip.jsx';
-import { itemViews, pageItems } from '../../../client/items.mjs';
+import { itemViews, pageItems } from './folder-items.mjs';
 import { unitPrefixed } from '../../../client/format.mjs';
 import { Icon } from '../../Icon.jsx';
 

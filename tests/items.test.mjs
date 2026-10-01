@@ -1,6 +1,9 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
-import { neededItems, pageItems } from '../client/items.mjs';
+import {
+  neededItems,
+  pageItems,
+} from '../app/features/folders/folder-items.mjs';
 
 test('needed items flatten queue groups and name actions from flags', () => {
   const items = neededItems({
