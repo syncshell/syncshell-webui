@@ -8,6 +8,7 @@ export function needsUsageConsent(state) {
     options.urAccepted < maximum
   );
 }
+
 export async function usageReport(api, version, diff, signal) {
   const report = await api.get('svc/report', { version }, signal);
   if (!diff || version <= 2) return report;
@@ -20,6 +21,7 @@ export async function usageReport(api, version, diff, signal) {
     Object.entries(report).filter(([key]) => !Object.hasOwn(previous, key)),
   );
 }
+
 export function decideUsage(session, maximum, accepted) {
   return session.changeConfig((config) => {
     if (accepted) config.options.urAccepted = maximum;

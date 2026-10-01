@@ -1,7 +1,7 @@
 import { useContext, useEffect, useRef, useState } from 'preact/hooks';
 import { LocaleContext } from './locale-context.jsx';
 import { Dialog } from './Dialog.jsx';
-import { UsageReport } from './UsageReport.jsx';
+import { UsageReport } from './features/reports/UsageReport.jsx';
 import { Editor } from './Editor.jsx';
 import { FormFields } from './FormFields.jsx';
 import { cloneConfig, setValue } from '../client/edit.mjs';
