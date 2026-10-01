@@ -7,9 +7,9 @@ import {
   upgradeMode,
   ignoredFolders,
   unignore,
-  loadSettings,
   buildAdvancedConfigSections,
 } from './settings.mjs';
+import { loadSettingsOptions } from './loadSettingsOptions.mjs';
 import { prepareSettingsForSave } from './prepareSettingsForSave.mjs';
 import { Dialog } from '../../Dialog.jsx';
 import { Editor } from '../../Editor.jsx';
@@ -47,7 +47,7 @@ export function SettingsDialog({
   const ignored = ignoredFolders(draft);
   useEffect(() => {
     const controller = new AbortController();
-    loadSettings(api, controller.signal).then((value) => {
+    loadSettingsOptions(api, controller.signal).then((value) => {
       if (!controller.signal.aborted) setOptions(value);
     });
     return () => controller.abort();
