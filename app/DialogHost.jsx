@@ -1,4 +1,4 @@
-import { About } from './About.jsx';
+import { About } from './features/about/About.jsx';
 import { ServiceDialog } from './ServiceDialog.jsx';
 import { Logs } from './features/logs/Logs.jsx';
 import { Editor } from './Editor.jsx';

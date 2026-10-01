@@ -1,9 +1,10 @@
 import { useContext, useEffect, useState } from 'preact/hooks';
-import { LocaleContext } from './locale-context.jsx';
-import { Dialog } from './Dialog.jsx';
-import data from '../client/about-data.json';
-import { aboutPaths } from '../client/about.mjs';
-import { Tabs } from './Tabs.jsx';
+import { Dialog } from '../../Dialog.jsx';
+import { LocaleContext } from '../../locale-context.jsx';
+import { Tabs } from '../../Tabs.jsx';
+import data from './about-data.json';
+import { aboutPaths } from './about.mjs';
+
 export function About({ api, version, onClose }) {
   const { t } = useContext(LocaleContext);
   const [tab, setTab] = useState('Authors');
