@@ -3,8 +3,8 @@ import { desktopActions } from '../client/desktop.mjs';
 import { render } from 'preact';
 import { useEffect, useState } from 'preact/hooks';
 import { createApi } from '../client/api.mjs';
-import { createSession, runReportedSessionAction } from '../client/session.mjs';
-import { createInitialState } from '../client/session-state.mjs';
+import { runReportedSessionAction } from '../client/session.mjs';
+import { useSyncthingSession } from '../client/use-syncthing-session.mjs';
 import { loadEnglish, translator } from '../client/locale.mjs';
 import { deviceName, groupAndSortItems } from '../client/devices.mjs';
 import { UsageReport } from './UsageReport.jsx';
@@ -57,20 +57,17 @@ const helpLinks = [
 const desktop = desktopActions();
 
 function App() {
-  const [state, setState] = useState(createInitialState);
   const [api] = useState(() => createApi());
+  const authenticated = Boolean(window.metadata?.authenticated);
+  const [state, session] = useSyncthingSession(api, {
+    active: authenticated,
+    onAuthExpired: () => location.reload(),
+  });
   const [locale, setLocale] = useState({ t: translator({}) });
-  const [session] = useState(() =>
-    createSession(api, {
-      publish: setState,
-      onAuthExpired: () => location.reload(),
-    }),
-  );
   const [activeTab, setActiveTab] = useState('overview');
   const [menu, setMenu] = useState('');
   const [action, setAction] = useState(null);
   const [usesMetricRates, setUsesMetricRates] = useState(false);
-  const authenticated = Boolean(window.metadata?.authenticated);
   const self = state.config.devices.find(
     (device) => device.deviceID === state.system.myID,
   );
@@ -172,12 +169,10 @@ function App() {
       if (!event.target.closest('.action-menu')) setMenu('');
     }
     document.addEventListener('pointerdown', outside);
-    if (authenticated) session.start();
     return () => {
-      session.stop();
       document.removeEventListener('pointerdown', outside);
     };
-  }, [session, authenticated]);
+  }, [session]);
   useEffect(() => {
     document.title = name + ' | Syncshell';
   }, [name]);
