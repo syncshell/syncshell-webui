@@ -1,7 +1,8 @@
 import { useContext, useEffect, useRef, useState } from 'preact/hooks';
-import { LocaleContext } from './locale-context.jsx';
-import { Dialog } from './Dialog.jsx';
-import { Tabs } from './Tabs.jsx';
+import { Dialog } from '../../Dialog.jsx';
+import { LocaleContext } from '../../locale-context.jsx';
+import { Tabs } from '../../Tabs.jsx';
+
 export function Logs({ api, onClose }) {
   const { t } = useContext(LocaleContext);
   const area = useRef();

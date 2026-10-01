@@ -1,6 +1,6 @@
 import { About } from './About.jsx';
 import { ServiceDialog } from './ServiceDialog.jsx';
-import { Logs } from './Logs.jsx';
+import { Logs } from './features/logs/Logs.jsx';
 import { Editor } from './Editor.jsx';
 import { Settings } from './Settings.jsx';
 import { ConfirmAction } from './ConfirmAction.jsx';
