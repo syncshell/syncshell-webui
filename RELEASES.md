@@ -6,10 +6,13 @@ Update `package.json` and `package-lock.json`, then commit the source. From a
 clean checkout:
 
 ```sh
+mise install
 npm ci
-npm test
-npm run release -- 0.1.3
-bash scripts/test-release.sh "$PWD/release/syncshell-webui-v0.1.3.tar.gz"
+npm run check
+version=$(node -p "require('./package.json').version")
+npm run release -- "$version"
+bash scripts/test-release.sh \
+  "$PWD/release/syncshell-webui-v$version.tar.gz"
 ```
 
 The release command rebuilds from committed source. The archive records its
