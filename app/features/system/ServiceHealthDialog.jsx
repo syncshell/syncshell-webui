@@ -1,7 +1,7 @@
 import { useContext } from 'preact/hooks';
-import { serviceHealth } from './features/system/serviceHealth.mjs';
-import { Dialog } from './Dialog.jsx';
-import { LocaleContext } from './core/locale/LocaleContext.jsx';
+import { Dialog } from '../../Dialog.jsx';
+import { LocaleContext } from '../../core/locale/LocaleContext.jsx';
+import { serviceHealth } from './serviceHealth.mjs';
 
 export function ServiceHealthDialog({ kind, state, onClose }) {
   const { t } = useContext(LocaleContext);
