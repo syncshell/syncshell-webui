@@ -17,11 +17,7 @@ before=$(sha256sum "$temporary/gui/syncshell-modern/index.html")
 mkdir "$temporary/bin"
 export SYNCSHELL_REAL_MV
 SYNCSHELL_REAL_MV=$(command -v mv)
-# shellcheck disable=SC2016
-printf '%s\n' '#!/bin/bash' '[[ $1 != -- ]] || shift' \
-	'if [[ $1 == */.syncshell-modern.* && $1 != *.previous && $2 == */syncshell-modern ]]; then exit 1; fi' \
-	'exec "$SYNCSHELL_REAL_MV" -- "$@"' >"$temporary/bin/mv"
-chmod 700 "$temporary/bin/mv"
+install -m 700 "$root/tests/fixtures/failing-mv.sh" "$temporary/bin/mv"
 if PATH="$temporary/bin:$PATH" bash "$bundle/install.sh" "$temporary/gui"; then
 	printf 'Simulated replacement failure was ignored\n' >&2
 	exit 1
