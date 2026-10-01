@@ -10,7 +10,7 @@ import {
   unignore,
   loadSettings,
   buildAdvancedConfigSections,
-} from '../../../client/settings.mjs';
+} from './settings.mjs';
 import { Dialog } from '../../Dialog.jsx';
 import { Editor } from '../../Editor.jsx';
 import { FormFields } from '../../FormFields.jsx';

@@ -1,4 +1,5 @@
-import { cloneConfig } from './edit.mjs';
+import { cloneConfig } from '../../../client/edit.mjs';
+
 const isUnixAddress = (address) =>
   address.startsWith('/') ||
   address.startsWith('unix://') ||
