@@ -10,7 +10,7 @@ import { needsUsageConsent } from '../client/reports.mjs';
 import { prepareFolderEditorAction } from './features/folders/folder-editor.mjs';
 import { prepareDeviceEditorAction } from '../client/device-editor.mjs';
 import { notices } from '../client/notices.mjs';
-import { Folder } from './Folder.jsx';
+import { FolderCard } from './features/folders/FolderCard.jsx';
 import { Device } from './Device.jsx';
 import { Login } from './Login.jsx';
 import { Notifications } from './Notifications.jsx';
@@ -155,7 +155,7 @@ export function App() {
                         )}
                         <div class="panel-group">
                           {folders.map((folder) => (
-                            <Folder
+                            <FolderCard
                               key={folder.id}
                               api={api}
                               session={session}

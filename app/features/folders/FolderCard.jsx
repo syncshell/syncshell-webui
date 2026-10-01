@@ -1,5 +1,5 @@
 import { useContext, useEffect, useRef, useState } from 'preact/hooks';
-import { LocaleContext } from './locale-context.jsx';
+import { LocaleContext } from '../../locale-context.jsx';
 import {
   folderStatus,
   folderStateClass,
@@ -10,26 +10,26 @@ import {
   folderTypes,
   pullOrders,
   scanRemaining,
-} from './features/folders/folder-status.mjs';
+} from './folder-status.mjs';
 import {
   compactNumber,
   unitPrefixed,
   duration,
   timestamp,
-} from '../client/format.mjs';
-import { stripeSections } from '../client/stripes.mjs';
-import { fieldHelp } from '../client/field-help.mjs';
-import { Tooltip } from './Tooltip.jsx';
-import { Counts } from './Counts.jsx';
-import { Field } from './Field.jsx';
-import { Versioning } from './Versioning.jsx';
-import { FolderItemsDialog } from './features/folders/FolderItemsDialog.jsx';
-import { Icon } from './Icon.jsx';
-import { runReportedSessionAction } from '../client/session.mjs';
-import { FolderHeader } from './features/folders/FolderHeader.jsx';
-import { FolderActions } from './features/folders/FolderActions.jsx';
+} from '../../../client/format.mjs';
+import { stripeSections } from '../../../client/stripes.mjs';
+import { fieldHelp } from '../../../client/field-help.mjs';
+import { Tooltip } from '../../Tooltip.jsx';
+import { Counts } from '../../Counts.jsx';
+import { Field } from '../../Field.jsx';
+import { Versioning } from '../../Versioning.jsx';
+import { FolderItemsDialog } from './FolderItemsDialog.jsx';
+import { Icon } from '../../Icon.jsx';
+import { runReportedSessionAction } from '../../../client/session.mjs';
+import { FolderHeader } from './FolderHeader.jsx';
+import { FolderActions } from './FolderActions.jsx';
 
-export function Folder({
+export function FolderCard({
   folder,
   info,
   stats,
