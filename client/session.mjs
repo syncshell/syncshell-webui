@@ -233,6 +233,41 @@ export function createSession(
       .catch(clearUnavailableUpgradeInfo);
   }
 
+  function runDaemonEventEffects(event) {
+    switch (event.type) {
+      case 'DeviceDisconnected':
+        read('stats/device')
+          .then((deviceStats) => update({ ...state, deviceStats }))
+          .catch(fail);
+        break;
+      case 'DeviceConnected':
+        refresh().catch(fail);
+        break;
+      case 'PendingDevicesChanged':
+      case 'PendingFoldersChanged':
+        refreshPending().catch(fail);
+        break;
+      case 'ConfigSaved':
+        refreshModels(event.data).catch(fail);
+        read('config/insync')
+          .then((value) =>
+            update({ ...state, configInSync: value.configInSync }),
+          )
+          .catch(fail);
+        break;
+      case 'LocalIndexUpdated':
+        folderStats().catch(fail);
+        refreshGlobalChanges().catch(fail);
+        break;
+      case 'StateChanged':
+        if (event.data.from === 'scanning' && event.data.to === 'idle') {
+          folderStats().catch(fail);
+          refreshGlobalChanges().catch(fail);
+        }
+        break;
+    }
+  }
+
   const events = createEventStream(api, {
     retryMs,
     onAuthExpired,
@@ -250,36 +285,7 @@ export function createSession(
     },
     onEvent(event) {
       update(reduceDaemonEvent(state, event));
-      if (event.type === 'DeviceDisconnected') {
-        read('stats/device')
-          .then((deviceStats) => update({ ...state, deviceStats }))
-          .catch(fail);
-      }
-      if (event.type === 'DeviceConnected') refresh().catch(fail);
-      if (
-        event.type === 'PendingDevicesChanged' ||
-        event.type === 'PendingFoldersChanged'
-      ) {
-        refreshPending().catch(fail);
-      }
-
-      if (event.type === 'ConfigSaved') {
-        refreshModels(event.data).catch(fail);
-        read('config/insync')
-          .then((value) =>
-            update({ ...state, configInSync: value.configInSync }),
-          )
-          .catch(fail);
-      }
-      if (
-        event.type === 'LocalIndexUpdated' ||
-        (event.type === 'StateChanged' &&
-          event.data.from === 'scanning' &&
-          event.data.to === 'idle')
-      ) {
-        folderStats().catch(fail);
-        refreshGlobalChanges().catch(fail);
-      }
+      runDaemonEventEffects(event);
     },
   });
 
