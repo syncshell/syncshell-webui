@@ -1,13 +1,6 @@
 import { useContext, useEffect, useRef, useState } from 'preact/hooks';
 import { cloneConfig, setValue } from '../../../client/edit.mjs';
-import { timestamp } from '../../../client/format.mjs';
-import {
-  settingsTabs,
-  settingsFields,
-  upgradeMode,
-  ignoredFolders,
-  unignore,
-} from './settings.mjs';
+import { settingsTabs, settingsFields, upgradeMode } from './settings.mjs';
 import { buildAdvancedConfigSections } from './advancedConfigFields.mjs';
 import { loadSettingsOptions } from './loadSettingsOptions.mjs';
 import { prepareSettingsForSave } from './prepareSettingsForSave.mjs';
@@ -17,6 +10,10 @@ import { FormFields } from '../../FormFields.jsx';
 import { LocaleContext } from '../../locale-context.jsx';
 import { Tabs } from '../../Tabs.jsx';
 import { UsageReport } from '../reports/UsageReport.jsx';
+import {
+  IgnoredDevicesSettings,
+  IgnoredFoldersSettings,
+} from './IgnoredSettings.jsx';
 
 export function SettingsDialog({
   state,
@@ -44,7 +41,6 @@ export function SettingsDialog({
     panelId: 'settings-panel',
     label: t(name),
   }));
-  const ignored = ignoredFolders(draft);
   useEffect(() => {
     const controller = new AbortController();
     loadSettingsOptions(api, controller.signal).then((value) => {
@@ -188,87 +184,15 @@ export function SettingsDialog({
                   }
                 >
                   {tab === 'Ignored Devices' ? (
-                    <>
-                      {!draft.remoteIgnoredDevices?.length && (
-                        <p>{t('You have no ignored devices.')}</p>
-                      )}
-                      <div class="table-responsive">
-                        <table class="table table-striped">
-                          <tbody>
-                            {(draft.remoteIgnoredDevices || []).map(
-                              (device) => (
-                                <tr key={device.deviceID}>
-                                  <td>{timestamp(device.time)}</td>
-                                  <td
-                                    class="word-break-all"
-                                    title={device.deviceID}
-                                  >
-                                    {device.name || device.deviceID}
-                                  </td>
-                                  <td class="word-break-all">
-                                    {device.address}
-                                  </td>
-                                  <td>
-                                    <button
-                                      type="button"
-                                      class="btn btn-default btn-sm"
-                                      onClick={() =>
-                                        setDraft(
-                                          unignore(draft, device.deviceID),
-                                        )
-                                      }
-                                    >
-                                      {t('Unignore')}
-                                    </button>
-                                  </td>
-                                </tr>
-                              ),
-                            )}
-                          </tbody>
-                        </table>
-                      </div>
-                    </>
+                    <IgnoredDevicesSettings
+                      config={draft}
+                      onChange={setDraft}
+                    />
                   ) : tab === 'Ignored Folders' ? (
-                    <>
-                      {!ignored.length && (
-                        <p>{t('You have no ignored folders.')}</p>
-                      )}
-                      <div class="table-responsive">
-                        <table class="table table-striped">
-                          <tbody>
-                            {ignored.map(({ device, folder }) => (
-                              <tr key={device.deviceID + folder.id}>
-                                <td>{timestamp(folder.time)}</td>
-                                <td>{folder.label || folder.id}</td>
-                                <td
-                                  class="word-break-all"
-                                  title={device.deviceID}
-                                >
-                                  {device.name || device.deviceID}
-                                </td>
-                                <td>
-                                  <button
-                                    type="button"
-                                    class="btn btn-default btn-sm"
-                                    onClick={() =>
-                                      setDraft(
-                                        unignore(
-                                          draft,
-                                          device.deviceID,
-                                          folder.id,
-                                        ),
-                                      )
-                                    }
-                                  >
-                                    {t('Unignore')}
-                                  </button>
-                                </td>
-                              </tr>
-                            ))}
-                          </tbody>
-                        </table>
-                      </div>
-                    </>
+                    <IgnoredFoldersSettings
+                      config={draft}
+                      onChange={setDraft}
+                    />
                   ) : (
                     <>
                       <FormFields
