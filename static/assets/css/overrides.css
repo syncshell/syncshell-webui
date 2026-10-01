@@ -85,10 +85,6 @@ ul + h5 {
   font-weight: 400;
 }
 
-.table td {
-  /*padding-left: 20px !important;*/
-}
-
 .table td.small-data {
   white-space: nowrap;
 }
@@ -225,7 +221,7 @@ button.panel-heading {
   border-top-width: 0;
   border-left-width: 0;
   border-right-width: 0;
-  border-radius: 0 !important;
+  border-radius: 0;
 }
 
 .panel-heading .panel-title-text {
@@ -312,17 +308,14 @@ button.panel-heading {
     padding: 12px 15px 12px 25px;
   }
 
-  /* The selectors are build to target only the content of folder and device
-       panels as it would "destroy" e.g. out of sync or recent changes listings.
-       The !important is needed to override .visible-xs that sets display to a
-       specific table element instead of block. */
+  /* Limit the block layout to folder and device panel details. */
   div[id^='device-'].panel-collapse table,
   div[id^='folder-'].panel-collapse table,
   div[id^='device-'].panel-collapse tbody,
   div[id^='folder-'].panel-collapse tbody,
   div[id^='device-'].panel-collapse tr,
   div[id^='folder-'].panel-collapse tr {
-    display: block !important;
+    display: block;
   }
   div[id^='device-'].panel-collapse th,
   div[id^='folder-'].panel-collapse th,

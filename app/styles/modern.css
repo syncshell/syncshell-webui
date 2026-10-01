@@ -189,7 +189,7 @@
 }
 
 .notifications .panel-footer .btn {
-  float: none !important;
+  float: none;
   white-space: normal;
   max-width: 100%;
 }
