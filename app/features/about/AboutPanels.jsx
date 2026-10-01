@@ -2,6 +2,7 @@ import { useContext } from 'preact/hooks';
 import { LocaleContext } from '../../core/locale/LocaleContext.jsx';
 import data from './about-data.json';
 import { aboutPaths } from './about.mjs';
+import './AboutPanels.css';
 
 export function AuthorsPanel() {
   const { t } = useContext(LocaleContext);

@@ -30,8 +30,3 @@
   white-space: pre-wrap;
   overflow-wrap: anywhere;
 }
-
-.about-paths code {
-  white-space: normal;
-  overflow-wrap: anywhere;
-}
