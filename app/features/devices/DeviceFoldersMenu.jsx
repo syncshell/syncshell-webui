@@ -1,7 +1,7 @@
 import { useContext } from 'preact/hooks';
 import { Icon } from '../../Icon.jsx';
 import { LocaleContext } from '../../core/locale/LocaleContext.jsx';
-import { MenuButton } from '../../MenuButton.jsx';
+import { MenuButton } from '../../ui/MenuButton.jsx';
 import { ShareStatus } from '../sharing/ShareStatus.jsx';
 
 export function DeviceFoldersMenu({

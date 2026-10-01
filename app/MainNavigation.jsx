@@ -2,7 +2,7 @@ import syncshellMark from '../assets/status-default.svg?url';
 import { useContext } from 'preact/hooks';
 import { Icon } from './Icon.jsx';
 import { LocaleContext } from './core/locale/LocaleContext.jsx';
-import { MenuButton } from './MenuButton.jsx';
+import { MenuButton } from './ui/MenuButton.jsx';
 
 const helpLinks = [
   ['Introduction', 'https://github.com/syncshell/syncshell-webui#readme'],

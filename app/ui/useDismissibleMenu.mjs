@@ -3,19 +3,19 @@ import { useEffect } from 'preact/hooks';
 export function useDismissibleMenu(ref, open, setOpen) {
   useEffect(() => {
     if (!open) return;
-    function pointerdown(event) {
+    function handlePointerDown(event) {
       if (!ref.current?.contains(event.target)) setOpen(false);
     }
-    function keydown(event) {
+    function handleKeyDown(event) {
       if (event.key !== 'Escape') return;
       setOpen(false);
       ref.current?.querySelector('.dropdown-toggle')?.focus();
     }
-    document.addEventListener('pointerdown', pointerdown);
-    document.addEventListener('keydown', keydown);
+    document.addEventListener('pointerdown', handlePointerDown);
+    document.addEventListener('keydown', handleKeyDown);
     return () => {
-      document.removeEventListener('pointerdown', pointerdown);
-      document.removeEventListener('keydown', keydown);
+      document.removeEventListener('pointerdown', handlePointerDown);
+      document.removeEventListener('keydown', handleKeyDown);
     };
   }, [open, setOpen]);
 }
