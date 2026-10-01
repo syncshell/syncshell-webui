@@ -5,71 +5,85 @@ import { deviceName } from '../devices/device-status.mjs';
 import { folderStatus } from '../folders/folder-status.mjs';
 import { notificationCards } from './notification-definitions.mjs';
 
-export function notices(state) {
-  const cards = [];
-  const config = state.config;
+function isGuiAuthenticated(config) {
   const gui = config.gui || {};
+  return gui.authMode === 'ldap' || (gui.user && gui.password);
+}
+
+function createAuthenticationWarning(state, authenticated) {
+  const gui = state.config.gui || {};
   const address = state.system.guiAddressUsed;
-  const authenticated = gui.authMode === 'ldap' || (gui.user && gui.password);
   if (
-    address &&
-    !address.startsWith('127.') &&
-    !address.startsWith('[::1]:') &&
-    !address.startsWith('/') &&
-    !authenticated &&
-    !gui.insecureAdminAccess
+    !address ||
+    address.startsWith('127.') ||
+    address.startsWith('[::1]:') ||
+    address.startsWith('/') ||
+    authenticated ||
+    gui.insecureAdminAccess
   ) {
-    cards.push({
-      id: 'openNoAuth',
-      severity: 'danger',
-      title: 'Danger!',
-      paragraphs: [
-        'The Syncthing admin interface is configured to allow remote access without a password.',
-        'This can easily give hackers access to read and change any files on your computer.',
-        'Please set a GUI Authentication User and Password in the Settings dialog.',
-      ],
-      actions: ['Settings'],
-    });
+    return null;
   }
-  if (!state.configInSync)
-    cards.push({
-      id: 'restart',
-      severity: 'warning',
-      title: 'Restart Needed',
-      paragraphs: [
-        'The configuration has been saved but not activated. Syncthing must restart to activate the new configuration.',
-      ],
-      actions: ['Restart'],
-    });
-  for (const id of config.options?.unackedNotificationIDs || []) {
-    if (id === 'authenticationUserAndPassword' && authenticated) continue;
-    if (notificationCards[id])
-      cards.push({
-        id,
-        ...notificationCards[id],
-        params: { syncthingInotify: 'syncthing-inotify' },
-      });
-  }
-  for (const [id, pending] of Object.entries(state.pendingDevices)) {
-    cards.push({
-      id: 'device-' + id,
-      kind: 'device',
-      device: id,
-      pending,
-      severity: 'warning',
-      title: 'New Device',
-      time: pending.time,
-      paragraphs: [
-        'Device "{%name%}" ({%device%} at {%address%}) wants to connect. Add new device?',
-      ],
-      params: { name: pending.name, device: id, address: pending.address },
-      actions: ['Add Device', 'Ignore', 'Dismiss'],
-    });
-  }
-  for (const [folder, pending] of Object.entries(state.pendingFolders)) {
-    for (const [device, offered] of Object.entries(pending.offeredBy || {})) {
+  return {
+    id: 'openNoAuth',
+    severity: 'danger',
+    title: 'Danger!',
+    paragraphs: [
+      'The Syncthing admin interface is configured to allow remote access without a password.',
+      'This can easily give hackers access to read and change any files on your computer.',
+      'Please set a GUI Authentication User and Password in the Settings dialog.',
+    ],
+    actions: ['Settings'],
+  };
+}
+
+function createRestartWarning(state) {
+  if (state.configInSync) return null;
+  return {
+    id: 'restart',
+    severity: 'warning',
+    title: 'Restart Needed',
+    paragraphs: [
+      'The configuration has been saved but not activated. Syncthing must restart to activate the new configuration.',
+    ],
+    actions: ['Restart'],
+  };
+}
+
+function createAcknowledgementCards(config, authenticated) {
+  return (config.options?.unackedNotificationIDs || []).flatMap((id) => {
+    if (id === 'authenticationUserAndPassword' && authenticated) return [];
+    if (!notificationCards[id]) return [];
+    return {
+      id,
+      ...notificationCards[id],
+      params: { syncthingInotify: 'syncthing-inotify' },
+    };
+  });
+}
+
+function createPendingDeviceCards(state) {
+  return Object.entries(state.pendingDevices).map(([id, pending]) => ({
+    id: 'device-' + id,
+    kind: 'device',
+    device: id,
+    pending,
+    severity: 'warning',
+    title: 'New Device',
+    time: pending.time,
+    paragraphs: [
+      'Device "{%name%}" ({%device%} at {%address%}) wants to connect. Add new device?',
+    ],
+    params: { name: pending.name, device: id, address: pending.address },
+    actions: ['Add Device', 'Ignore', 'Dismiss'],
+  }));
+}
+
+function createPendingFolderCards(state) {
+  const config = state.config;
+  return Object.entries(state.pendingFolders).flatMap(([folder, pending]) =>
+    Object.entries(pending.offeredBy || {}).map(([device, offered]) => {
       const existing = config.folders.find((item) => item.id === folder);
-      cards.push({
+      return {
         id: 'folder-' + folder + '-' + device,
         kind: 'folder',
         folder,
@@ -93,27 +107,33 @@ export function notices(state) {
           folderlabel: offered.label,
         },
         actions: [existing ? 'Share' : 'Add', 'Ignore', 'Dismiss'],
-      });
-    }
-  }
+      };
+    }),
+  );
+}
+
+function createErrorCard(state) {
   const errors = state.errors.filter(
     (error) => !state.seenError || error.when > state.seenError,
   );
-  if (errors.length)
-    cards.push({
-      id: 'errors',
-      severity: 'warning',
-      title: 'Notice',
-      errors: errors.map((error) => ({
-        ...error,
-        message: config.devices.reduce(
-          (text, device) => text.replace(device.deviceID, deviceName(device)),
-          error.message,
-        ),
-      })),
-      actions: ['OK'],
-    });
-  const watchers = config.folders
+  if (!errors.length) return null;
+  return {
+    id: 'errors',
+    severity: 'warning',
+    title: 'Notice',
+    errors: errors.map((error) => ({
+      ...error,
+      message: state.config.devices.reduce(
+        (text, device) => text.replace(device.deviceID, deviceName(device)),
+        error.message,
+      ),
+    })),
+    actions: ['OK'],
+  };
+}
+
+function createWatcherCard(state) {
+  const watchers = state.config.folders
     .filter(
       (folder) =>
         folder.fsWatcherEnabled &&
@@ -125,19 +145,31 @@ export function notices(state) {
       name: folder.label || folder.id,
       error: state.model[folder.id].watchError,
     }));
-  if (watchers.length)
-    cards.push({
-      id: 'watchers',
-      severity: 'warning',
-      title: 'Filesystem Watcher Errors',
-      watchers,
-      paragraphs: [
-        "For the following folders an error occurred while starting to watch for changes. It will be retried every minute, so the errors might go away soon. If they persist, try to fix the underlying issue and ask for help if you can't.",
-      ],
-      link: 'https://forum.syncthing.net',
-      actions: [],
-    });
-  return cards;
+  if (!watchers.length) return null;
+  return {
+    id: 'watchers',
+    severity: 'warning',
+    title: 'Filesystem Watcher Errors',
+    watchers,
+    paragraphs: [
+      "For the following folders an error occurred while starting to watch for changes. It will be retried every minute, so the errors might go away soon. If they persist, try to fix the underlying issue and ask for help if you can't.",
+    ],
+    link: 'https://forum.syncthing.net',
+    actions: [],
+  };
+}
+
+export function notices(state) {
+  const authenticated = isGuiAuthenticated(state.config);
+  return [
+    createAuthenticationWarning(state, authenticated),
+    createRestartWarning(state),
+    ...createAcknowledgementCards(state.config, authenticated),
+    ...createPendingDeviceCards(state),
+    ...createPendingFolderCards(state),
+    createErrorCard(state),
+    createWatcherCard(state),
+  ].filter(Boolean);
 }
 
 export async function noticeAction(session, card, action, open) {
