@@ -192,3 +192,70 @@ test('modern follows the browser color scheme across reloads', async ({
     'rgb(255, 255, 255)',
   );
 });
+
+test('remote needed details page through paths with device metadata', async ({
+  page,
+  syncthing,
+}) => {
+  syncthing.configure();
+  await page.route('**/rest/db/completion?*', (route) =>
+    route.fulfill({
+      json: {
+        completion: 50,
+        needItems: 25,
+        needDeletes: 0,
+        needBytes: 2048,
+        globalBytes: 4096,
+        remoteState: 'valid',
+      },
+    }),
+  );
+  const reads = [];
+  await page.route('**/rest/db/remoteneed?*', async (route) => {
+    const query = new URL(route.request().url()).searchParams;
+    reads.push({
+      page: Number(query.get('page')),
+      folder: query.get('folder'),
+      device: query.get('device'),
+    });
+    await route.fulfill({
+      json: {
+        files: [
+          {
+            name: 'nested/remote.txt',
+            size: 2048,
+            type: 'FILE_INFO_TYPE_FILE',
+            modified: '2026-09-08T12:00:00Z',
+            modifiedBy: '',
+          },
+        ],
+      },
+    });
+  });
+  const configResponse = page.waitForResponse(
+    (response) =>
+      new URL(response.url()).pathname === '/rest/config' && response.ok(),
+  );
+  const statusResponse = page.waitForResponse(
+    (response) =>
+      new URL(response.url()).pathname === '/rest/system/status' &&
+      response.ok(),
+  );
+  await page.goto('/');
+  const [config, status] = await Promise.all([
+    configResponse.then((response) => response.json()),
+    statusResponse.then((response) => response.json()),
+  ]);
+  const expectedDevice = config.devices.find(
+    (device) => device.deviceID !== status.myID,
+  ).deviceID;
+  await page.locator('.dashboard-remotes .panel-heading').first().click();
+  await page.locator('.dashboard-remotes a[href="#remote-needed"]').click();
+  const dialog = page.getByRole('dialog');
+  await expect(dialog).toContainText('nested/remote.txt');
+  await expect(dialog).toContainText('Unknown');
+  await dialog.getByRole('link', { name: '2', exact: true }).click();
+  await expect.poll(() => reads.map((read) => read.page)).toEqual([1, 2]);
+  expect(reads[0].folder).toBe('test-folder');
+  expect(reads[0].device).toBe(expectedDevice);
+});

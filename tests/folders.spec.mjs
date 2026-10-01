@@ -140,3 +140,48 @@ test('configuration fields and scanning estimate follow visibility rules', async
   await page.getByRole('img', { name: 'File Versioning', exact: true }).hover();
   await expect(page.getByRole('tooltip')).toContainText('Keeps older copies');
 });
+
+test('local changes show empty-file sizes and page through the API', async ({
+  page,
+  syncthing,
+}) => {
+  syncthing.configure({
+    folder: { type: 'receiveonly' },
+    model: { receiveOnlyTotalItems: 25, receiveOnlyChangedBytes: 1 },
+  });
+  const reads = [];
+  await page.route('**/rest/db/localchanged?*', async (route) => {
+    const query = new URL(route.request().url()).searchParams;
+    reads.push(Number(query.get('page')));
+    await route.fulfill({
+      json: {
+        files: [
+          { name: 'empty.txt', size: 0, type: 'FILE_INFO_TYPE_FILE' },
+          { name: 'directory', size: 128, type: 'FILE_INFO_TYPE_DIRECTORY' },
+        ],
+      },
+    });
+  });
+  await page.goto('/');
+  await page.getByRole('button', { name: /Folder under test/ }).click();
+  await page.locator('.dashboard-folders a[href="#local-changed"]').click();
+  const dialog = page.getByRole('dialog', {
+    name: 'Locally Changed Items',
+    exact: true,
+  });
+  await expect(
+    dialog.getByRole('columnheader', { name: 'Path', exact: true }),
+  ).toBeVisible();
+  await expect(
+    dialog.getByRole('row').filter({ hasText: 'empty.txt' }),
+  ).toContainText('0 B');
+  await expect(
+    dialog
+      .getByRole('row')
+      .filter({ hasText: 'directory' })
+      .locator('td')
+      .last(),
+  ).toHaveText('');
+  await dialog.getByRole('link', { name: '2', exact: true }).click();
+  await expect.poll(() => reads).toEqual([1, 2]);
+});
