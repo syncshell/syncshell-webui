@@ -1,4 +1,4 @@
-import { cloneConfig, setValue } from './edit.mjs';
+import { cloneConfig, setValue } from '../../../client/edit.mjs';
 
 export const newFolderSavePhases = Object.freeze({
   editing: 'editing',

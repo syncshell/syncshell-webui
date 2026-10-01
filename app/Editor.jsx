@@ -31,7 +31,7 @@ import {
   saveFolderEditor,
   xattrDefault,
   xattrHint,
-} from '../client/folder-editor.mjs';
+} from './features/folders/folder-editor.mjs';
 import { Icon } from './Icon.jsx';
 import { Tabs } from './Tabs.jsx';
 

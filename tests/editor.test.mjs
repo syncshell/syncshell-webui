@@ -21,7 +21,7 @@ import {
   saveFolderEditor,
   xattrDefault,
   xattrHint,
-} from '../client/folder-editor.mjs';
+} from '../app/features/folders/folder-editor.mjs';
 import {
   deviceEditorFieldState,
   prepareDeviceEditorAction,

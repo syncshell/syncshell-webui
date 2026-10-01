@@ -7,7 +7,7 @@ import { loadEnglish, translator } from '../client/locale.mjs';
 import { deviceName, groupAndSortItems } from '../client/devices.mjs';
 import { UsageReport } from './UsageReport.jsx';
 import { needsUsageConsent } from '../client/reports.mjs';
-import { prepareFolderEditorAction } from '../client/folder-editor.mjs';
+import { prepareFolderEditorAction } from './features/folders/folder-editor.mjs';
 import { prepareDeviceEditorAction } from '../client/device-editor.mjs';
 import { notices } from '../client/notices.mjs';
 import { Folder } from './Folder.jsx';
