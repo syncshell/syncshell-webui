@@ -15,6 +15,7 @@ import {
   newFolderSavePhases,
   normalizeFolderEditor,
   overlappingPath,
+  prepareFolderEditorAction,
   reduceFolderDraft,
   reduceNewFolderSavePhase,
   saveFolderEditor,
@@ -23,6 +24,7 @@ import {
 } from '../client/folder-editor.mjs';
 import {
   deviceEditorFieldState,
+  prepareDeviceEditorAction,
   reduceDeviceDraft,
   saveDeviceEditor,
 } from '../client/device-editor.mjs';
@@ -261,6 +263,59 @@ test('new folder ignore persistence exposes loading and retry phases', () => {
   phase = reduceNewFolderSavePhase(phase, 'start-ignore-load');
   phase = reduceNewFolderSavePhase(phase, 'ignore-load-succeeded');
   assert.equal(phase, newFolderSavePhases.editingIgnores);
+});
+
+test('new editor actions prepare domain defaults without changing requests', async () => {
+  const requests = [];
+  const api = {
+    async get(path, query) {
+      requests.push({ path, query });
+      if (path === 'config/defaults/device') return { addresses: ['dynamic'] };
+      if (path === 'config/defaults/folder') {
+        return { type: 'sendreceive', fsWatcherEnabled: true };
+      }
+      return { random: 'ABCDEFGHIJ' };
+    },
+  };
+  const deviceRequest = {
+    type: 'add-device',
+    device: 'PEER',
+    pending: { name: 'New peer' },
+  };
+  const deviceAction = await prepareDeviceEditorAction(api, deviceRequest);
+  assert.equal(deviceAction.device.deviceID, 'PEER');
+  assert.equal(deviceAction.device.name, 'New peer');
+  assert.equal(deviceRequest.device, 'PEER');
+
+  const folderRequest = {
+    type: 'add-folder',
+    device: 'PEER',
+    pending: { label: 'Encrypted offer' },
+  };
+  const folderAction = await prepareFolderEditorAction(
+    api,
+    {
+      config: { defaults: { folder: {} } },
+      system: { myID: 'LOCAL', pathSeparator: '/' },
+      pendingFolders: {
+        'abcde-fghij': {
+          offeredBy: { PEER: { receiveEncrypted: true } },
+        },
+      },
+    },
+    folderRequest,
+  );
+  assert.equal(folderAction.folder.id, 'abcde-fghij');
+  assert.equal(folderAction.folder.type, 'receiveencrypted');
+  assert.deepEqual(folderAction.folder.devices, [
+    { deviceID: 'LOCAL' },
+    { deviceID: 'PEER' },
+  ]);
+  assert.equal(folderRequest.folder, undefined);
+  assert.deepEqual(requests.at(-1), {
+    path: 'svc/random/string',
+    query: { length: 10 },
+  });
 });
 
 test('folder normalization removes unfinished attribute rules from a clone', () => {

@@ -158,6 +158,38 @@ export function folderEditorFields(tab) {
   ];
 }
 
+export async function prepareFolderEditorAction(api, state, request) {
+  const defaults = await api.get('config/defaults/folder');
+  const random =
+    typeof request.folder === 'string'
+      ? null
+      : (await api.get('svc/random/string', { length: 10 })).random;
+  let folder = {
+    ...defaults,
+    id:
+      typeof request.folder === 'string'
+        ? request.folder
+        : (random.slice(0, 5) + '-' + random.slice(5)).toLowerCase(),
+    label: request.pending?.label || '',
+    devices: [
+      { deviceID: state.system.myID },
+      ...(request.device ? [{ deviceID: request.device }] : []),
+    ],
+  };
+  if (
+    Object.values(state.pendingFolders[folder.id]?.offeredBy || {}).some(
+      (offer) => offer.receiveEncrypted,
+    )
+  ) {
+    folder = reduceFolderDraft(
+      folder,
+      { type: 'set-folder-type', value: 'receiveencrypted' },
+      { isNew: true, config: state.config, system: state.system },
+    );
+  }
+  return { ...request, folder };
+}
+
 export function folderPath(base, name, separator = '/') {
   return base ? base.replace(/[\\/]+$/, '') + separator + name : '';
 }

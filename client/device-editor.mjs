@@ -52,6 +52,18 @@ export function deviceEditorFields(tab) {
   ];
 }
 
+export async function prepareDeviceEditorAction(api, request) {
+  const defaults = await api.get('config/defaults/device');
+  return {
+    ...request,
+    device: {
+      ...defaults,
+      deviceID: typeof request.device === 'string' ? request.device : '',
+      name: request.pending?.name || '',
+    },
+  };
+}
+
 const deviceFieldPaths = {
   'set-device-id': 'deviceID',
   'set-device-name': 'name',
