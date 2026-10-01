@@ -1,5 +1,4 @@
-import { test, expect } from '@playwright/test';
-import { folderFixture } from './folder-fixture.mjs';
+import { test, expect } from './playwright-fixtures.mjs';
 
 async function openSettings(page, advanced = false) {
   await page.getByRole('link', { name: /Actions/ }).click();
@@ -14,9 +13,10 @@ async function openSettings(page, advanced = false) {
 
 test('settings drafts survive default editing and ignored-list changes', async ({
   page,
+  folderFixture,
 }, testInfo) => {
   let original, saved;
-  await folderFixture(page);
+  await folderFixture();
   await page.route('**/rest/config', async (route) => {
     if (route.request().method() === 'PUT') {
       saved = route.request().postDataJSON();
@@ -96,8 +96,9 @@ test('settings drafts survive default editing and ignored-list changes', async (
 
 test('settings controls keep labels and associate save errors', async ({
   page,
+  folderFixture,
 }) => {
-  await folderFixture(page);
+  await folderFixture();
   await page.goto('/');
   const dialog = await openSettings(page);
   await dialog.getByRole('tab', { name: 'GUI', exact: true }).click();
@@ -124,9 +125,10 @@ test('settings controls keep labels and associate save errors', async ({
 
 test('advanced changes stay in the draft until save or explicit discard', async ({
   page,
+  folderFixture,
 }, testInfo) => {
   let saved;
-  await folderFixture(page);
+  await folderFixture();
   await page.route('**/rest/config', async (route) => {
     if (route.request().method() === 'PUT') {
       saved = route.request().postDataJSON();
@@ -180,8 +182,9 @@ for (const [type, model, label, operation] of [
 ])
   test(`${label} requires confirmation before the folder request`, async ({
     page,
+    folderFixture,
   }) => {
-    await folderFixture(page, { folder: { type }, model });
+    await folderFixture({ folder: { type }, model });
     let calls = 0;
     await page.route('**/rest/db/' + operation + '?*', async (route) => {
       expect(route.request().method()).toBe('POST');

@@ -1,5 +1,4 @@
-import { test, expect } from '@playwright/test';
-import { folderFixture } from './folder-fixture.mjs';
+import { test, expect } from './playwright-fixtures.mjs';
 
 async function openFolder(page, query = '') {
   await page.goto('/' + query);
@@ -9,8 +8,9 @@ async function openFolder(page, query = '') {
 
 test('accepted fields, compact values and icon-only help stay readable in English', async ({
   page,
+  folderFixture,
 }, testInfo) => {
-  await folderFixture(page);
+  await folderFixture();
   await openFolder(page, '?lang=de');
   const summary = page.locator('.folder-state-summary');
   await expect(summary).toContainText('109.2k');
@@ -48,8 +48,9 @@ test('accepted fields, compact values and icon-only help stay readable in Englis
 
 test('divergence exposes compact child rows and a working paged error dialog', async ({
   page,
+  folderFixture,
 }, testInfo) => {
-  await folderFixture(page, {
+  await folderFixture({
     model: {
       localFiles: 109000,
       localBytes: 7340000000,
@@ -114,8 +115,9 @@ test('divergence exposes compact child rows and a working paged error dialog', a
 
 test('configuration fields and scanning estimate follow visibility rules', async ({
   page,
+  folderFixture,
 }, testInfo) => {
-  await folderFixture(page, {
+  await folderFixture({
     folder: {
       ignorePerms: true,
       type: 'receiveonly',

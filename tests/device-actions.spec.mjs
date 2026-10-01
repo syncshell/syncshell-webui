@@ -1,10 +1,10 @@
-import { test, expect } from '@playwright/test';
-import { folderFixture } from './folder-fixture.mjs';
+import { test, expect } from './playwright-fixtures.mjs';
 
 test('device actions expose local folders and dismiss menus outside', async ({
   page,
+  folderFixture,
 }) => {
-  await folderFixture(page, { model: { ignorePatterns: true } });
+  await folderFixture({ model: { ignorePatterns: true } });
   let saved;
   await page.route('**/rest/config', async (route) => {
     if (route.request().method() !== 'PUT') return route.fallback();
@@ -99,8 +99,9 @@ test('device actions expose local folders and dismiss menus outside', async ({
 
 test('recent changes use compact columns and scroll only when needed', async ({
   page,
+  folderFixture,
 }) => {
-  await folderFixture(page);
+  await folderFixture();
   const path =
     'projects/syncshell/syncshell-webui/' +
     'a-very-long-directory/'.repeat(20) +
@@ -211,8 +212,9 @@ test('recent changes use compact columns and scroll only when needed', async ({
 
 test('modern follows the browser color scheme across reloads', async ({
   page,
+  folderFixture,
 }) => {
-  await folderFixture(page);
+  await folderFixture();
   await page.emulateMedia({ colorScheme: 'dark' });
   await page.goto('/');
   await expect(page.locator('body')).toHaveCSS(

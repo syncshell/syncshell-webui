@@ -1,11 +1,11 @@
-import { test, expect } from '@playwright/test';
-import { folderFixture } from './folder-fixture.mjs';
+import { test, expect } from './playwright-fixtures.mjs';
 
 test('version restore sends selected REST values and recovers from errors', async ({
   page,
+  folderFixture,
 }, testInfo) => {
   await page.emulateMedia({ colorScheme: 'dark' });
-  await folderFixture(page, {
+  await folderFixture({
     folder: {
       versioning: {
         type: 'simple',

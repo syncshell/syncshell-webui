@@ -1,10 +1,10 @@
-import { test, expect } from '@playwright/test';
-import { folderFixture } from './folder-fixture.mjs';
+import { test, expect } from './playwright-fixtures.mjs';
 
 test('Escape closes a folder menu and returns focus to its trigger', async ({
   page,
+  folderFixture,
 }) => {
-  await folderFixture(page);
+  await folderFixture();
   await page.goto('/');
 
   const localDevice = page.locator('.dashboard-devices > .panel');

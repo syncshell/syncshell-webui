@@ -1,10 +1,10 @@
-import { test, expect } from '@playwright/test';
-import { folderFixture } from './folder-fixture.mjs';
+import { test, expect } from './playwright-fixtures.mjs';
 
 test('rechecks show activity until completion and clear it after errors', async ({
   page,
+  folderFixture,
 }, info) => {
-  await folderFixture(page);
+  await folderFixture();
   const copy = 'note.sync-conflict-20260908-120000-ABCDEFG.txt';
   await page.route('**/rest/db/browse?*', (route) =>
     route.fulfill({

@@ -1,8 +1,10 @@
+import { test as base, expect } from '@playwright/test';
+
 function ignoreFixtureShutdownRace() {
   // The page or intercepted request can already be closed during teardown.
 }
 
-export async function folderFixture(
+async function configureFolderRoutes(
   page,
   { folder = {}, model = {}, progress } = {},
 ) {
@@ -59,3 +61,11 @@ export async function folderFixture(
     }
   });
 }
+
+export const test = base.extend({
+  folderFixture: async ({ page }, use) => {
+    await use((options) => configureFolderRoutes(page, options));
+  },
+});
+
+export { expect };

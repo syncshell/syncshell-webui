@@ -1,10 +1,10 @@
-import { test, expect } from '@playwright/test';
-import { folderFixture } from './folder-fixture.mjs';
+import { test, expect } from './playwright-fixtures.mjs';
 
 test('dashboard tabs move focus, wrap and activate from the keyboard', async ({
   page,
+  folderFixture,
 }) => {
-  await folderFixture(page);
+  await folderFixture();
   await page.goto('/');
   await expect(page.locator('.dashboard-folders .panel-heading')).toBeVisible();
 

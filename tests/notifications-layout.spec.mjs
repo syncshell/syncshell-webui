@@ -1,6 +1,5 @@
-import { test, expect } from '@playwright/test';
+import { test, expect } from './playwright-fixtures.mjs';
 import { notificationCards } from '../app/features/notifications/notification-definitions.mjs';
-import { folderFixture } from './folder-fixture.mjs';
 
 const peer = 'PEER-DEVICE-IDENTIFIER';
 
@@ -22,8 +21,9 @@ async function expectColumns(panels, count) {
 
 test('notification cards form a responsive grid with aligned headers', async ({
   page,
+  folderFixture,
 }, testInfo) => {
-  await folderFixture(page, {
+  await folderFixture({
     folder: { fsWatcherEnabled: true, paused: false },
     model: { watchError: 'watch failed' },
   });

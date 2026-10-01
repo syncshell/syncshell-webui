@@ -1,10 +1,10 @@
-import { test, expect } from '@playwright/test';
-import { folderFixture } from './folder-fixture.mjs';
+import { test, expect } from './playwright-fixtures.mjs';
 
 test('focused tooltips describe their trigger and hide on Escape', async ({
   page,
+  folderFixture,
 }) => {
-  await folderFixture(page);
+  await folderFixture();
   await page.goto('/');
   await page.getByRole('button', { name: /Folder under test/ }).click();
 
@@ -32,8 +32,9 @@ test('focused tooltips describe their trigger and hide on Escape', async ({
 
 test('hovered tooltips remain open across the pointer gap and stay in view', async ({
   page,
+  folderFixture,
 }) => {
-  await folderFixture(page);
+  await folderFixture();
   await page.goto('/');
   await page.getByRole('button', { name: /Folder under test/ }).click();
 

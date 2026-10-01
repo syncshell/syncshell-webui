@@ -1,10 +1,10 @@
-import { test, expect } from '@playwright/test';
-import { folderFixture } from './folder-fixture.mjs';
+import { test, expect } from './playwright-fixtures.mjs';
 
 test('local changes show empty-file sizes and page through the API', async ({
   page,
+  folderFixture,
 }) => {
-  await folderFixture(page, {
+  await folderFixture({
     folder: { type: 'receiveonly' },
     model: { receiveOnlyTotalItems: 25, receiveOnlyChangedBytes: 1 },
   });
@@ -47,8 +47,9 @@ test('local changes show empty-file sizes and page through the API', async ({
 
 test('remote needed details page through paths with device metadata', async ({
   page,
+  folderFixture,
 }) => {
-  await folderFixture(page);
+  await folderFixture();
   await page.route('**/rest/db/completion?*', (route) =>
     route.fulfill({
       json: {

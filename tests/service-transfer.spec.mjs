@@ -1,10 +1,10 @@
-import { test, expect } from '@playwright/test';
-import { folderFixture } from './folder-fixture.mjs';
+import { test, expect } from './playwright-fixtures.mjs';
 
 test('needed files show event progress, prioritize a file and refresh when it finishes', async ({
   page,
+  folderFixture,
 }, testInfo) => {
-  await folderFixture(page, { model: { needTotalItems: 2, needBytes: 2048 } });
+  await folderFixture({ model: { needTotalItems: 2, needBytes: 2048 } });
   const path = 'nested/file & review.txt';
   let pending,
     finished = false,
@@ -82,8 +82,9 @@ test('needed files show event progress, prioritize a file and refresh when it fi
 
 test('logs render literal text, update logging levels and cancel polling on close', async ({
   page,
+  folderFixture,
 }, testInfo) => {
-  await folderFixture(page);
+  await folderFixture();
   let levels = { api: 'INFO' },
     writes = 0,
     reads = 0;
@@ -136,8 +137,9 @@ test('logs render literal text, update logging levels and cancel polling on clos
 
 test('upgrade confirmation reports API failures without claiming a restart', async ({
   page,
+  folderFixture,
 }) => {
-  await folderFixture(page);
+  await folderFixture();
   let writes = 0;
   await page.route('**/rest/system/upgrade', async (route) => {
     if (route.request().method() === 'POST') {
