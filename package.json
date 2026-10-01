@@ -5,7 +5,8 @@
   "type": "module",
   "scripts": {
     "build": "vite build && node scripts/assets.mjs",
-    "check": "npm run format:check && npm run lint && npm test",
+    "check": "npm run format:check && npm run lint && npm run check:types && npm test",
+    "check:types": "tsc --project jsconfig.json",
     "format": "prettier --write . --ignore-unknown && npm run shell:format",
     "format:check": "prettier --check . --ignore-unknown && shfmt -d scripts/*.sh",
     "lint": "eslint . && npm run shell:lint",
@@ -27,6 +28,7 @@
     "eslint": "10.10.0",
     "globals": "17.12.0",
     "prettier": "3.9.6",
+    "typescript": "7.0.2",
     "vite": "8.2.2"
   }
 }

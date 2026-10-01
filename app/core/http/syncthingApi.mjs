@@ -2,11 +2,22 @@
 // SPDX-License-Identifier: MPL-2.0
 
 export class HttpError extends Error {
+  /**
+   * @param {Response} response
+   * @param {unknown} data
+   */
   constructor(response, data) {
+    const daemonMessage =
+      data &&
+      typeof data === 'object' &&
+      'error' in data &&
+      typeof data.error === 'string'
+        ? data.error
+        : '';
     super(
       typeof data === 'string' && data
         ? data
-        : data?.error || `HTTP ${response.status}`,
+        : daemonMessage || `HTTP ${response.status}`,
     );
     this.name = 'HttpError';
     this.status = response.status;
@@ -21,11 +32,33 @@ export class HttpError extends Error {
  * same-origin fetch.
  *
  * @typedef {object} SyncthingRequestOptions
- * @property {Record<string, unknown>} [query]
+ * @property {Record<string, string | number | boolean | null | undefined>} [query]
  * @property {unknown} [body]
  * @property {AbortSignal} [signal]
  */
 
+/**
+ * @typedef {object} SyncthingApi
+ * @property {(method: string, path: string, options?: SyncthingRequestOptions) => Promise<unknown>} request
+ * @property {(path: string, options?: SyncthingRequestOptions) => Promise<unknown>} get
+ * @property {(path: string, options?: SyncthingRequestOptions) => Promise<unknown>} post
+ * @property {(path: string, options?: SyncthingRequestOptions) => Promise<unknown>} put
+ * @property {(path: string, options?: SyncthingRequestOptions) => Promise<unknown>} patch
+ * @property {(path: string, options?: SyncthingRequestOptions) => Promise<unknown>} delete
+ */
+
+/**
+ * @typedef {object} SyncthingApiOptions
+ * @property {string | URL} [pageUrl]
+ * @property {{deviceIDShort?: string} | null} [metadata]
+ * @property {typeof globalThis.fetch} [fetch]
+ * @property {() => string} [cookie]
+ */
+
+/**
+ * @param {SyncthingApiOptions} [options]
+ * @returns {SyncthingApi}
+ */
 export function createSyncthingApi({
   pageUrl = location.href,
   metadata = window.metadata,
@@ -35,6 +68,11 @@ export function createSyncthingApi({
   const base = new URL('rest/', pageUrl);
   const suffix = metadata?.deviceIDShort;
 
+  /**
+   * @param {string} method
+   * @param {string} path
+   * @param {SyncthingRequestOptions} [options]
+   */
   async function request(method, path, { query, body, signal } = {}) {
     const url = new URL(path, base);
     if (url.origin !== base.origin || !url.pathname.startsWith(base.pathname)) {
@@ -42,7 +80,7 @@ export function createSyncthingApi({
     }
     for (const [key, value] of Object.entries(query || {})) {
       if (value !== undefined && value !== null)
-        url.searchParams.set(key, value);
+        url.searchParams.set(key, String(value));
     }
     const headers = new Headers({
       Accept: 'application/json, text/plain, */*',
@@ -68,6 +106,7 @@ export function createSyncthingApi({
       body: body === undefined ? undefined : JSON.stringify(body),
     });
     const text = await response.text();
+    /** @type {unknown} */
     let data = text;
     if (
       text &&

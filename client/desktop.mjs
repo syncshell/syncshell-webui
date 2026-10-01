@@ -3,14 +3,45 @@ const launchKey = 'syncshell-launch-action';
 export const desktopHelp =
   'Local file actions are unavailable. Open this UI from Syncshell on the desktop running Syncthing, under the same user.';
 
+/**
+ * @typedef {object} DesktopFile
+ * @property {string} path
+ * @property {number} [bytes]
+ * @property {string} [modified]
+ */
+
+/**
+ * @typedef {object} DesktopFileGroup
+ * @property {string} folder
+ * @property {string} root
+ * @property {string} path
+ * @property {DesktopFile} [current]
+ * @property {[DesktopFile, ...DesktopFile[]]} copies
+ */
+
+/** @typedef {{type: 'edit-device', device: string}} DesktopLaunchAction */
+
+/**
+ * @typedef {object} DesktopActionPort
+ * @property {() => DesktopLaunchAction | null} takeLaunchAction
+ * @property {(device: string) => Promise<unknown>} status
+ * @property {(device: string, group: DesktopFileGroup, file?: DesktopFile) => Promise<unknown>} check
+ * @property {(group: DesktopFileGroup, file: DesktopFile, device: string) => Promise<unknown>} open
+ * @property {(group: DesktopFileGroup, file: DesktopFile, device: string) => Promise<unknown>} rename
+ */
+
 // Only the plugin launch grants access; the address bar and HTTP requests retain no token.
+/**
+ * @param {Window} [browser]
+ * @returns {DesktopActionPort | null}
+ */
 export function desktopActions(browser = window) {
   let grant;
   let launch = null;
   try {
     const fragment = new URLSearchParams(browser.location.hash.slice(1));
     if (fragment.has('syncshell-desktop')) {
-      grant = fragment.get('syncshell-desktop');
+      grant = fragment.get('syncshell-desktop') || '';
       const action = fragment.get('syncshell-action');
       const device = fragment.get('device');
       if (
@@ -30,6 +61,7 @@ export function desktopActions(browser = window) {
   }
   const match = /^127\.0\.0\.1:([0-9]{1,5})\/([a-f0-9]{64})$/.exec(grant || '');
   if (!match || Number(match[1]) < 1 || Number(match[1]) > 65535) return null;
+  const [, port, token] = match;
   if (launch) {
     try {
       browser.sessionStorage.setItem(launchKey, JSON.stringify(launch));
@@ -37,16 +69,20 @@ export function desktopActions(browser = window) {
       return null;
     }
   }
+  /**
+   * @param {string} action
+   * @param {unknown} body
+   */
   async function request(action, body) {
     let response;
     try {
-      response = await browser.fetch(`http://127.0.0.1:${match[1]}/${action}`, {
+      response = await browser.fetch(`http://127.0.0.1:${port}/${action}`, {
         method: 'POST',
         credentials: 'omit',
         referrerPolicy: 'no-referrer',
         headers: {
           'Content-Type': 'application/json',
-          'X-Syncshell-Token': match[2],
+          'X-Syncshell-Token': token,
         },
         body: JSON.stringify(body),
         signal: AbortSignal.timeout(30000),
@@ -60,10 +96,23 @@ export function desktopActions(browser = window) {
       throw new Error(
         'Desktop authorization expired. Reopen the Web UI from the Syncshell plugin.',
       );
+    /** @type {unknown} */
     const result = await response.json();
-    if (!response.ok) throw new Error(result.error || 'Desktop action failed');
+    const message =
+      result &&
+      typeof result === 'object' &&
+      'error' in result &&
+      typeof result.error === 'string'
+        ? result.error
+        : 'Desktop action failed';
+    if (!response.ok) throw new Error(message);
     return result;
   }
+  /**
+   * @param {string} device
+   * @param {DesktopFileGroup} group
+   * @param {DesktopFile} [file]
+   */
   const fileRequest = (
     device,
     group,
@@ -79,6 +128,7 @@ export function desktopActions(browser = window) {
   });
   return {
     takeLaunchAction() {
+      /** @type {DesktopLaunchAction | null} */
       let action;
       try {
         action = JSON.parse(
