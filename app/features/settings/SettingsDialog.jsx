@@ -1,10 +1,6 @@
 import { useContext, useEffect, useRef, useState } from 'preact/hooks';
-import { LocaleContext } from './locale-context.jsx';
-import { Dialog } from './Dialog.jsx';
-import { UsageReport } from './features/reports/UsageReport.jsx';
-import { Editor } from './Editor.jsx';
-import { FormFields } from './FormFields.jsx';
-import { cloneConfig, setValue } from '../client/edit.mjs';
+import { cloneConfig, setValue } from '../../../client/edit.mjs';
+import { timestamp } from '../../../client/format.mjs';
 import {
   settingsTabs,
   settingsFields,
@@ -14,10 +10,21 @@ import {
   unignore,
   loadSettings,
   buildAdvancedConfigSections,
-} from '../client/settings.mjs';
-import { timestamp } from '../client/format.mjs';
-import { Tabs } from './Tabs.jsx';
-export function Settings({ state, api, session, onClose, advanced = false }) {
+} from '../../../client/settings.mjs';
+import { Dialog } from '../../Dialog.jsx';
+import { Editor } from '../../Editor.jsx';
+import { FormFields } from '../../FormFields.jsx';
+import { LocaleContext } from '../../locale-context.jsx';
+import { Tabs } from '../../Tabs.jsx';
+import { UsageReport } from '../reports/UsageReport.jsx';
+
+export function SettingsDialog({
+  state,
+  api,
+  session,
+  onClose,
+  advanced = false,
+}) {
   const { t } = useContext(LocaleContext);
   const form = useRef();
   const [initial] = useState(() => cloneConfig(state.config));

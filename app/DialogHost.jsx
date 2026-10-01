@@ -2,7 +2,7 @@ import { About } from './features/about/About.jsx';
 import { ServiceDialog } from './ServiceDialog.jsx';
 import { Logs } from './features/logs/Logs.jsx';
 import { Editor } from './Editor.jsx';
-import { Settings } from './Settings.jsx';
+import { SettingsDialog } from './features/settings/SettingsDialog.jsx';
 import { ConfirmManagementAction } from './features/management/ConfirmManagementAction.jsx';
 import { RestoreVersionsDialog } from './features/versions/RestoreVersionsDialog.jsx';
 import { ServiceHealthDialog } from './ServiceHealthDialog.jsx';
@@ -45,7 +45,7 @@ export function DialogHost({ action, state, api, session, onClose }) {
     case 'settings':
     case 'advanced':
       return (
-        <Settings
+        <SettingsDialog
           state={state}
           api={api}
           session={session}
