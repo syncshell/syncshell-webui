@@ -1,32 +1,3 @@
-.folder-actions {
-  display: flex;
-  justify-content: flex-end;
-  flex-wrap: wrap;
-  gap: 5px;
-}
-
-.folder-actions > .pull-right {
-  display: contents;
-}
-
-.folder-actions .folder-sharing {
-  margin-inline-end: auto;
-}
-
-.folder-actions .btn {
-  font-size: var(--text-small);
-  padding: 5px var(--space-2);
-  max-width: 100%;
-  white-space: normal;
-  overflow-wrap: anywhere;
-}
-
-.folder-actions .clearfix,
-.folder-actions::before,
-.folder-actions::after {
-  display: none;
-}
-
 .navbar .syncshell-brand {
   color: inherit;
   display: inline-flex;
