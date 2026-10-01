@@ -20,7 +20,8 @@ export function reduceNewFolderSavePhase(phase, event) {
   }
 }
 
-const field = (path, label, type = 'text', options) => ({
+const field = (action, path, label, type = 'text', options) => ({
+  action,
   path,
   label,
   type,
@@ -30,37 +31,68 @@ const field = (path, label, type = 'text', options) => ({
 export function folderEditorFields(tab) {
   if (tab === 'General') {
     return [
-      field('label', 'Folder Label'),
-      field('group', 'Folder Group'),
-      field('id', 'Folder ID'),
-      field('path', 'Folder Path'),
+      field('set-folder-label', 'label', 'Folder Label'),
+      field('set-folder-group', 'group', 'Folder Group'),
+      field('set-folder-id', 'id', 'Folder ID'),
+      field('set-folder-path', 'path', 'Folder Path'),
     ];
   }
   if (tab === 'File Versioning') {
     return [
-      field('versioning.type', 'File Versioning', 'select', [
-        { value: '', label: 'No File Versioning' },
-        { value: 'trashcan', label: 'Trash Can' },
-        { value: 'simple', label: 'Simple' },
-        { value: 'staggered', label: 'Staggered' },
-        { value: 'external', label: 'External' },
-      ]),
-      field('versioning.fsPath', 'Versions Path'),
-      field('versioning.cleanupIntervalS', 'Cleanup Interval', 'number'),
+      field(
+        'set-folder-versioning-type',
+        'versioning.type',
+        'File Versioning',
+        'select',
+        [
+          { value: '', label: 'No File Versioning' },
+          { value: 'trashcan', label: 'Trash Can' },
+          { value: 'simple', label: 'Simple' },
+          { value: 'staggered', label: 'Staggered' },
+          { value: 'external', label: 'External' },
+        ],
+      ),
+      field('set-folder-versions-path', 'versioning.fsPath', 'Versions Path'),
+      field(
+        'set-folder-cleanup-interval',
+        'versioning.cleanupIntervalS',
+        'Cleanup Interval',
+        'number',
+      ),
     ];
   }
   return [
-    field('type', 'Folder Type', 'select', [
+    field('set-folder-type', 'type', 'Folder Type', 'select', [
       { value: 'sendreceive', label: 'Send & Receive' },
       { value: 'sendonly', label: 'Send Only' },
       { value: 'receiveonly', label: 'Receive Only' },
       { value: 'receiveencrypted', label: 'Receive Encrypted' },
     ]),
-    field('fsWatcherEnabled', 'Watch for Changes', 'checkbox'),
-    field('rescanIntervalS', 'Full Rescan Interval (s)', 'number'),
-    field('ignorePerms', 'Ignore Permissions', 'checkbox'),
-    field('blockIndexing', 'Block Indexing', 'checkbox'),
-    field('order', 'File Pull Order', 'select', [
+    field(
+      'set-folder-watcher',
+      'fsWatcherEnabled',
+      'Watch for Changes',
+      'checkbox',
+    ),
+    field(
+      'set-folder-rescan-interval',
+      'rescanIntervalS',
+      'Full Rescan Interval (s)',
+      'number',
+    ),
+    field(
+      'set-folder-ignore-permissions',
+      'ignorePerms',
+      'Ignore Permissions',
+      'checkbox',
+    ),
+    field(
+      'set-folder-block-indexing',
+      'blockIndexing',
+      'Block Indexing',
+      'checkbox',
+    ),
+    field('set-folder-pull-order', 'order', 'File Pull Order', 'select', [
       { value: 'random', label: 'Random' },
       { value: 'alphabetic', label: 'Alphabetic' },
       { value: 'smallestFirst', label: 'Smallest First' },
@@ -68,24 +100,61 @@ export function folderEditorFields(tab) {
       { value: 'oldestFirst', label: 'Oldest First' },
       { value: 'newestFirst', label: 'Newest First' },
     ]),
-    field('minDiskFree.value', 'Minimum Free Disk Space', 'number'),
-    field('minDiskFree.unit', 'Unit', 'select', [
-      { value: '%', label: '%' },
-      { value: 'kB', label: 'kB' },
-      { value: 'MB', label: 'MB' },
-      { value: 'GB', label: 'GB' },
-      { value: 'TB', label: 'TB' },
-    ]),
-    field('syncOwnership', 'Sync Ownership', 'checkbox'),
-    field('sendOwnership', 'Send Ownership', 'checkbox'),
-    field('syncXattrs', 'Sync Extended Attributes', 'checkbox'),
-    field('sendXattrs', 'Send Extended Attributes', 'checkbox'),
     field(
+      'set-folder-minimum-free-space',
+      'minDiskFree.value',
+      'Minimum Free Disk Space',
+      'number',
+    ),
+    field(
+      'set-folder-minimum-free-unit',
+      'minDiskFree.unit',
+      'Unit',
+      'select',
+      [
+        { value: '%', label: '%' },
+        { value: 'kB', label: 'kB' },
+        { value: 'MB', label: 'MB' },
+        { value: 'GB', label: 'GB' },
+        { value: 'TB', label: 'TB' },
+      ],
+    ),
+    field(
+      'set-folder-sync-ownership',
+      'syncOwnership',
+      'Sync Ownership',
+      'checkbox',
+    ),
+    field(
+      'set-folder-send-ownership',
+      'sendOwnership',
+      'Send Ownership',
+      'checkbox',
+    ),
+    field(
+      'set-folder-sync-xattrs',
+      'syncXattrs',
+      'Sync Extended Attributes',
+      'checkbox',
+    ),
+    field(
+      'set-folder-send-xattrs',
+      'sendXattrs',
+      'Send Extended Attributes',
+      'checkbox',
+    ),
+    field(
+      'set-folder-max-single-xattr-size',
       'xattrFilter.maxSingleEntrySize',
       'Maximum Single Entry Size',
       'number',
     ),
-    field('xattrFilter.maxTotalSize', 'Maximum Total Size', 'number'),
+    field(
+      'set-folder-max-total-xattr-size',
+      'xattrFilter.maxTotalSize',
+      'Maximum Total Size',
+      'number',
+    ),
   ];
 }
 
@@ -93,12 +162,57 @@ export function folderPath(base, name, separator = '/') {
   return base ? base.replace(/[\\/]+$/, '') + separator + name : '';
 }
 
-export function updateFolderEditor(
-  draft,
-  path,
-  value,
-  { isNew, defaults, autoPath, config, system },
-) {
+const folderFieldPaths = {
+  'set-folder-label': 'label',
+  'set-folder-group': 'group',
+  'set-folder-id': 'id',
+  'set-folder-path': 'path',
+  'set-folder-versioning-type': 'versioning.type',
+  'set-folder-versions-path': 'versioning.fsPath',
+  'set-folder-cleanup-interval': 'versioning.cleanupIntervalS',
+  'set-folder-type': 'type',
+  'set-folder-watcher': 'fsWatcherEnabled',
+  'set-folder-rescan-interval': 'rescanIntervalS',
+  'set-folder-ignore-permissions': 'ignorePerms',
+  'set-folder-block-indexing': 'blockIndexing',
+  'set-folder-pull-order': 'order',
+  'set-folder-minimum-free-space': 'minDiskFree.value',
+  'set-folder-minimum-free-unit': 'minDiskFree.unit',
+  'set-folder-sync-ownership': 'syncOwnership',
+  'set-folder-send-ownership': 'sendOwnership',
+  'set-folder-sync-xattrs': 'syncXattrs',
+  'set-folder-send-xattrs': 'sendXattrs',
+  'set-folder-max-single-xattr-size': 'xattrFilter.maxSingleEntrySize',
+  'set-folder-max-total-xattr-size': 'xattrFilter.maxTotalSize',
+};
+
+export function reduceFolderDraft(draft, action, context = {}) {
+  let path = folderFieldPaths[action.type];
+  let value = action.value;
+  switch (action.type) {
+    case 'set-folder-versioning-parameter':
+      path = 'versioning.params.' + action.key;
+      break;
+    case 'set-folder-xattr-permit':
+      path = 'xattrFilter.entries.' + action.index + '.permit';
+      break;
+    case 'set-folder-xattr-match':
+      path = 'xattrFilter.entries.' + action.index + '.match';
+      break;
+    case 'remove-folder-xattr-rule':
+      path = 'xattrFilter.entries';
+      value = (draft.xattrFilter?.entries || []).filter(
+        (_, index) => index !== action.index,
+      );
+      break;
+    case 'add-folder-xattr-rule':
+      path = 'xattrFilter.entries';
+      value = newXattrEntry(draft.xattrFilter?.entries);
+      break;
+  }
+  if (!path) return draft;
+
+  const { isNew, defaults, autoPath, config, system } = context;
   const next = setValue(draft, path, value);
   if (path === 'versioning.type' && value) {
     const versioningDefaults =

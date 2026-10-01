@@ -24,12 +24,11 @@ import {
   folderEditorFieldState,
   folderEditorFields,
   folderPath,
-  newXattrEntry,
   newFolderSavePhases,
   overlappingPath,
   reduceNewFolderSavePhase,
+  reduceFolderDraft,
   saveFolderEditor,
-  updateFolderEditor,
   xattrDefault,
   xattrHint,
 } from '../client/folder-editor.mjs';
@@ -161,18 +160,22 @@ export function Editor({ action, state, api, session, onClose, onSaved }) {
       if (kind === 'device') {
         return reduceDeviceDraft(previous, { type: field.action, value });
       }
-      return updateFolderEditor(previous, field.path, value, {
-        isNew,
-        defaults,
-        autoPath: autoPath.current,
-        config: state.config,
-        system: state.system,
-      });
+      return reduceFolderDraft(
+        previous,
+        { type: field.action, value },
+        {
+          isNew,
+          defaults,
+          autoPath: autoPath.current,
+          config: state.config,
+          system: state.system,
+        },
+      );
     });
   }
-  function updateFolderValue(path, value) {
+  function dispatchFolder(action) {
     setDraft((previous) =>
-      updateFolderEditor(previous, path, value, {
+      reduceFolderDraft(previous, action, {
         isNew,
         defaults,
         autoPath: autoPath.current,
@@ -724,14 +727,16 @@ export function Editor({ action, state, api, session, onClose, onSaved }) {
                             : draft.versioning.params?.[key] || ''
                         }
                         onInput={(event) =>
-                          updateFolderValue(
-                            'versioning.params.' + key,
-                            key === 'maxAge'
-                              ? String(
-                                  Number(event.currentTarget.value) * 86400,
-                                )
-                              : event.currentTarget.value,
-                          )
+                          dispatchFolder({
+                            type: 'set-folder-versioning-parameter',
+                            key,
+                            value:
+                              key === 'maxAge'
+                                ? String(
+                                    Number(event.currentTarget.value) * 86400,
+                                  )
+                                : event.currentTarget.value,
+                          })
                         }
                       />
                     </div>
@@ -763,10 +768,11 @@ export function Editor({ action, state, api, session, onClose, onSaved }) {
                               aria-label={t('permit') + ' ' + (index + 1)}
                               checked={entry.permit}
                               onChange={(event) =>
-                                updateFolderValue(
-                                  'xattrFilter.entries.' + index + '.permit',
-                                  event.currentTarget.checked,
-                                )
+                                dispatchFolder({
+                                  type: 'set-folder-xattr-permit',
+                                  index,
+                                  value: event.currentTarget.checked,
+                                })
                               }
                             />
                             <input
@@ -776,22 +782,21 @@ export function Editor({ action, state, api, session, onClose, onSaved }) {
                               }
                               value={entry.match}
                               onInput={(event) =>
-                                updateFolderValue(
-                                  'xattrFilter.entries.' + index + '.match',
-                                  event.currentTarget.value,
-                                )
+                                dispatchFolder({
+                                  type: 'set-folder-xattr-match',
+                                  index,
+                                  value: event.currentTarget.value,
+                                })
                               }
                             />
                             <button
                               type="button"
                               class="btn btn-default"
                               onClick={() =>
-                                updateFolderValue(
-                                  'xattrFilter.entries',
-                                  draft.xattrFilter.entries.filter(
-                                    (_, i) => i !== index,
-                                  ),
-                                )
+                                dispatchFolder({
+                                  type: 'remove-folder-xattr-rule',
+                                  index,
+                                })
                               }
                             >
                               {t('Remove')}
@@ -803,10 +808,7 @@ export function Editor({ action, state, api, session, onClose, onSaved }) {
                         type="button"
                         class="btn btn-default"
                         onClick={() =>
-                          updateFolderValue(
-                            'xattrFilter.entries',
-                            newXattrEntry(draft.xattrFilter?.entries),
-                          )
+                          dispatchFolder({ type: 'add-folder-xattr-rule' })
                         }
                       >
                         {t('Add filter entry')}

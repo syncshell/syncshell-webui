@@ -15,9 +15,9 @@ import {
   newFolderSavePhases,
   normalizeFolderEditor,
   overlappingPath,
+  reduceFolderDraft,
   reduceNewFolderSavePhase,
   saveFolderEditor,
-  updateFolderEditor,
   xattrDefault,
   xattrHint,
 } from '../client/folder-editor.mjs';
@@ -178,10 +178,9 @@ test('selecting versioning supplies defaults without replacing existing values',
       fsPath: '/srv/versions',
     },
   };
-  const simple = updateFolderEditor(
+  const simple = reduceFolderDraft(
     original,
-    'versioning.type',
-    'simple',
+    { type: 'set-folder-versioning-type', value: 'simple' },
     folderContext,
   );
   assert.deepEqual(simple.versioning, {
@@ -192,10 +191,9 @@ test('selecting versioning supplies defaults without replacing existing values',
   });
   assert.equal(original.versioning.type, '');
 
-  const staggered = updateFolderEditor(
+  const staggered = reduceFolderDraft(
     {},
-    'versioning.type',
-    'staggered',
+    { type: 'set-folder-versioning-type', value: 'staggered' },
     folderContext,
   );
   assert.deepEqual(staggered.versioning, {
@@ -205,10 +203,9 @@ test('selecting versioning supplies defaults without replacing existing values',
     fsPath: '',
   });
 
-  const external = updateFolderEditor(
+  const external = reduceFolderDraft(
     {},
-    'versioning.type',
-    'external',
+    { type: 'set-folder-versioning-type', value: 'external' },
     folderContext,
   );
   assert.deepEqual(external.versioning.params, { command: '' });
@@ -588,10 +585,9 @@ test('folder types apply watcher, rescan, encryption and indexing defaults', () 
     blockIndexing: true,
     versioning: { type: 'simple', params: { keep: '5' } },
   };
-  const encrypted = updateFolderEditor(
+  const encrypted = reduceFolderDraft(
     original,
-    'type',
-    'receiveencrypted',
+    { type: 'set-folder-type', value: 'receiveencrypted' },
     folderContext,
   );
 
@@ -603,44 +599,41 @@ test('folder types apply watcher, rescan, encryption and indexing defaults', () 
   assert.equal(original.type, 'sendreceive');
 
   const newFolderContext = { ...folderContext, isNew: true };
-  const sendOnly = updateFolderEditor(
+  const sendOnly = reduceFolderDraft(
     original,
-    'type',
-    'sendonly',
+    { type: 'set-folder-type', value: 'sendonly' },
     newFolderContext,
   );
   assert.equal(sendOnly.fsWatcherEnabled, true);
   assert.equal(sendOnly.rescanIntervalS, 3600);
   assert.equal(sendOnly.blockIndexing, false);
 
-  const receiveOnly = updateFolderEditor(
+  const receiveOnly = reduceFolderDraft(
     original,
-    'type',
-    'receiveonly',
+    { type: 'set-folder-type', value: 'receiveonly' },
     newFolderContext,
   );
   assert.equal(receiveOnly.blockIndexing, true);
 
-  const defaultFolder = updateFolderEditor(original, 'type', 'sendonly', {
-    ...folderContext,
-    defaults: true,
-  });
+  const defaultFolder = reduceFolderDraft(
+    original,
+    { type: 'set-folder-type', value: 'sendonly' },
+    { ...folderContext, defaults: true },
+  );
   assert.equal(defaultFolder.blockIndexing, false);
 });
 
 test('watcher changes update standard intervals and leave custom intervals unchanged', () => {
-  const standard = updateFolderEditor(
+  const standard = reduceFolderDraft(
     { type: 'sendreceive', fsWatcherEnabled: true, rescanIntervalS: 3600 },
-    'fsWatcherEnabled',
-    false,
+    { type: 'set-folder-watcher', value: false },
     folderContext,
   );
   assert.equal(standard.rescanIntervalS, 60);
 
-  const custom = updateFolderEditor(
+  const custom = reduceFolderDraft(
     { type: 'sendreceive', fsWatcherEnabled: true, rescanIntervalS: 300 },
-    'fsWatcherEnabled',
-    false,
+    { type: 'set-folder-watcher', value: false },
     folderContext,
   );
   assert.equal(custom.rescanIntervalS, 300);
@@ -654,25 +647,25 @@ test('new folder names update only an automatic path', () => {
   );
 
   const original = { id: 'photos', label: '', path: '/srv/sync/photos' };
-  const automatic = updateFolderEditor(original, 'label', 'Family photos', {
-    ...folderContext,
-    isNew: true,
-    autoPath: true,
-  });
+  const automatic = reduceFolderDraft(
+    original,
+    { type: 'set-folder-label', value: 'Family photos' },
+    { ...folderContext, isNew: true, autoPath: true },
+  );
   assert.equal(automatic.path, '/srv/sync/Family photos');
 
-  const idFallback = updateFolderEditor(original, 'id', 'new-photos', {
-    ...folderContext,
-    isNew: true,
-    autoPath: true,
-  });
+  const idFallback = reduceFolderDraft(
+    original,
+    { type: 'set-folder-id', value: 'new-photos' },
+    { ...folderContext, isNew: true, autoPath: true },
+  );
   assert.equal(idFallback.path, '/srv/sync/new-photos');
 
-  const explicit = updateFolderEditor(original, 'label', 'Family photos', {
-    ...folderContext,
-    isNew: true,
-    autoPath: false,
-  });
+  const explicit = reduceFolderDraft(
+    original,
+    { type: 'set-folder-label', value: 'Family photos' },
+    { ...folderContext, isNew: true, autoPath: false },
+  );
   assert.equal(explicit.path, '/srv/sync/photos');
 });
 
