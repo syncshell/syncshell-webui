@@ -16,6 +16,13 @@ export const itemViews = {
   },
 };
 
+export const needIcons = {
+  Del: 'trash',
+  'Del (dir)': 'trash',
+  Sync: 'circle-arrow-down',
+  Update: 'asterisk',
+};
+
 const ITEM_FLAG_DELETED = 1 << 12;
 const ITEM_FLAG_DIRECTORY = 1 << 14;
 const ITEM_ACTION_FLAGS = ITEM_FLAG_DELETED | ITEM_FLAG_DIRECTORY;

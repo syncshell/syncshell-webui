@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
-import { transferProgress } from '../client/transfer.mjs';
+import { transferProgress } from '../app/core/session/transferState.mjs';
 
 test('transfer percentages guard missing totals and keep active work visible', () => {
   const progress = transferProgress({
