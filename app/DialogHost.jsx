@@ -6,7 +6,7 @@ import { SettingsDialog } from './features/settings/SettingsDialog.jsx';
 import { ConfirmManagementAction } from './features/management/ConfirmManagementAction.jsx';
 import { RestoreVersionsDialog } from './features/versions/RestoreVersionsDialog.jsx';
 import { ServiceHealthDialog } from './features/system/ServiceHealthDialog.jsx';
-import { RecentChangesDialog } from './RecentChangesDialog.jsx';
+import { RecentChangesDialog } from './features/system/RecentChangesDialog.jsx';
 import { DeviceIdentificationDialog } from './features/devices/DeviceIdentificationDialog.jsx';
 import { RemoteNeededDialog } from './features/devices/RemoteNeededDialog.jsx';
 

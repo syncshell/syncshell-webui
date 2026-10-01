@@ -1,9 +1,9 @@
 import { useContext } from 'preact/hooks';
-import { deviceName } from './features/devices/device-status.mjs';
-import { timestamp } from '../client/format.mjs';
-import { Dialog } from './Dialog.jsx';
-import { LocaleContext } from './core/locale/LocaleContext.jsx';
-import { Tooltip } from './Tooltip.jsx';
+import { timestamp } from '../../../client/format.mjs';
+import { Dialog } from '../../Dialog.jsx';
+import { LocaleContext } from '../../core/locale/LocaleContext.jsx';
+import { Tooltip } from '../../Tooltip.jsx';
+import { deviceName } from '../devices/device-status.mjs';
 
 export function RecentChangesDialog({ state, onClose }) {
   const { t } = useContext(LocaleContext);
