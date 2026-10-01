@@ -1,15 +1,3 @@
-export function recoveryActions(folder, info = {}, status) {
-  const actions = [];
-  if (folder.type === 'sendonly' && status === 'outofsync')
-    actions.push('override');
-  if (
-    ['receiveonly', 'receiveencrypted'].includes(folder.type) &&
-    info.receiveOnlyTotalItems > 0 &&
-    ['outofsync', 'faileditems', 'localadditions'].includes(status)
-  )
-    actions.push('revert');
-  return actions;
-}
 export const managementActions = {
   'remove-folder': {
     title: 'Remove Folder',

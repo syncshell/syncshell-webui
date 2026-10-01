@@ -1,12 +1,10 @@
 import { useContext } from 'preact/hooks';
-import {
-  managementActions,
-  recoveryActions,
-} from '../../../client/management.mjs';
+import { managementActions } from '../../../client/management.mjs';
 import { Icon } from '../../Icon.jsx';
 import { LocaleContext } from '../../locale-context.jsx';
 import { MenuButton } from '../../MenuButton.jsx';
 import { ShareStatus } from '../sharing/ShareStatus.jsx';
+import { recoveryActions } from './folder-status.mjs';
 
 export function FolderActions({
   folder,

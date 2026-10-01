@@ -152,6 +152,21 @@ export function folderStateDetails(folder, info) {
   );
 }
 
+export function recoveryActions(folder, info = {}, status) {
+  const actions = [];
+  if (folder.type === 'sendonly' && status === 'outofsync') {
+    actions.push('override');
+  }
+  if (
+    ['receiveonly', 'receiveencrypted'].includes(folder.type) &&
+    info.receiveOnlyTotalItems > 0 &&
+    ['outofsync', 'faileditems', 'localadditions'].includes(status)
+  ) {
+    actions.push('revert');
+  }
+  return actions;
+}
+
 export function progressPercentage(current, total) {
   return current === total ? 99 : Math.floor((100 * current) / total);
 }
