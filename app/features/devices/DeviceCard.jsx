@@ -1,4 +1,3 @@
-import { ShareStatus } from '../../ShareStatus.jsx';
 import { useContext, useEffect, useRef, useState } from 'preact/hooks';
 import { LocaleContext } from '../../locale-context.jsx';
 import {
@@ -27,10 +26,8 @@ import { stripeSections } from '../../../client/stripes.mjs';
 import { Field } from '../../Field.jsx';
 import { Counts } from '../../Counts.jsx';
 import { Tooltip } from '../../Tooltip.jsx';
-import { Icon } from '../../Icon.jsx';
-import { MenuButton } from '../../MenuButton.jsx';
-import { runReportedSessionAction } from '../../../client/session.mjs';
 import { DeviceHeader } from './DeviceHeader.jsx';
+import { DeviceActions } from './DeviceActions.jsx';
 
 export function DeviceCard({
   device,
@@ -388,149 +385,15 @@ export function DeviceCard({
               </table>
             </details>
           </div>
-          <div class="panel-footer folder-actions device-actions">
-            <button
-              class="btn btn-sm btn-default"
-              onClick={() => openAction('identification')}
-            >
-              <Icon name="qrcode" />
-              &nbsp;{t('Identification')}
-            </button>
-            {folders.length > 0 && (
-              <MenuButton
-                placement="dropup"
-                className="folder-sharing device-folders"
-                buttonClass="btn btn-sm btn-default"
-                label={
-                  <>
-                    <Icon name="folder" />
-                    &nbsp;{t('Folders')} <span class="caret" />
-                  </>
-                }
-              >
-                {({ close }) =>
-                  folders.map((folder) => (
-                    <li key={folder.id}>
-                      <a
-                        href={isLocalDevice ? '#folder' : '#folder-sharing'}
-                        onClick={(event) => {
-                          event.preventDefault();
-                          close();
-                          onAction({
-                            type: 'edit-folder',
-                            folder,
-                            ...(isLocalDevice ? {} : { tab: 'sharing' }),
-                          });
-                        }}
-                      >
-                        {folder.label || folder.id}
-                        {!isLocalDevice && (
-                          <>
-                            {' '}
-                            <ShareStatus
-                              encrypted={
-                                folder.type === 'receiveencrypted' ||
-                                !!folder.devices.find(
-                                  (member) =>
-                                    member.deviceID === device.deviceID,
-                                )?.encryptionPassword
-                              }
-                              remoteState={
-                                state.completion[device.deviceID]?.[folder.id]
-                                  ?.remoteState
-                              }
-                            />
-                          </>
-                        )}
-                      </a>
-                    </li>
-                  ))
-                }
-              </MenuButton>
-            )}
-            <span class="pull-right">
-              {isLocalDevice ? (
-                state.config.folders.length > 0 && (
-                  <button
-                    class="btn btn-sm btn-default"
-                    onClick={() =>
-                      runReportedSessionAction(
-                        () =>
-                          session.setPaused(
-                            'folders',
-                            undefined,
-                            state.config.folders.some(
-                              (folder) => !folder.paused,
-                            ),
-                          ),
-                        session.reportError,
-                      )
-                    }
-                  >
-                    <Icon
-                      name={
-                        state.config.folders.some((folder) => !folder.paused)
-                          ? 'pause'
-                          : 'play'
-                      }
-                    />
-                    &nbsp;
-                    {t(
-                      state.config.folders.some((folder) => !folder.paused)
-                        ? 'Pause'
-                        : 'Resume',
-                    )}
-                  </button>
-                )
-              ) : (
-                <>
-                  {device.remoteGUIPort > 0 && (
-                    <a
-                      class="btn btn-sm btn-default"
-                      href={gui || undefined}
-                      aria-disabled={!gui}
-                    >
-                      <Icon name="monitor" />
-                      &nbsp;{t('Remote GUI')}
-                    </a>
-                  )}
-                  <button
-                    class="btn btn-sm btn-default"
-                    onClick={() =>
-                      runReportedSessionAction(
-                        () =>
-                          session.setPaused(
-                            'devices',
-                            device.deviceID,
-                            !device.paused,
-                          ),
-                        session.reportError,
-                      )
-                    }
-                  >
-                    <Icon name={device.paused ? 'play' : 'pause'} />
-                    &nbsp;{t(device.paused ? 'Resume' : 'Pause')}
-                  </button>
-                  <button
-                    class="btn btn-sm btn-default"
-                    onClick={() => openAction('edit-device')}
-                  >
-                    <Icon name="pencil" />
-                    &nbsp;{t('Edit')}
-                  </button>
-                </>
-              )}
-              {isLocalDevice && (
-                <button
-                  class="btn btn-sm btn-default"
-                  onClick={() => openAction('settings')}
-                >
-                  <Icon name="settings" />
-                  &nbsp;{t('Settings')}
-                </button>
-              )}
-            </span>
-          </div>
+          <DeviceActions
+            device={device}
+            folders={folders}
+            gui={gui}
+            isLocalDevice={isLocalDevice}
+            session={session}
+            state={state}
+            onAction={onAction}
+          />
         </div>
       )}
     </div>
