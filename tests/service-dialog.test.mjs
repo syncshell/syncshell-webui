@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
-import { servicePresentation } from '../client/service.mjs';
+import { servicePresentation } from '../app/features/system/servicePresentation.mjs';
 
 test('service phases select their title, tone and icon', () => {
   for (const [input, expected] of [
