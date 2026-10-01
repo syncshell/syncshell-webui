@@ -4,67 +4,13 @@
 import { createEvents } from './events.mjs';
 import { transferProgress, endedTransfers } from './transfer.mjs';
 import { completionTotal, connectionRates } from './devices.mjs';
-import { createInitialState } from './session-state.mjs';
+import { createInitialState, reduceFolderEvent } from './session-state.mjs';
 
 export async function runReportedSessionAction(action, reportError) {
   try {
     await action();
   } catch (error) {
     reportError(error);
-  }
-}
-
-export function reduceFolderEvent(state, event) {
-  const data = event.data;
-  switch (event.type) {
-    case 'FolderSummary':
-      return {
-        ...state,
-        model: { ...state.model, [data.folder]: data.summary },
-      };
-    case 'StateChanged': {
-      if (!state.model[data.folder]) return state;
-      const scanProgress = { ...state.scanProgress };
-      if (data.to === 'scanning') delete scanProgress[data.folder];
-      return {
-        ...state,
-        scanProgress,
-        model: {
-          ...state.model,
-          [data.folder]: {
-            ...state.model[data.folder],
-            state: data.to,
-            error: data.error,
-          },
-        },
-      };
-    }
-    case 'FolderErrors':
-      if (!state.model[data.folder]) return state;
-      return {
-        ...state,
-        model: {
-          ...state.model,
-          [data.folder]: {
-            ...state.model[data.folder],
-            errors: data.errors.length,
-          },
-        },
-      };
-    case 'FolderScanProgress':
-      return {
-        ...state,
-        scanProgress: {
-          ...state.scanProgress,
-          [data.folder]: {
-            current: data.current,
-            total: data.total,
-            rate: data.rate,
-          },
-        },
-      };
-    default:
-      return state;
   }
 }
 
