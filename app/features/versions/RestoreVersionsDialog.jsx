@@ -10,6 +10,7 @@ import {
 } from './versions.mjs';
 import { timestamp, unitPrefixed } from '../../../client/format.mjs';
 import { Icon } from '../../ui/Icon.jsx';
+import './RestoreVersionsDialog.css';
 
 export function RestoreVersionsDialog({ api, folder, onClose }) {
   const { t } = useContext(LocaleContext);

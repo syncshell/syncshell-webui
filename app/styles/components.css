@@ -26,36 +26,6 @@
   min-width: 0;
 }
 
-.version-filters {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 12px;
-  margin-bottom: 12px;
-}
-.version-filters label {
-  flex: 1 1 180px;
-  min-width: 0;
-}
-.version-group {
-  margin-top: 12px;
-}
-.version-group summary {
-  font-size: 16px;
-  overflow-wrap: anywhere;
-}
-.version-row {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 12px;
-  padding: 6px 12px;
-  align-items: center;
-  font-size: 14px;
-}
-.version-row > * {
-  flex: 1 1 220px;
-  min-width: 0;
-}
-
 .folder-items-table .folder-text {
   display: inline-block;
   max-width: calc(100% - 36px);
