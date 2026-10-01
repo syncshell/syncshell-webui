@@ -15,12 +15,12 @@ import { FolderCard } from './features/folders/FolderCard.jsx';
 import { DeviceCard } from './features/devices/DeviceCard.jsx';
 import { Login } from './features/authentication/Login.jsx';
 import { Notifications } from './features/notifications/Notifications.jsx';
-import { DialogHost } from './DialogHost.jsx';
+import { DialogHost } from './shell/DialogHost.jsx';
 import { Conflicts } from './features/conflicts/Conflicts.jsx';
 import { LocaleContext } from './core/locale/LocaleContext.jsx';
 import { Icon } from './ui/Icon.jsx';
-import { DashboardTabs } from './DashboardTabs.jsx';
-import { MainNavigation } from './MainNavigation.jsx';
+import { DashboardTabs } from './shell/DashboardTabs.jsx';
+import { MainNavigation } from './shell/MainNavigation.jsx';
 const desktop = desktopActions();
 
 export function App() {

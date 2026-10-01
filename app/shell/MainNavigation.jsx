@@ -1,7 +1,7 @@
-import syncshellMark from '../assets/status-default.svg?url';
-import { Icon } from './ui/Icon.jsx';
-import { useLocale } from './core/locale/LocaleContext.jsx';
-import { MenuButton } from './ui/MenuButton.jsx';
+import syncshellMark from '../../assets/status-default.svg?url';
+import { Icon } from '../ui/Icon.jsx';
+import { useLocale } from '../core/locale/LocaleContext.jsx';
+import { MenuButton } from '../ui/MenuButton.jsx';
 import './MainNavigation.css';
 
 const helpLinks = [

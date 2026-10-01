@@ -1,6 +1,6 @@
-import { Icon } from './ui/Icon.jsx';
-import { useLocale } from './core/locale/LocaleContext.jsx';
-import { Tabs } from './ui/Tabs.jsx';
+import { Icon } from '../ui/Icon.jsx';
+import { useLocale } from '../core/locale/LocaleContext.jsx';
+import { Tabs } from '../ui/Tabs.jsx';
 
 const dashboardTabs = [
   { id: 'overview', label: 'Overview' },
