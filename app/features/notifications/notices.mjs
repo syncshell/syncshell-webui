@@ -173,61 +173,69 @@ export function notices(state) {
 }
 
 export async function noticeAction(session, card, action, open) {
-  if (action === 'Settings') {
-    open({ type: 'settings' });
-    if (card.id === 'channelNotification')
-      await session.dismissNotification(card.id);
-    return;
-  }
-  if (action === 'Restart') return open({ type: 'restart' });
-  if (action === 'Ignore')
-    return session.ignorePending(card.device, card.folder, card.pending);
-  if (action === 'Dismiss')
-    return session.dismissPending(card.device, card.folder);
-  if (
-    action === 'Share' &&
-    card.folderConfig?.type !== 'receiveencrypted' &&
-    card.pending.remoteEncrypted
-  ) {
-    const folder = JSON.parse(JSON.stringify(card.folderConfig));
-    if (!folder.devices.some((member) => member.deviceID === card.device))
-      folder.devices.push({ deviceID: card.device, encryptionPassword: '' });
-    return open({ type: 'edit-folder', folder, tab: 'sharing' });
-  }
-  if (action === 'Share')
-    return session.changeConfig((config) => {
-      const folder = config.folders.find((item) => item.id === card.folder);
-      if (!folder.devices.some((item) => item.deviceID === card.device))
-        folder.devices.push({ deviceID: card.device });
-    });
-  if (action === 'Add' || action === 'Add Device') {
-    open({
-      type: card.kind === 'folder' ? 'add-folder' : 'add-device',
-      ...card,
-    });
-    return;
-  }
-  if (card.id === 'errors') return session.clearErrors();
-  if (action === 'Yes' && card.id === 'fsWatcherNotification') {
-    await session.changeConfig((config) => {
-      for (const folder of config.folders)
-        if (!folder.fsWatcherEnabled) {
-          folder.fsWatcherEnabled = true;
-          if (folder.rescanIntervalS)
-            folder.rescanIntervalS = Math.min(
-              86400,
-              folder.rescanIntervalS * 60,
-            );
+  switch (action) {
+    case 'Settings':
+      open({ type: 'settings' });
+      if (card.id === 'channelNotification') {
+        await session.dismissNotification(card.id);
+      }
+      return;
+    case 'Restart':
+      return open({ type: 'restart' });
+    case 'Ignore':
+      return session.ignorePending(card.device, card.folder, card.pending);
+    case 'Dismiss':
+      return session.dismissPending(card.device, card.folder);
+    case 'Share':
+      if (
+        card.folderConfig?.type !== 'receiveencrypted' &&
+        card.pending.remoteEncrypted
+      ) {
+        const folder = JSON.parse(JSON.stringify(card.folderConfig));
+        if (!folder.devices.some((member) => member.deviceID === card.device)) {
+          folder.devices.push({
+            deviceID: card.device,
+            encryptionPassword: '',
+          });
         }
-    });
-  }
-  if (
-    action === 'Enable Crash Reporting' ||
-    action === 'Disable Crash Reporting'
-  ) {
-    await session.changeConfig((config) => {
-      config.options.crashReportingEnabled = action.startsWith('Enable');
-    });
+        return open({ type: 'edit-folder', folder, tab: 'sharing' });
+      }
+      return session.changeConfig((config) => {
+        const folder = config.folders.find((item) => item.id === card.folder);
+        if (!folder.devices.some((item) => item.deviceID === card.device)) {
+          folder.devices.push({ deviceID: card.device });
+        }
+      });
+    case 'Add':
+    case 'Add Device':
+      open({
+        type: card.kind === 'folder' ? 'add-folder' : 'add-device',
+        ...card,
+      });
+      return;
+    case 'Yes':
+      if (card.id === 'fsWatcherNotification') {
+        await session.changeConfig((config) => {
+          for (const folder of config.folders)
+            if (!folder.fsWatcherEnabled) {
+              folder.fsWatcherEnabled = true;
+              if (folder.rescanIntervalS)
+                folder.rescanIntervalS = Math.min(
+                  86400,
+                  folder.rescanIntervalS * 60,
+                );
+            }
+        });
+      }
+      break;
+    case 'Enable Crash Reporting':
+    case 'Disable Crash Reporting':
+      await session.changeConfig((config) => {
+        config.options.crashReportingEnabled = action.startsWith('Enable');
+      });
+      break;
+    default:
+      if (card.id === 'errors') return session.clearErrors();
   }
   return session.dismissNotification(card.id);
 }
