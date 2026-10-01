@@ -32,10 +32,7 @@
 
 @media (min-width: 1400px) {
   .dashboard-primary.active {
-    max-inline-size: var(--content-max-inline-size);
-    grid-template-columns:
-      minmax(320px, calc((100% - 48px) * 0.25))
-      minmax(320px, calc((100% - 48px) * 0.25));
+    grid-template-columns: minmax(320px, 1fr) minmax(0, 2fr);
     column-gap: var(--space-7);
   }
 
@@ -58,6 +55,26 @@
 }
 
 .dashboard-heading h3 {
+  flex: 1;
+  min-width: 0;
+}
+
+.dashboard-folders .panel-title {
+  display: flex;
+  align-items: center;
+  min-width: 0;
+}
+
+.dashboard-folders .panel-title > .panel-icon,
+.dashboard-folders .panel-title > .panel-status {
+  flex-shrink: 0;
+}
+
+.dashboard-folders .panel-title > .panel-status {
+  order: 1;
+}
+
+.dashboard-folders .panel-title > .panel-title-text {
   flex: 1;
   min-width: 0;
 }
