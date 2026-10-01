@@ -162,6 +162,14 @@ export function Editor({ action, state, api, session, onClose, onSaved }) {
         name === 'Ignore Patterns')
     );
   }
+  function fieldDescriptions(field) {
+    const descriptions = [];
+    if (fieldHelp[field.label]) {
+      descriptions.push('editor-' + field.path + '-help');
+    }
+    if (error) descriptions.push('editor-error');
+    return descriptions.join(' ') || undefined;
+  }
   function updateField(field, value) {
     if (field.path === 'path') autoPath.current = false;
     setDraft((previous) => {
@@ -595,6 +603,7 @@ export function Editor({ action, state, api, session, onClose, onSaved }) {
                             field.checked ?? !!getValue(draft, field.path)
                           }
                           disabled={field.disabled}
+                          aria-describedby={fieldDescriptions(field)}
                           onChange={(event) =>
                             updateField(
                               field,
@@ -622,6 +631,7 @@ export function Editor({ action, state, api, session, onClose, onSaved }) {
                             class="form-control"
                             value={inputValue(draft, field)}
                             disabled={field.disabled}
+                            aria-describedby={fieldDescriptions(field)}
                             onChange={(event) =>
                               updateField(field, event.currentTarget.value)
                             }
@@ -639,6 +649,7 @@ export function Editor({ action, state, api, session, onClose, onSaved }) {
                             type={field.type === 'list' ? 'text' : field.type}
                             value={inputValue(draft, field)}
                             disabled={field.disabled}
+                            aria-describedby={fieldDescriptions(field)}
                             list={
                               field.path === 'path'
                                 ? 'directory-list'
@@ -675,6 +686,14 @@ export function Editor({ action, state, api, session, onClose, onSaved }) {
                         label={field.label}
                         text={fieldHelp[field.label].help}
                       />
+                    )}
+                    {fieldHelp[field.label] && (
+                      <span
+                        id={'editor-' + field.path + '-help'}
+                        class="sr-only"
+                      >
+                        {t(fieldHelp[field.label].help)}
+                      </span>
                     )}
                     {field.path === 'path' && overlap && (
                       <p class="text-warning">

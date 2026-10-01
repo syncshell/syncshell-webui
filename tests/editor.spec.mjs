@@ -25,6 +25,10 @@ test('editor enforces folder restrictions and orders attribute rules', async ({
     name: 'Folder Type',
     exact: true,
   });
+  await expect(type).toHaveAttribute('aria-describedby', 'editor-type-help');
+  await expect(dialog.locator('#editor-type-help')).toContainText(
+    'Controls how changes travel',
+  );
   await expect(type.locator('option[value=receiveencrypted]')).toHaveCount(0);
   await type.selectOption('sendonly');
   await expect(
