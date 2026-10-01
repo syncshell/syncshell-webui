@@ -16,7 +16,7 @@ import {
 } from '../../../client/format.mjs';
 import { stripeSections } from '../../../client/stripes.mjs';
 import { Field } from '../../Field.jsx';
-import { Counts } from '../../Counts.jsx';
+import { FolderCounts } from '../folders/FolderCounts.jsx';
 import { Tooltip } from '../../Tooltip.jsx';
 import { DeviceHeader } from './DeviceHeader.jsx';
 import { DeviceActions } from './DeviceActions.jsx';
@@ -112,7 +112,7 @@ export function DeviceCard({
                     )}
                     {isLocalDevice && (
                       <Field label="Local State (Total)">
-                        <Counts
+                        <FolderCounts
                           prefix="local"
                           info={{
                             localFiles: totals.files,

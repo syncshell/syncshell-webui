@@ -6,12 +6,12 @@ import {
   timestamp,
   unitPrefixed,
 } from '../../../client/format.mjs';
-import { Counts } from '../../Counts.jsx';
 import { Field } from '../../Field.jsx';
 import { Icon } from '../../Icon.jsx';
 import { LocaleContext } from '../../locale-context.jsx';
 import { Tooltip } from '../../Tooltip.jsx';
 import { Versioning } from '../../Versioning.jsx';
+import { FolderCounts } from './FolderCounts.jsx';
 import {
   folderStateClass,
   folderStateDetails,
@@ -80,7 +80,7 @@ export function FolderDetails({
                   )}
                 </th>
                 <td class="text-right">
-                  <Counts info={info} />
+                  <FolderCounts info={info} />
                 </td>
               </tr>
             )}
@@ -90,7 +90,7 @@ export function FolderDetails({
                 label={prefix === 'global' ? 'Global State' : 'Local State'}
                 rowClass="folder-state-detail"
               >
-                <Counts info={info} prefix={prefix} />
+                <FolderCounts info={info} prefix={prefix} />
               </Field>
             ))}
             {info?.needTotalItems > 0 && (
