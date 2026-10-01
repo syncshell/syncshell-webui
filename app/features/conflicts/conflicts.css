@@ -48,7 +48,7 @@
     text-overflow: ellipsis;
     white-space: nowrap;
     direction: rtl;
-    text-align: left;
+    text-align: end;
   }
   .review-cell-label {
     display: block;

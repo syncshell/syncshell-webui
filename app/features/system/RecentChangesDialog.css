@@ -5,8 +5,7 @@
   }
 
   .recent-changes-table :is(th, td) {
-    padding-right: 14px;
-    padding-left: 14px;
+    padding-inline: 14px;
     white-space: nowrap;
   }
 
@@ -32,12 +31,12 @@
 
   .recent-changes-table td:nth-child(5) {
     direction: rtl;
-    text-align: left;
+    text-align: end;
   }
 
   .recent-changes-table .folder-tail {
     display: block;
     max-width: 100%;
-    text-align: left;
+    text-align: end;
   }
 }
