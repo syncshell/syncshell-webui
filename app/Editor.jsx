@@ -2,16 +2,9 @@ import { useContext, useEffect, useRef, useState } from 'preact/hooks';
 import { LocaleContext } from './core/locale/LocaleContext.jsx';
 import { Dialog } from './Dialog.jsx';
 import { ConfirmManagementAction } from './features/management/ConfirmManagementAction.jsx';
-import {
-  cloneConfig,
-  getValue,
-  inputValue,
-  changedValue,
-  ignoreLines,
-} from '../client/edit.mjs';
+import { cloneConfig, ignoreLines } from '../client/edit.mjs';
 import { deviceFieldHelp } from './features/devices/DeviceDefinitionRow.jsx';
 import { folderFieldHelp } from './features/folders/FolderDefinitionRow.jsx';
-import { Tooltip } from './Tooltip.jsx';
 import { ShareDeviceIdentity } from './features/devices/ShareDeviceIdentity.jsx';
 import { DeviceSharingFields } from './features/devices/DeviceSharingFields.jsx';
 import {
@@ -36,6 +29,7 @@ import { FolderExtendedAttributes } from './features/folders/FolderExtendedAttri
 import { FolderIgnorePatterns } from './features/folders/FolderIgnorePatterns.jsx';
 import { FolderSharingFields } from './features/folders/FolderSharingFields.jsx';
 import { FolderVersioningFields } from './features/folders/FolderVersioningFields.jsx';
+import { EditorField } from './EditorField.jsx';
 
 export function Editor({ action, state, api, session, onClose, onSaved }) {
   const { t } = useContext(LocaleContext);
@@ -167,14 +161,6 @@ export function Editor({ action, state, api, session, onClose, onSaved }) {
         draft.type === 'receiveencrypted' &&
         name === 'Ignore Patterns')
     );
-  }
-  function fieldDescriptions(field) {
-    const descriptions = [];
-    if (activeFieldHelp[field.label]) {
-      descriptions.push('editor-' + field.path + '-help');
-    }
-    if (error) descriptions.push('editor-error');
-    return descriptions.join(' ') || undefined;
   }
   function updateField(field, value) {
     if (field.path === 'path') autoPath.current = false;
@@ -491,107 +477,15 @@ export function Editor({ action, state, api, session, onClose, onSaved }) {
                 )}
                 {fields.map((field) => (
                   <div class="form-group" key={field.path}>
-                    {field.type === 'checkbox' ? (
-                      <label>
-                        <input
-                          type="checkbox"
-                          checked={
-                            field.checked ?? !!getValue(draft, field.path)
-                          }
-                          disabled={field.disabled}
-                          aria-describedby={fieldDescriptions(field)}
-                          onChange={(event) =>
-                            updateField(
-                              field,
-                              changedValue(field, event.currentTarget),
-                            )
-                          }
-                        />{' '}
-                        {t(field.label)}
-                      </label>
-                    ) : (
-                      <>
-                        <label for={'editor-' + field.path}>
-                          {t(field.label)}
-                        </label>
-                        {activeFieldHelp[field.label] && (
-                          <Tooltip
-                            icon="info"
-                            label={field.label}
-                            text={activeFieldHelp[field.label].help}
-                          />
-                        )}
-                        {field.type === 'select' ? (
-                          <select
-                            id={'editor-' + field.path}
-                            class="form-control"
-                            value={inputValue(draft, field)}
-                            disabled={field.disabled}
-                            aria-describedby={fieldDescriptions(field)}
-                            onChange={(event) =>
-                              updateField(field, event.currentTarget.value)
-                            }
-                          >
-                            {field.options.map(({ value, label }) => (
-                              <option key={value} value={value}>
-                                {t(label)}
-                              </option>
-                            ))}
-                          </select>
-                        ) : (
-                          <input
-                            id={'editor-' + field.path}
-                            class="form-control"
-                            type={field.type === 'list' ? 'text' : field.type}
-                            value={inputValue(draft, field)}
-                            disabled={field.disabled}
-                            aria-describedby={fieldDescriptions(field)}
-                            list={
-                              field.path === 'path'
-                                ? 'directory-list'
-                                : field.path === 'group'
-                                  ? 'editor-groups'
-                                  : undefined
-                            }
-                            readOnly={
-                              !isNew &&
-                              !defaults &&
-                              ['id', 'path', 'deviceID'].includes(field.path)
-                            }
-                            required={
-                              !defaults &&
-                              ['id', 'path', 'deviceID'].includes(field.path)
-                            }
-                            step={
-                              field.path.endsWith('.value') ? '0.01' : undefined
-                            }
-                            min={field.type === 'number' ? 0 : undefined}
-                            onInput={(event) =>
-                              updateField(
-                                field,
-                                changedValue(field, event.currentTarget),
-                              )
-                            }
-                          />
-                        )}
-                      </>
-                    )}
-                    {field.type === 'checkbox' &&
-                      activeFieldHelp[field.label] && (
-                        <Tooltip
-                          icon="info"
-                          label={field.label}
-                          text={activeFieldHelp[field.label].help}
-                        />
-                      )}
-                    {activeFieldHelp[field.label] && (
-                      <span
-                        id={'editor-' + field.path + '-help'}
-                        class="sr-only"
-                      >
-                        {t(activeFieldHelp[field.label].help)}
-                      </span>
-                    )}
+                    <EditorField
+                      field={field}
+                      draft={draft}
+                      help={activeFieldHelp[field.label]}
+                      hasError={Boolean(error)}
+                      isNew={isNew}
+                      defaults={defaults}
+                      onChange={(value) => updateField(field, value)}
+                    />
                     {field.path === 'path' && overlap && (
                       <p class="text-warning">
                         {t(
