@@ -1,6 +1,6 @@
 import { useContext, useEffect, useState } from 'preact/hooks';
 import { LocaleContext } from './locale-context.jsx';
-import { deviceName } from '../client/devices.mjs';
+import { deviceName } from './features/devices/device-status.mjs';
 import { unitPrefixed, timestamp } from '../client/format.mjs';
 import { Pagination } from './Pagination.jsx';
 export function RemoteFiles({ api, folder, device, state, single }) {

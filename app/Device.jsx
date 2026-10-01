@@ -8,10 +8,12 @@ import {
   deviceLabels,
   deviceIcons,
   deviceColor,
+  lastSeenDays,
+} from './features/devices/device-status.mjs';
+import {
   connectionType,
   connectionLabels,
   connectionIcons,
-  lastSeenDays,
   addressError,
   remoteGui,
   serviceHealth,

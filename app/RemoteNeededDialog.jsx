@@ -1,5 +1,8 @@
 import { useContext } from 'preact/hooks';
-import { deviceName, sharedFolders } from '../client/devices.mjs';
+import {
+  deviceName,
+  sharedFolders,
+} from './features/devices/device-status.mjs';
 import { Dialog } from './Dialog.jsx';
 import { LocaleContext } from './locale-context.jsx';
 import { RemoteFiles } from './RemoteFiles.jsx';

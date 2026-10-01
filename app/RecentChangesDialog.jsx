@@ -1,5 +1,5 @@
 import { useContext } from 'preact/hooks';
-import { deviceName } from '../client/devices.mjs';
+import { deviceName } from './features/devices/device-status.mjs';
 import { timestamp } from '../client/format.mjs';
 import { Dialog } from './Dialog.jsx';
 import { LocaleContext } from './locale-context.jsx';

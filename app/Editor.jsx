@@ -13,7 +13,7 @@ import { fieldHelp } from '../client/field-help.mjs';
 import { Tooltip } from './Tooltip.jsx';
 import { IdentityControls } from './IdentityControls.jsx';
 import { SharingEntry } from './SharingEntry.jsx';
-import { deviceName } from '../client/devices.mjs';
+import { deviceName } from './features/devices/device-status.mjs';
 import {
   deviceEditorFieldState,
   deviceEditorFields,

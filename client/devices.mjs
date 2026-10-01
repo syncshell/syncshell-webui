@@ -3,13 +3,6 @@
 
 import { timestamp } from './format.mjs';
 
-export const deviceName = (device) =>
-  device?.name || device?.deviceID?.slice(0, 7) || '';
-export const sharedFolders = (config, id) =>
-  config.folders.filter((folder) =>
-    folder.devices.some((device) => device.deviceID === id),
-  );
-
 export function groupAndSortItems(items, name, id) {
   const groups = {};
   for (const item of items) (groups[item.group || ''] ||= []).push(item);
@@ -71,63 +64,6 @@ export function connectionRates(current, previous, elapsed) {
   };
 }
 
-export function deviceStatus(device, state) {
-  const unused =
-    sharedFolders(state.config, device.deviceID).length === 0 ? 'unused-' : '';
-  const conn = state.connections[device.deviceID];
-  if (!conn) return 'unknown';
-  if (device.paused) return unused + 'paused';
-  if (conn.connected)
-    return state.completion[device.deviceID]?._total === 100
-      ? unused + 'insync'
-      : 'syncing';
-  const age = lastSeenDays(state.deviceStats[device.deviceID]?.lastSeen);
-  return (
-    unused +
-    (!unused && (!age || age >= 7) ? 'disconnected-inactive' : 'disconnected')
-  );
-}
-
-export const deviceLabels = {
-  unknown: 'Unknown',
-  disconnected: 'Disconnected',
-  'disconnected-inactive': 'Disconnected (Inactive)',
-  insync: 'Up to Date',
-  paused: 'Paused',
-  syncing: 'Syncing',
-  'unused-disconnected': 'Disconnected (Unused)',
-  'unused-insync': 'Connected (Unused)',
-  'unused-paused': 'Paused (Unused)',
-};
-export const deviceIcons = {
-  disconnected: 'power',
-  'disconnected-inactive': 'power',
-  insync: 'check',
-  paused: 'pause',
-  syncing: 'refresh',
-  unknown: 'help',
-  'unused-disconnected': 'unlink',
-  'unused-insync': 'unlink',
-  'unused-paused': 'unlink',
-};
-export function deviceColor(device, state) {
-  const conn = state.connections[device.deviceID];
-  return !conn
-    ? 'info'
-    : device.paused
-      ? 'default'
-      : !conn.connected
-        ? 'info'
-        : state.completion[device.deviceID]?._total === 100
-          ? 'success'
-          : 'primary';
-}
-export function lastSeenDays(value) {
-  const date = new Date(value);
-  return !value || date.getTime() === 0
-    ? undefined
-    : (Date.now() - date) / 86400000;
-}
 export function connectionType(conn) {
   if (!conn) return '-1';
   for (const type of ['relay', 'quic', 'tcp']) {
