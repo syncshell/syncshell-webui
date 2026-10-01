@@ -1,7 +1,8 @@
 import { useState } from 'preact/hooks';
 import { Dialog } from '../../ui/Dialog.jsx';
 import { useLocale } from '../../core/locale/LocaleContext.jsx';
-import { managementActions, performManagement } from './management.mjs';
+import { managementActions } from './managementActions.mjs';
+import { performManagement } from './management.mjs';
 
 export function ConfirmManagementAction({
   action,

@@ -1,4 +1,4 @@
-import { managementActions } from '../management/management.mjs';
+import { managementActions } from '../management/managementActions.mjs';
 import { Icon } from '../../ui/Icon.jsx';
 import { useLocale } from '../../core/locale/LocaleContext.jsx';
 import { MenuButton } from '../../ui/MenuButton.jsx';
