@@ -5,7 +5,7 @@ import {
 } from './features/devices/device-status.mjs';
 import { Dialog } from './Dialog.jsx';
 import { LocaleContext } from './locale-context.jsx';
-import { RemoteFiles } from './RemoteFiles.jsx';
+import { RemoteNeededFiles } from './features/devices/RemoteNeededFiles.jsx';
 
 export function RemoteNeededDialog({ api, device, state, onClose }) {
   const { t } = useContext(LocaleContext);
@@ -24,7 +24,7 @@ export function RemoteNeededDialog({ api, device, state, onClose }) {
       onClose={onClose}
     >
       {folders.map((folder) => (
-        <RemoteFiles
+        <RemoteNeededFiles
           key={folder.id}
           api={api}
           folder={folder}
