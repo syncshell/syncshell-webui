@@ -69,6 +69,102 @@ export function RestoreVersionsDialog({ api, folder, onClose }) {
         {t(label)}
       </button>
     ));
+  function versionList() {
+    return (
+      <fieldset disabled={busy || confirm}>
+        <div class="version-filters">
+          <label>
+            {t('Filter by name')}
+            <input
+              class="form-control"
+              type="search"
+              value={search}
+              onInput={(event) => setSearch(event.currentTarget.value)}
+            />
+          </label>
+          <label>
+            {t('Filter by date')} · {t('From')}
+            <input
+              class="form-control"
+              type="datetime-local"
+              step="1"
+              value={start}
+              onInput={(event) => setStart(event.currentTarget.value)}
+            />
+          </label>
+          <label>
+            {t('Filter by date')} · {t('To')}
+            <input
+              class="form-control"
+              type="datetime-local"
+              step="1"
+              value={end}
+              onInput={(event) => setEnd(event.currentTarget.value)}
+            />
+          </label>
+        </div>
+        <div class="action-row">
+          {massActions(groups.flatMap(([, files]) => files))}
+        </div>
+        {groups.map(([parent, files]) => (
+          <details key={parent} class="version-group" open>
+            <summary>
+              <Icon name="folder" /> {parent || folder.label || folder.id}
+            </summary>
+            <div class="action-row">{massActions(files)}</div>
+            {files.map((file, index) => (
+              <div
+                key={file.path}
+                class={`version-row ${index % 2 === 0 ? 'section-stripe' : ''}`}
+              >
+                <span class="folder-text" title={file.path}>
+                  {file.path.slice(file.path.lastIndexOf('/') + 1)}
+                </span>
+                <select
+                  class="form-control input-sm"
+                  aria-label={file.path}
+                  value={selections[file.path] || ''}
+                  onChange={(event) =>
+                    setSelections({
+                      ...selections,
+                      [file.path]: event.currentTarget.value,
+                    })
+                  }
+                >
+                  <option value="">{t('Do not restore')}</option>
+                  {selections[file.path] &&
+                    !file.versions.some(
+                      (version) =>
+                        version.versionTime === selections[file.path],
+                    ) && (
+                      <option value={selections[file.path]}>
+                        {timestamp(selections[file.path])}
+                      </option>
+                    )}
+                  {file.versions.map((version) => (
+                    <option
+                      key={version.versionTime}
+                      value={version.versionTime}
+                    >
+                      {timestamp(version.versionTime)} ·{' '}
+                      {unitPrefixed(version.size, true)}B
+                    </option>
+                  ))}
+                </select>
+              </div>
+            ))}
+          </details>
+        ))}
+      </fieldset>
+    );
+  }
+  function versionContent() {
+    if (versions === null)
+      return error ? null : <p role="status">{t('Loading data...')}</p>;
+    if (Object.keys(versions).length === 0)
+      return <p>{t('There are no file versions to restore.')}</p>;
+    return versionList();
+  }
   return (
     <Dialog
       title={t('Restore Versions') + ' - ' + (folder.label || folder.id)}
@@ -136,99 +232,7 @@ export function RestoreVersionsDialog({ api, folder, onClose }) {
           </table>
         </>
       )}
-      {versions === null && !error ? (
-        <p role="status">{t('Loading data...')}</p>
-      ) : versions && !Object.keys(versions).length ? (
-        <p>{t('There are no file versions to restore.')}</p>
-      ) : (
-        versions && (
-          <fieldset disabled={busy || confirm}>
-            <div class="version-filters">
-              <label>
-                {t('Filter by name')}
-                <input
-                  class="form-control"
-                  type="search"
-                  value={search}
-                  onInput={(event) => setSearch(event.currentTarget.value)}
-                />
-              </label>
-              <label>
-                {t('Filter by date')} · {t('From')}
-                <input
-                  class="form-control"
-                  type="datetime-local"
-                  step="1"
-                  value={start}
-                  onInput={(event) => setStart(event.currentTarget.value)}
-                />
-              </label>
-              <label>
-                {t('Filter by date')} · {t('To')}
-                <input
-                  class="form-control"
-                  type="datetime-local"
-                  step="1"
-                  value={end}
-                  onInput={(event) => setEnd(event.currentTarget.value)}
-                />
-              </label>
-            </div>
-            <div class="action-row">
-              {massActions(groups.flatMap(([, files]) => files))}
-            </div>
-            {groups.map(([parent, files]) => (
-              <details key={parent} class="version-group" open>
-                <summary>
-                  <Icon name="folder" /> {parent || folder.label || folder.id}
-                </summary>
-                <div class="action-row">{massActions(files)}</div>
-                {files.map((file, index) => (
-                  <div
-                    key={file.path}
-                    class={`version-row ${index % 2 === 0 ? 'section-stripe' : ''}`}
-                  >
-                    <span class="folder-text" title={file.path}>
-                      {file.path.slice(file.path.lastIndexOf('/') + 1)}
-                    </span>
-                    <select
-                      class="form-control input-sm"
-                      aria-label={file.path}
-                      value={selections[file.path] || ''}
-                      onChange={(event) =>
-                        setSelections({
-                          ...selections,
-                          [file.path]: event.currentTarget.value,
-                        })
-                      }
-                    >
-                      <option value="">{t('Do not restore')}</option>
-                      {selections[file.path] &&
-                        !file.versions.some(
-                          (version) =>
-                            version.versionTime === selections[file.path],
-                        ) && (
-                          <option value={selections[file.path]}>
-                            {timestamp(selections[file.path])}
-                          </option>
-                        )}
-                      {file.versions.map((version) => (
-                        <option
-                          key={version.versionTime}
-                          value={version.versionTime}
-                        >
-                          {timestamp(version.versionTime)} ·{' '}
-                          {unitPrefixed(version.size, true)}B
-                        </option>
-                      ))}
-                    </select>
-                  </div>
-                ))}
-              </details>
-            ))}
-          </fieldset>
-        )
-      )}
+      {versionContent()}
       {confirm && (
         <div class="alert alert-warning" role="alert">
           {t('Are you sure you want to restore {%count%} files?', {
