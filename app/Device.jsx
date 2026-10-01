@@ -29,7 +29,7 @@ import { Counts } from './Counts.jsx';
 import { Tooltip } from './Tooltip.jsx';
 import { Identicon } from './Identicon.jsx';
 import { Icon } from './Icon.jsx';
-import { useDismissibleMenu } from './useDismissibleMenu.mjs';
+import { MenuButton } from './MenuButton.jsx';
 import { runReportedSessionAction } from '../client/session.mjs';
 
 export function Device({
@@ -43,10 +43,7 @@ export function Device({
 }) {
   const { t } = useContext(LocaleContext);
   const [open, setOpen] = useState(isLocalDevice);
-  const [foldersOpen, setFoldersOpen] = useState(false);
   const panel = useRef();
-  const foldersMenu = useRef();
-  useDismissibleMenu(foldersMenu, foldersOpen, setFoldersOpen);
   useEffect(() => {
     if (open) return stripeSections(panel.current);
   }, [open]);
@@ -432,26 +429,25 @@ export function Device({
               &nbsp;{t('Identification')}
             </button>
             {folders.length > 0 && (
-              <div
-                ref={foldersMenu}
-                class={`dropup folder-sharing device-folders ${foldersOpen ? 'open' : ''}`}
+              <MenuButton
+                placement="dropup"
+                className="folder-sharing device-folders"
+                buttonClass="btn btn-sm btn-default"
+                label={
+                  <>
+                    <Icon name="folder" />
+                    &nbsp;{t('Folders')} <span class="caret" />
+                  </>
+                }
               >
-                <button
-                  class="btn btn-sm btn-default dropdown-toggle"
-                  aria-expanded={foldersOpen}
-                  onClick={() => setFoldersOpen(!foldersOpen)}
-                >
-                  <Icon name="folder" />
-                  &nbsp;{t('Folders')} <span class="caret" />
-                </button>
-                <ul class="dropdown-menu">
-                  {folders.map((folder) => (
+                {({ close }) =>
+                  folders.map((folder) => (
                     <li key={folder.id}>
                       <a
                         href={isLocalDevice ? '#folder' : '#folder-sharing'}
                         onClick={(event) => {
                           event.preventDefault();
-                          setFoldersOpen(false);
+                          close();
                           onAction({
                             type: 'edit-folder',
                             folder,
@@ -480,9 +476,9 @@ export function Device({
                         )}
                       </a>
                     </li>
-                  ))}
-                </ul>
-              </div>
+                  ))
+                }
+              </MenuButton>
             )}
             <span class="pull-right">
               {isLocalDevice ? (
