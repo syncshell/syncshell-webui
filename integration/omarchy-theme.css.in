@@ -16,12 +16,12 @@
 }
 
 body {
-  color: {{foreground}};
-  background-color: {{background}};
+  color: var(--color-text);
+  background-color: var(--color-page);
 }
 
 a {
-  color: {{accent}};
+  color: var(--color-accent);
 }
 
 .text-primary {
@@ -31,7 +31,7 @@ a {
 a:hover,
 a:focus,
 .text-info {
-  color: {{cyan}};
+  color: var(--color-info);
 }
 
 .navbar,
@@ -170,7 +170,7 @@ li.hidden-xs:hover,
 }
 
 .text-success {
-  color: {{green}};
+  color: var(--color-success);
 }
 
 .text-warning {
@@ -179,11 +179,11 @@ li.hidden-xs:hover,
 
 .folder-change-time,
 .review-rechecking {
-  color: {{yellow}};
+  color: var(--color-warning);
 }
 
 .text-danger {
-  color: {{red}};
+  color: var(--color-danger);
 }
 
 .identicon rect {
