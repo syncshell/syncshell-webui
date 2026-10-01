@@ -5,7 +5,6 @@ import { ConfirmAction } from './ConfirmAction.jsx';
 import {
   cloneConfig,
   getValue,
-  editorFields,
   inputValue,
   changedValue,
   saveEditor,
@@ -29,6 +28,7 @@ import {
   deviceEditorFields,
   saveDeviceEditor,
 } from '../client/device-editor.mjs';
+import { folderEditorFields } from '../client/folder-editor.mjs';
 import { Icon } from './Icon.jsx';
 
 export function Editor({ action, state, api, session, onClose, onSaved }) {
@@ -83,9 +83,7 @@ export function Editor({ action, state, api, session, onClose, onSaved }) {
       : ['General', 'Sharing', 'Advanced']
   ).filter((name) => !defaults || name !== 'Sharing');
   const describedFields =
-    kind === 'device'
-      ? deviceEditorFields(tab)
-      : editorFields(kind, tab, state.config, state.system.myID);
+    kind === 'device' ? deviceEditorFields(tab) : folderEditorFields(tab);
   const fields = describedFields
     .map((field) =>
       editorFieldState(field, draft, {

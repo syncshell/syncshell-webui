@@ -17,7 +17,7 @@ export const upgradeMode = (config) =>
       ? 'stable'
       : 'none';
 export function settingsFields(tab, draft, myID, themes) {
-  const fields = editorFields('settings', tab, draft, myID).map((field) =>
+  const fields = editorFields(tab, draft, myID).map((field) =>
     field.type === 'number' ? { ...field, min: 0, required: true } : field,
   );
   if (tab === 'General')
