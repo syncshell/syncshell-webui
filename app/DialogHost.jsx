@@ -1,18 +1,14 @@
-import { useContext } from 'preact/hooks';
-import { LocaleContext } from './locale-context.jsx';
-import { Dialog } from './Dialog.jsx';
 import { About } from './About.jsx';
 import { ServiceDialog } from './ServiceDialog.jsx';
 import { Logs } from './Logs.jsx';
 import { Editor } from './Editor.jsx';
 import { Settings } from './Settings.jsx';
 import { ConfirmAction } from './ConfirmAction.jsx';
-import { RemoteFiles } from './RemoteFiles.jsx';
 import { RestoreVersions } from './RestoreVersions.jsx';
-import { deviceName, sharedFolders } from '../client/devices.mjs';
 import { ServiceHealthDialog } from './ServiceHealthDialog.jsx';
 import { RecentChangesDialog } from './RecentChangesDialog.jsx';
 import { DeviceIdentificationDialog } from './DeviceIdentificationDialog.jsx';
+import { RemoteNeededDialog } from './RemoteNeededDialog.jsx';
 
 /**
  * @typedef (
@@ -32,7 +28,6 @@ import { DeviceIdentificationDialog } from './DeviceIdentificationDialog.jsx';
 
 /** @param {{action: DialogRequest, state: object, api: object, session: object, onClose: function}} props */
 export function DialogHost({ action, state, api, session, onClose }) {
-  const { t } = useContext(LocaleContext);
   switch (action.type) {
     case 'restart':
     case 'shutdown':
@@ -105,36 +100,15 @@ export function DialogHost({ action, state, api, session, onClose }) {
           onClose={onClose}
         />
       );
-    case 'remote-needed': {
-      const folders = sharedFolders(
-        state.config,
-        action.device.deviceID,
-      ).filter((folder) => {
-        const completion =
-          state.completion[action.device.deviceID]?.[folder.id];
-        return !completion || completion.needItems + completion.needDeletes > 0;
-      });
+    case 'remote-needed':
       return (
-        <Dialog
-          title={t('Out of Sync Items') + ' - ' + deviceName(action.device)}
-          large
-          status="info"
-          icon="arrow-left-right"
+        <RemoteNeededDialog
+          api={api}
+          device={action.device}
+          state={state}
           onClose={onClose}
-        >
-          {folders.map((folder) => (
-            <RemoteFiles
-              key={folder.id}
-              api={api}
-              folder={folder}
-              device={action.device}
-              state={state}
-              single={folders.length === 1}
-            />
-          ))}
-        </Dialog>
+        />
       );
-    }
     case 'changes':
       return <RecentChangesDialog state={state} onClose={onClose} />;
     default:
