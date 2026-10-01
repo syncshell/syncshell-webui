@@ -1,6 +1,5 @@
 import { useContext } from 'preact/hooks';
 import { LocaleContext } from './locale-context.jsx';
-import { fieldHelp } from '../client/field-help.mjs';
 import { unitPrefixed } from '../client/format.mjs';
 import { Tooltip } from './Tooltip.jsx';
 
@@ -9,13 +8,14 @@ export function DefinitionRow({
   rowClass = '',
   icon = '',
   help = '',
+  definition = {},
   totalBytes,
   children,
 }) {
   const { t } = useContext(LocaleContext);
   const field = {
-    icon: icon || fieldHelp[label]?.icon || 'info',
-    help: help || fieldHelp[label]?.help || '',
+    icon: icon || definition.icon || 'info',
+    help: help || definition.help || '',
   };
   return (
     <tr class={rowClass}>

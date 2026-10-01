@@ -9,7 +9,8 @@ import {
   changedValue,
   ignoreLines,
 } from '../client/edit.mjs';
-import { fieldHelp } from '../client/field-help.mjs';
+import { deviceFieldHelp } from './features/devices/DeviceDefinitionRow.jsx';
+import { folderFieldHelp } from './features/folders/FolderDefinitionRow.jsx';
 import { Tooltip } from './Tooltip.jsx';
 import { ShareDeviceIdentity } from './features/devices/ShareDeviceIdentity.jsx';
 import { EncryptedShareField } from './features/sharing/EncryptedShareField.jsx';
@@ -38,6 +39,7 @@ import { Tabs } from './Tabs.jsx';
 export function Editor({ action, state, api, session, onClose, onSaved }) {
   const { t } = useContext(LocaleContext);
   const kind = action.type.includes('device') ? 'device' : 'folder';
+  const activeFieldHelp = kind === 'folder' ? folderFieldHelp : deviceFieldHelp;
   const defaults = !!action.defaults;
   const isNew = action.type.startsWith('add');
   const [draft, setDraft] = useState(() => cloneConfig(action[kind]));
@@ -164,7 +166,7 @@ export function Editor({ action, state, api, session, onClose, onSaved }) {
   }
   function fieldDescriptions(field) {
     const descriptions = [];
-    if (fieldHelp[field.label]) {
+    if (activeFieldHelp[field.label]) {
       descriptions.push('editor-' + field.path + '-help');
     }
     if (error) descriptions.push('editor-error');
@@ -618,11 +620,11 @@ export function Editor({ action, state, api, session, onClose, onSaved }) {
                         <label for={'editor-' + field.path}>
                           {t(field.label)}
                         </label>
-                        {fieldHelp[field.label] && (
+                        {activeFieldHelp[field.label] && (
                           <Tooltip
                             icon="info"
                             label={field.label}
-                            text={fieldHelp[field.label].help}
+                            text={activeFieldHelp[field.label].help}
                           />
                         )}
                         {field.type === 'select' ? (
@@ -680,19 +682,20 @@ export function Editor({ action, state, api, session, onClose, onSaved }) {
                         )}
                       </>
                     )}
-                    {field.type === 'checkbox' && fieldHelp[field.label] && (
-                      <Tooltip
-                        icon="info"
-                        label={field.label}
-                        text={fieldHelp[field.label].help}
-                      />
-                    )}
-                    {fieldHelp[field.label] && (
+                    {field.type === 'checkbox' &&
+                      activeFieldHelp[field.label] && (
+                        <Tooltip
+                          icon="info"
+                          label={field.label}
+                          text={activeFieldHelp[field.label].help}
+                        />
+                      )}
+                    {activeFieldHelp[field.label] && (
                       <span
                         id={'editor-' + field.path + '-help'}
                         class="sr-only"
                       >
-                        {t(fieldHelp[field.label].help)}
+                        {t(activeFieldHelp[field.label].help)}
                       </span>
                     )}
                     {field.path === 'path' && overlap && (

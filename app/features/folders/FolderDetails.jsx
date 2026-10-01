@@ -1,17 +1,19 @@
 import { useContext } from 'preact/hooks';
-import { fieldHelp } from '../../../client/field-help.mjs';
 import {
   compactNumber,
   duration,
   timestamp,
   unitPrefixed,
 } from '../../../client/format.mjs';
-import { DefinitionRow } from '../../DefinitionRow.jsx';
 import { Icon } from '../../Icon.jsx';
 import { LocaleContext } from '../../locale-context.jsx';
 import { Tooltip } from '../../Tooltip.jsx';
 import { FolderCounts } from './FolderCounts.jsx';
 import { FolderVersioningSummary } from './FolderVersioningSummary.jsx';
+import {
+  FolderDefinitionRow,
+  folderFieldHelp,
+} from './FolderDefinitionRow.jsx';
 import {
   folderStateClass,
   folderStateDetails,
@@ -59,7 +61,7 @@ export function FolderDetails({
                     iconClass={`text-${folderStateClass(status)}`}
                     label="Global/local State"
                     prefix={label}
-                    text={fieldHelp['Global/local State'].help}
+                    text={folderFieldHelp['Global/local State'].help}
                   />
                   &nbsp;<span>{t('Global/local State')}</span>
                   {info.ignorePatterns && (
@@ -85,16 +87,16 @@ export function FolderDetails({
               </tr>
             )}
             {summaries.map((prefix) => (
-              <DefinitionRow
+              <FolderDefinitionRow
                 key={prefix}
                 label={prefix === 'global' ? 'Global State' : 'Local State'}
                 rowClass="folder-state-detail"
               >
                 <FolderCounts info={info} prefix={prefix} />
-              </DefinitionRow>
+              </FolderDefinitionRow>
             ))}
             {info?.needTotalItems > 0 && (
-              <DefinitionRow
+              <FolderDefinitionRow
                 label="Out of Sync Items"
                 icon="cloud-download"
                 help="Items this device still needs to synchronize with other devices. The size counts whole files; reusing existing data can reduce the amount actually downloaded. Click the value to see the items."
@@ -103,7 +105,7 @@ export function FolderDetails({
                   {compactNumber(info.needTotalItems)} {t('items')}, ~
                   {unitPrefixed(info.needBytes, true)}B
                 </a>
-              </DefinitionRow>
+              </FolderDefinitionRow>
             )}
             {!folder.paused && info?.state && folder.ignoreDelete && (
               <tr>
@@ -122,46 +124,46 @@ export function FolderDetails({
               </tr>
             )}
             {stats?.lastScan && (
-              <DefinitionRow label="Last Scan">
+              <FolderDefinitionRow label="Last Scan">
                 {(Date.now() - new Date(stats.lastScan)) / 86400000 >= 365
                   ? t('Never')
                   : timestamp(stats.lastScan)}
-              </DefinitionRow>
+              </FolderDefinitionRow>
             )}
             {!folder.paused && (info?.invalid || info?.error) && (
-              <DefinitionRow label="Error">
+              <FolderDefinitionRow label="Error">
                 <Tooltip
                   label={info.invalid || info.error}
                   text={info.invalid || info.error}
                   triggerText={info.invalid || info.error}
                 />
-              </DefinitionRow>
+              </FolderDefinitionRow>
             )}
             {info && info.errors !== 0 && (
-              <DefinitionRow label="Failed Items">
+              <FolderDefinitionRow label="Failed Items">
                 <a href="#failed" onClick={showItems('failed')}>
                   {compactNumber(info.pullErrors || 0)} {t('items')}
                 </a>
-              </DefinitionRow>
+              </FolderDefinitionRow>
             )}
             {localChanges && (
-              <DefinitionRow label="Locally Changed Items">
+              <FolderDefinitionRow label="Locally Changed Items">
                 <a href="#local-changed" onClick={showItems('local')}>
                   {compactNumber(info.receiveOnlyTotalItems)} {t('items')}, ~
                   {unitPrefixed(info.receiveOnlyChangedBytes, true)}B
                 </a>
-              </DefinitionRow>
+              </FolderDefinitionRow>
             )}
             {status === 'scanning' && progress?.rate > 0 && (
-              <DefinitionRow label="Scan Time Remaining">
+              <FolderDefinitionRow label="Scan Time Remaining">
                 <span title={unitPrefixed(progress.rate, true) + 'B/s'}>
                   ~ {scanRemaining(progress)}
                 </span>
-              </DefinitionRow>
+              </FolderDefinitionRow>
             )}
             {!['sendonly', 'receiveencrypted'].includes(folder.type) &&
               stats?.lastFile?.filename && (
-                <DefinitionRow label="Latest Change">
+                <FolderDefinitionRow label="Latest Change">
                   <Tooltip
                     label={stats.lastFile.filename}
                     triggerText={basename(stats.lastFile.filename)}
@@ -186,7 +188,7 @@ export function FolderDetails({
                       </span>
                     </span>
                   </Tooltip>
-                </DefinitionRow>
+                </FolderDefinitionRow>
               )}
           </tbody>
         </table>
@@ -195,7 +197,7 @@ export function FolderDetails({
         <summary>{t('Configuration')}</summary>
         <table class="table table-condensed table-auto">
           <tbody>
-            <DefinitionRow label="Rescans">
+            <FolderDefinitionRow label="Rescans">
               <span title={watcherFailed || ''}>
                 <Icon name="clock" />
                 &nbsp;
@@ -219,16 +221,16 @@ export function FolderDetails({
                       : 'Disabled',
                 )}
               </span>
-            </DefinitionRow>
+            </FolderDefinitionRow>
             {folder.versioning?.type && (
-              <DefinitionRow label="File Versioning">
+              <FolderDefinitionRow label="File Versioning">
                 <FolderVersioningSummary config={folder.versioning} />
-              </DefinitionRow>
+              </FolderDefinitionRow>
             )}
             {folder.ignorePerms && (
-              <DefinitionRow label="Ignore Permissions">
+              <FolderDefinitionRow label="Ignore Permissions">
                 {t('Yes')}
-              </DefinitionRow>
+              </FolderDefinitionRow>
             )}
           </tbody>
         </table>
@@ -237,33 +239,33 @@ export function FolderDetails({
         <summary>{t('Folder information')}</summary>
         <table class="table table-condensed table-auto">
           <tbody>
-            <DefinitionRow label="Folder Path">
+            <FolderDefinitionRow label="Folder Path">
               <Tooltip
                 label={folder.path}
                 text={folder.path}
                 triggerText={folder.path}
                 tail
               />
-            </DefinitionRow>
-            <DefinitionRow label="Folder Type">
+            </FolderDefinitionRow>
+            <FolderDefinitionRow label="Folder Type">
               {t(folderTypes[folder.type] || '')}
-            </DefinitionRow>
+            </FolderDefinitionRow>
             {folder.label && (
-              <DefinitionRow label="Folder ID">
+              <FolderDefinitionRow label="Folder ID">
                 <Tooltip
                   label={folder.id}
                   text={folder.id}
                   triggerText={folder.id}
                 />
-              </DefinitionRow>
+              </FolderDefinitionRow>
             )}
-            <DefinitionRow label="Block Indexing">
+            <FolderDefinitionRow label="Block Indexing">
               {t(folder.blockIndexing ? 'Yes' : 'No')}
-            </DefinitionRow>
+            </FolderDefinitionRow>
             {folder.type !== 'sendonly' && (
-              <DefinitionRow label="File Pull Order">
+              <FolderDefinitionRow label="File Pull Order">
                 {t(pullOrders[folder.order] || '')}
-              </DefinitionRow>
+              </FolderDefinitionRow>
             )}
           </tbody>
         </table>

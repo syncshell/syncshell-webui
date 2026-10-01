@@ -5,7 +5,7 @@ import {
   serviceHealth,
 } from '../../../client/connections.mjs';
 import { timestamp } from '../../../client/format.mjs';
-import { DefinitionRow } from '../../DefinitionRow.jsx';
+import { DeviceDefinitionRow } from './DeviceDefinitionRow.jsx';
 import { LocaleContext } from '../../locale-context.jsx';
 import { lastSeenDays } from './device-status.mjs';
 
@@ -41,7 +41,7 @@ export function ConnectionDetails({
         <tbody>
           {isLocalDevice ? (
             <>
-              <DefinitionRow label="Listeners">
+              <DeviceDefinitionRow label="Listeners">
                 <a
                   href="#listeners"
                   class={`text-${listeners.color}`}
@@ -49,9 +49,9 @@ export function ConnectionDetails({
                 >
                   {listeners.running}/{listeners.total}
                 </a>
-              </DefinitionRow>
+              </DeviceDefinitionRow>
               {state.system.discoveryEnabled && (
-                <DefinitionRow label="Discovery">
+                <DeviceDefinitionRow label="Discovery">
                   <a
                     href="#discovery"
                     class={`text-${discovery.color}`}
@@ -59,12 +59,12 @@ export function ConnectionDetails({
                   >
                     {discovery.running}/{discovery.total}
                   </a>
-                </DefinitionRow>
+                </DeviceDefinitionRow>
               )}
             </>
           ) : (
             <>
-              <DefinitionRow label="Address">
+              <DeviceDefinitionRow label="Address">
                 {connection.connected
                   ? connection.address
                   : addresses.map((item, index) => (
@@ -90,9 +90,9 @@ export function ConnectionDetails({
                           )}
                       </span>
                     ))}
-              </DefinitionRow>
+              </DeviceDefinitionRow>
               {!connection.connected ? (
-                <DefinitionRow label="Last seen">
+                <DeviceDefinitionRow label="Last seen">
                   {!age ? (
                     t('Never')
                   ) : (
@@ -122,22 +122,22 @@ export function ConnectionDetails({
                       )}
                     </>
                   )}
-                </DefinitionRow>
+                </DeviceDefinitionRow>
               ) : (
                 <>
-                  <DefinitionRow
+                  <DeviceDefinitionRow
                     label="Connection Type"
                     icon="signal"
                     help="Transport and network used to reach this device. A relay forwards traffic when a direct connection is unavailable."
                   >
                     {t(connectionLabels[type] || 'Disconnected')}
-                  </DefinitionRow>
-                  <DefinitionRow label="Number of Connections">
+                  </DeviceDefinitionRow>
+                  <DeviceDefinitionRow label="Number of Connections">
                     1
                     {connection.secondary?.length
                       ? ' + ' + connection.secondary.length
                       : ''}
-                  </DefinitionRow>
+                  </DeviceDefinitionRow>
                 </>
               )}
             </>
