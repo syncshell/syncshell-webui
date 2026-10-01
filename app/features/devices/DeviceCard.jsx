@@ -22,6 +22,7 @@ import { DeviceHeader } from './DeviceHeader.jsx';
 import { DeviceActions } from './DeviceActions.jsx';
 import { ConnectionDetails } from './ConnectionDetails.jsx';
 import { TransferRates } from './TransferRates.jsx';
+import './DeviceCard.css';
 
 export function DeviceCard({
   device,

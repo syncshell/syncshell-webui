@@ -1,0 +1,92 @@
+@layer features {
+  .device-title,
+  .device-title .panel-title-text {
+    display: flex;
+    align-items: center;
+  }
+
+  .device-title .panel-title-text {
+    flex: 1;
+    min-width: 0;
+    gap: 0.4em;
+  }
+
+  .device-name {
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .device-role,
+  .device-title .panel-icon,
+  .device-title .panel-status {
+    flex-shrink: 0;
+  }
+
+  .device-role {
+    text-transform: lowercase;
+  }
+
+  .device-title .panel-status {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    order: 1;
+  }
+
+  .device-title .panel-status .reception {
+    margin-inline: 0;
+  }
+
+  .remote-address {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+    column-gap: var(--space-2);
+  }
+
+  .remote-address > .folder-text {
+    max-width: 100%;
+  }
+
+  .remote-status {
+    font-size: var(--text-body);
+  }
+
+  .device-actions {
+    position: relative;
+    justify-content: flex-start;
+  }
+
+  .device-actions > .pull-right > .btn:first-child {
+    margin-inline-start: auto;
+  }
+
+  .device-actions [aria-disabled='true'] {
+    opacity: 0.65;
+    cursor: default;
+  }
+
+  .device-folders {
+    position: static;
+  }
+
+  .device-folders .dropdown-menu {
+    inset-inline: 10px;
+    min-width: 0;
+    max-height: min(320px, 40vh);
+    overflow-y: auto;
+    font-size: var(--text-body);
+  }
+
+  .device-folders .dropdown-menu a {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    padding: 5px 10px;
+  }
+
+  .device-folders .folder-text {
+    flex: 1;
+    min-width: 0;
+  }
+}
