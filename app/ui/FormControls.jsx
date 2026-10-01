@@ -5,6 +5,7 @@ export function CheckboxFormControl({
   label,
   checked,
   describedBy,
+  disabled,
   onChange,
 }) {
   const { t } = useLocale();
@@ -15,6 +16,7 @@ export function CheckboxFormControl({
         type="checkbox"
         checked={checked}
         aria-describedby={describedBy}
+        disabled={disabled}
         onChange={onChange}
       />{' '}
       {t(label)}
@@ -28,17 +30,21 @@ export function SelectFormControl({
   value,
   options,
   describedBy,
+  disabled,
+  labelSuffix,
   onChange,
 }) {
   const { t } = useLocale();
   return (
     <>
       <label for={id}>{t(label)}</label>
+      {labelSuffix}
       <select
         id={id}
         class="form-control"
         value={value}
         aria-describedby={describedBy}
+        disabled={disabled}
         onChange={onChange}
       >
         {options.map((option) => (
@@ -81,21 +87,26 @@ export function NumberFormControl({
   min,
   required,
   describedBy,
+  disabled,
+  labelSuffix,
+  step = 'any',
   onInput,
 }) {
   const { t } = useLocale();
   return (
     <>
       <label for={id}>{t(label)}</label>
+      {labelSuffix}
       <input
         id={id}
         class="form-control"
         type="number"
-        step="any"
+        step={step}
         min={min}
         required={required}
         value={value}
         aria-describedby={describedBy}
+        disabled={disabled}
         onInput={onInput}
       />
     </>
@@ -109,12 +120,17 @@ export function TextFormControl({
   value,
   required,
   describedBy,
+  disabled,
+  labelSuffix,
+  list,
+  readOnly,
   onInput,
 }) {
   const { t } = useLocale();
   return (
     <>
       <label for={id}>{t(label)}</label>
+      {labelSuffix}
       <input
         id={id}
         class="form-control"
@@ -122,6 +138,9 @@ export function TextFormControl({
         required={required}
         value={value}
         aria-describedby={describedBy}
+        disabled={disabled}
+        list={list}
+        readOnly={readOnly}
         onInput={onInput}
       />
     </>
