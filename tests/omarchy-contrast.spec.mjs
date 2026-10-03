@@ -1,7 +1,7 @@
 import { readFile } from 'node:fs/promises';
 import { test, expect } from './playwright-fixtures.mjs';
 
-const palette = {
+const catppuccin = {
   mode: 'dark',
   background: '#1e1e2e',
   foreground: '#cdd6f4',
@@ -24,10 +24,34 @@ const template = await readFile(
   new URL('../integration/omarchy-theme.css.in', import.meta.url),
   'utf8',
 );
-const css = template.replace(/{{(\w+)}}/g, (_, key) => {
-  if (!(key in palette)) throw new Error(`Unresolved palette value: ${key}`);
-  return palette[key];
-});
+const palettes = {
+  catppuccin,
+  hackerman: {
+    mode: 'dark',
+    background: '#0b0c16',
+    foreground: '#ddf7ff',
+    surface: '#151828',
+    surface_dark: '#06060c',
+    foreground_dark: '#6a6e95',
+    foreground_light: '#b5c5db',
+    accent: '#82fb9c',
+    muted: '#2d3450',
+    selection: '#1f253a',
+    green: '#4fe88f',
+    yellow: '#50f7d4',
+    red: '#50f872',
+    cyan: '#7cf8f7',
+    blue: '#829dd4',
+    magenta: '#86a7df',
+    orange: '#50f7a3',
+  },
+};
+const rgb = (hex) =>
+  `rgb(${hex
+    .slice(1)
+    .match(/../g)
+    .map((v) => parseInt(v, 16))
+    .join(', ')})`;
 
 async function contrast(element) {
   return element.evaluate((el) => {
@@ -52,8 +76,15 @@ async function contrast(element) {
   });
 }
 
-for (const scheme of ['dark', 'light']) {
-  test(`catppuccin stays dark and readable with browser ${scheme}`, async ({
+for (const [name, palette, scheme] of Object.entries(palettes).flatMap(
+  ([name, palette]) =>
+    ['dark', 'light'].map((scheme) => [name, palette, scheme]),
+)) {
+  const css = template.replace(/{{(\w+)}}/g, (_, key) => {
+    if (!(key in palette)) throw new Error(`Unresolved palette value: ${key}`);
+    return palette[key];
+  });
+  test(`${name} stays dark and readable with browser ${scheme}`, async ({
     page,
     syncthing,
   }) => {
@@ -98,11 +129,20 @@ for (const scheme of ['dark', 'light']) {
           await expect(button).toBeFocused();
           await expect(button).toHaveCSS(
             'outline',
-            'rgb(148, 226, 213) solid 2px',
+            `${rgb(palette.cyan)} solid 2px`,
           );
         }
         if (state === 'active') await page.mouse.down();
-        await expect(button).toHaveCSS('color', 'rgb(30, 30, 46)');
+        await expect(button).toHaveCSS('color', rgb(palette.background));
+        if (state === 'normal')
+          await expect(button).toHaveCSS(
+            'background-color',
+            rgb(
+              palette[
+                { success: 'green', warning: 'yellow', danger: 'red' }[tone]
+              ],
+            ),
+          );
         expect(await contrast(button)).toBeGreaterThanOrEqual(4.5);
         fills.push(
           await button.evaluate((el) => getComputedStyle(el).backgroundColor),
@@ -112,7 +152,7 @@ for (const scheme of ['dark', 'light']) {
       expect(new Set(fills).size).toBe(3);
       for (const selector of ['.alert', '.panel-heading']) {
         const element = card.locator(selector);
-        await expect(element).toHaveCSS('color', 'rgb(30, 30, 46)');
+        await expect(element).toHaveCSS('color', rgb(palette.background));
         expect(await contrast(element)).toBeGreaterThanOrEqual(4.5);
       }
       for (const control of await card.locator('a, .btn-link').all()) {
@@ -120,8 +160,11 @@ for (const scheme of ['dark', 'light']) {
         await page.keyboard.press('Shift+Tab');
         await page.keyboard.press('Tab');
         await expect(control).toBeFocused();
-        await expect(control).toHaveCSS('color', 'rgb(30, 30, 46)');
-        await expect(control).toHaveCSS('outline', 'rgb(30, 30, 46) solid 2px');
+        await expect(control).toHaveCSS('color', rgb(palette.background));
+        await expect(control).toHaveCSS(
+          'outline',
+          `${rgb(palette.background)} solid 2px`,
+        );
       }
       await expect(card.locator('a')).toHaveCSS(
         'text-decoration-line',
