@@ -165,18 +165,21 @@ li.hidden-xs:hover,
 .alert-success,
 .panel-success > .panel-heading {
   --semantic-fill: {{green}};
+  --color-semantic-text: var(--color-success-text);
 }
 
 .btn-warning,
 .alert-warning,
 .panel-warning > .panel-heading {
   --semantic-fill: {{yellow}};
+  --color-semantic-text: var(--color-warning-text);
 }
 
 .btn-danger,
 .alert-danger,
 .panel-danger > .panel-heading {
   --semantic-fill: {{red}};
+  --color-semantic-text: var(--color-danger-text);
 }
 
 :is(.btn-success, .btn-warning, .btn-danger,
@@ -220,7 +223,11 @@ li.hidden-xs:hover,
 
 .panel-success .identicon rect,
 .panel-warning .identicon rect,
-.panel-danger .identicon rect,
+.panel-danger .identicon rect {
+  fill: var(--color-semantic-text);
+  color: var(--color-semantic-text);
+}
+
 .progress .frontal {
   fill: {{background}};
   color: {{background}};

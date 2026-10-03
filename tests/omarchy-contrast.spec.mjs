@@ -24,6 +24,10 @@ const template = await readFile(
   new URL('../integration/omarchy-theme.css.in', import.meta.url),
   'utf8',
 );
+const refresh = await readFile(
+  new URL('../integration/omarchy-theme-refresh.js', import.meta.url),
+  'utf8',
+);
 const palettes = {
   catppuccin,
   hackerman: {
@@ -44,6 +48,44 @@ const palettes = {
     blue: '#829dd4',
     magenta: '#86a7df',
     orange: '#50f7a3',
+  },
+  solitude: {
+    mode: 'dark',
+    background: '#101315',
+    foreground: '#cacccc',
+    surface: '#101315',
+    surface_dark: '#080a0b',
+    foreground_dark: '#4b4e55',
+    foreground_light: '#cbc2be',
+    accent: '#798186',
+    muted: '#4b4e55',
+    selection: '#343d41',
+    green: '#9fa5a9',
+    yellow: '#d9dbdc',
+    red: '#565d60',
+    cyan: '#707070',
+    blue: '#798186',
+    magenta: '#aeaeae',
+    orange: '#d9dbdc',
+  },
+  white: {
+    mode: 'light',
+    background: '#ffffff',
+    foreground: '#000000',
+    surface: '#c0c0c0',
+    surface_dark: '#e8e8e8',
+    foreground_dark: '#c0c0c0',
+    foreground_light: '#000000',
+    accent: '#6e6e6e',
+    muted: '#808080',
+    selection: '#c0c0c0',
+    green: '#3a3a3a',
+    yellow: '#4a4a4a',
+    red: '#2a2a2a',
+    cyan: '#3e3e3e',
+    blue: '#1a1a1a',
+    magenta: '#2e2e2e',
+    orange: '#4a4a4a',
   },
 };
 const rgb = (hex) =>
@@ -80,25 +122,46 @@ for (const [name, palette, scheme] of Object.entries(palettes).flatMap(
   ([name, palette]) =>
     ['dark', 'light'].map((scheme) => [name, palette, scheme]),
 )) {
-  const css = template.replace(/{{(\w+)}}/g, (_, key) => {
-    if (!(key in palette)) throw new Error(`Unresolved palette value: ${key}`);
-    return palette[key];
-  });
-  test(`${name} stays dark and readable with browser ${scheme}`, async ({
+  test(`${name} contrast and native palette refresh with browser ${scheme}`, async ({
     page,
     syncthing,
   }) => {
     syncthing.configure();
+    let current = palette;
+    let version = '1';
+    await page.route('**/theme-version.txt', (route) =>
+      route.fulfill({ body: version }),
+    );
+    await page.route('**/assets/js/omarchy_theme_refresh.js', (route) =>
+      route.fulfill({ contentType: 'text/javascript', body: refresh }),
+    );
     await page.emulateMedia({ colorScheme: scheme });
     await page.route('**/assets/css/theme.css*', (route) =>
       route.fulfill({
         contentType: 'text/css',
-        body: '@import "syncshell-dark.css";\n' + css,
+        body:
+          `@import "syncshell-${current.mode}.css";\n` +
+          template.replace(/{{(\w+)}}/g, (_, key) => {
+            if (!(key in current))
+              throw new Error(`Unresolved palette value: ${key}`);
+            return current[key];
+          }),
       }),
     );
     await page.goto('/');
     await page.getByRole('button', { name: /Folder under test/ }).waitFor();
-    await expect(page.locator('html')).toHaveCSS('color-scheme', 'dark');
+    await expect(page.locator('html')).toHaveCSS('color-scheme', palette.mode);
+    await page.evaluate(
+      () =>
+        new Promise((resolve, reject) => {
+          const script = document.createElement('script');
+          script.dataset.themeVersion = '1';
+          script.src = 'assets/js/omarchy_theme_refresh.js';
+          script.onload = resolve;
+          script.onerror = reject;
+          document.head.append(script);
+        }),
+    );
     await page.evaluate(() => {
       const gallery = document.createElement('section');
       gallery.id = 'omarchy-contrast';
@@ -109,7 +172,8 @@ for (const [name, palette, scheme] of Object.entries(palettes).flatMap(
         <article data-tone="${tone}"><button class="btn btn-${tone}">${tone}</button>
         <div class="alert alert-${tone}">Alert <a href="#">Link</a>
           <button class="btn btn-link" aria-label="Close">x</button></div>
-        <div class="panel-${tone}"><h2 class="panel-heading">Notification</h2></div></article>`,
+        <div class="panel-${tone}"><h2 class="panel-heading">Notification
+          <svg class="identicon"><rect width="10" height="10" /></svg></h2></div></article>`,
         )
         .join('');
       document.body.prepend(gallery);
@@ -117,6 +181,11 @@ for (const [name, palette, scheme] of Object.entries(palettes).flatMap(
     for (const tone of ['success', 'warning', 'danger']) {
       const card = page.locator(`#omarchy-contrast [data-tone=${tone}]`);
       const button = card.locator(':scope > button');
+      const foreground = rgb(
+        name === 'solitude' && tone === 'danger'
+          ? palette.yellow
+          : palette.background,
+      );
       const fills = [];
       for (const state of ['normal', 'hover', 'focus', 'active']) {
         await button.evaluate((el) => el.blur());
@@ -127,13 +196,16 @@ for (const [name, palette, scheme] of Object.entries(palettes).flatMap(
           await page.keyboard.press('Shift+Tab');
           await page.keyboard.press('Tab');
           await expect(button).toBeFocused();
-          await expect(button).toHaveCSS(
-            'outline',
-            `${rgb(palette.cyan)} solid 2px`,
-          );
+          if (palette.mode === 'light')
+            await expect(button).toHaveCSS('outline-style', 'auto');
+          else
+            await expect(button).toHaveCSS(
+              'outline',
+              `${rgb(palette.cyan)} solid 2px`,
+            );
         }
         if (state === 'active') await page.mouse.down();
-        await expect(button).toHaveCSS('color', rgb(palette.background));
+        await expect(button).toHaveCSS('color', foreground);
         if (state === 'normal')
           await expect(button).toHaveCSS(
             'background-color',
@@ -152,19 +224,20 @@ for (const [name, palette, scheme] of Object.entries(palettes).flatMap(
       expect(new Set(fills).size).toBe(3);
       for (const selector of ['.alert', '.panel-heading']) {
         const element = card.locator(selector);
-        await expect(element).toHaveCSS('color', rgb(palette.background));
+        await expect(element).toHaveCSS('color', foreground);
         expect(await contrast(element)).toBeGreaterThanOrEqual(4.5);
       }
+      await expect(card.locator('.identicon rect')).toHaveCSS(
+        'fill',
+        foreground,
+      );
       for (const control of await card.locator('a, .btn-link').all()) {
         await control.focus();
         await page.keyboard.press('Shift+Tab');
         await page.keyboard.press('Tab');
         await expect(control).toBeFocused();
-        await expect(control).toHaveCSS('color', rgb(palette.background));
-        await expect(control).toHaveCSS(
-          'outline',
-          `${rgb(palette.background)} solid 2px`,
-        );
+        await expect(control).toHaveCSS('color', foreground);
+        await expect(control).toHaveCSS('outline', `${foreground} solid 2px`);
       }
       await expect(card.locator('a')).toHaveCSS(
         'text-decoration-line',
@@ -175,5 +248,15 @@ for (const [name, palette, scheme] of Object.entries(palettes).flatMap(
       });
       await expect(button).toHaveCSS('opacity', '0.65');
     }
+    current = palette.mode === 'light' ? palettes.solitude : palettes.white;
+    version = '2';
+    await page.evaluate(() =>
+      document.dispatchEvent(new Event('visibilitychange')),
+    );
+    await expect(page.locator('html')).toHaveCSS('color-scheme', current.mode);
+    await expect(page.locator('#omarchy-contrast .alert-danger')).toHaveCSS(
+      'color',
+      rgb(current === palettes.solitude ? current.yellow : current.background),
+    );
   });
 }
