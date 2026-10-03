@@ -17,7 +17,46 @@
     }, 0);
   }
 
-  function applySemanticText() {
+  function semanticPair(fill, colors) {
+    // Keep readable native fills; otherwise shade toward the native page.
+    for (var step = 10; step >= 0; step--) {
+      var backgrounds = [1, 0.9, 0.8].map(function (state) {
+        var weight = (state * step) / 10;
+        return luminance(
+          fill.rgb.map(function (value, channel) {
+            return value * weight + colors[0].rgb[channel] * (1 - weight);
+          }),
+        );
+      });
+      var text = colors.find(function (color) {
+        var foreground = luminance(color.rgb);
+        return backgrounds.every(function (background) {
+          return (
+            (Math.max(foreground, background) + 0.05) /
+              (Math.min(foreground, background) + 0.05) >=
+            4.5
+          );
+        });
+      });
+      if (text)
+        return {
+          text: text.css,
+          fill:
+            step === 10
+              ? fill.css
+              : 'color-mix(in srgb, ' +
+                fill.css +
+                ' ' +
+                step * 10 +
+                '%, ' +
+                colors[0].css +
+                ')',
+        };
+    }
+    throw new Error('No readable Omarchy foreground for ' + fill.name);
+  }
+
+  function applySemanticColors() {
     var root = document.documentElement;
     var style = getComputedStyle(root);
     var names = [
@@ -45,38 +84,9 @@
       };
     });
     colors.slice(-3).forEach(function (fill) {
-      // Match the normal, hover, and pressed sRGB mixes in the template.
-      var backgrounds = [1, 0.9, 0.8].map(function (weight) {
-        return luminance(
-          fill.rgb.map(function (value, channel) {
-            return value * weight + colors[0].rgb[channel] * (1 - weight);
-          }),
-        );
-      });
-      var ranked = colors.map(function (color) {
-        var foreground = luminance(color.rgb);
-        return {
-          css: color.css,
-          score: Math.min.apply(
-            null,
-            backgrounds.map(function (background) {
-              return (
-                (Math.max(foreground, background) + 0.05) /
-                (Math.min(foreground, background) + 0.05)
-              );
-            }),
-          ),
-        };
-      });
-      // Keep an already readable pair; otherwise use the best native color.
-      var selected =
-        ranked.find(function (color) {
-          return color.score >= 4.5;
-        }) ||
-        ranked.reduce(function (best, color) {
-          return color.score > best.score ? color : best;
-        });
-      root.style.setProperty('--color-' + fill.name + '-text', selected.css);
+      var pair = semanticPair(fill, colors);
+      root.style.setProperty('--color-' + fill.name + '-text', pair.text);
+      root.style.setProperty('--color-' + fill.name + '-fill', pair.fill);
     });
   }
 
@@ -103,7 +113,7 @@
         activeVersion = version;
         loadingVersion = '';
         current.remove();
-        applySemanticText();
+        applySemanticColors();
       },
       { once: true },
     );
@@ -140,8 +150,8 @@
       .catch(ignoreThemeCheckFailure);
   }
 
-  applySemanticText();
   document.addEventListener('visibilitychange', checkTheme);
   window.setInterval(checkTheme, 1000);
   checkTheme();
+  applySemanticColors();
 })();

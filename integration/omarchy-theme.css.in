@@ -164,21 +164,21 @@ li.hidden-xs:hover,
 .btn-success,
 .alert-success,
 .panel-success > .panel-heading {
-  --semantic-fill: {{green}};
+  --semantic-fill: var(--color-success-fill);
   --color-semantic-text: var(--color-success-text);
 }
 
 .btn-warning,
 .alert-warning,
 .panel-warning > .panel-heading {
-  --semantic-fill: {{yellow}};
+  --semantic-fill: var(--color-warning-fill);
   --color-semantic-text: var(--color-warning-text);
 }
 
 .btn-danger,
 .alert-danger,
 .panel-danger > .panel-heading {
-  --semantic-fill: {{red}};
+  --semantic-fill: var(--color-danger-fill);
   --color-semantic-text: var(--color-danger-text);
 }
 

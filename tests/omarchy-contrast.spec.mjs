@@ -68,6 +68,25 @@ const palettes = {
     magenta: '#aeaeae',
     orange: '#d9dbdc',
   },
+  nord: {
+    mode: 'dark',
+    background: '#2e3440',
+    foreground: '#d8dee9',
+    surface: '#3b4252',
+    surface_dark: '#191c23',
+    foreground_dark: '#667080',
+    foreground_light: '#adb5c4',
+    accent: '#81a1c1',
+    muted: '#4c566a',
+    selection: '#434c5e',
+    green: '#a3be8c',
+    yellow: '#ebcb8b',
+    red: '#bf616a',
+    cyan: '#88c0d0',
+    blue: '#81a1c1',
+    magenta: '#b48ead',
+    orange: '#d5967a',
+  },
   ristretto: {
     mode: 'dark',
     background: '#2c2525',
@@ -107,7 +126,11 @@ const palettes = {
     orange: '#4a4a4a',
   },
 };
-const dangerText = { solitude: '#d9dbdc', ristretto: '#181414' };
+const dangerText = {
+  solitude: '#d9dbdc',
+  ristretto: '#181414',
+  nord: '#d8dee9',
+};
 const rgb = (hex) =>
   `rgb(${hex
     .slice(1)
@@ -227,11 +250,13 @@ for (const [name, palette, scheme] of Object.entries(palettes).flatMap(
         if (state === 'normal')
           await expect(button).toHaveCSS(
             'background-color',
-            rgb(
-              palette[
-                { success: 'green', warning: 'yellow', danger: 'red' }[tone]
-              ],
-            ),
+            name === 'nord' && tone === 'danger'
+              ? 'color(srgb 0.521569 0.309804 0.349804)'
+              : rgb(
+                  palette[
+                    { success: 'green', warning: 'yellow', danger: 'red' }[tone]
+                  ],
+                ),
           );
         expect(await contrast(button)).toBeGreaterThanOrEqual(4.5);
         fills.push(
@@ -275,6 +300,10 @@ for (const [name, palette, scheme] of Object.entries(palettes).flatMap(
     await expect(page.locator('#omarchy-contrast .alert-danger')).toHaveCSS(
       'color',
       rgb(current === palettes.solitude ? current.yellow : current.background),
+    );
+    await expect(page.locator('#omarchy-contrast .alert-danger')).toHaveCSS(
+      'background-color',
+      rgb(current.red),
     );
   });
 }
