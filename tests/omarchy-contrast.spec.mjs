@@ -30,6 +30,25 @@ const refresh = await readFile(
 );
 const palettes = {
   catppuccin,
+  ethereal: {
+    mode: 'dark',
+    background: '#060b1e',
+    foreground: '#ffcead',
+    surface: '#131a3a',
+    surface_dark: '#030610',
+    foreground_dark: '#6d7db6',
+    foreground_light: '#c9b8a6',
+    accent: '#7d82d9',
+    muted: '#6d7db6',
+    selection: '#252e56',
+    green: '#92a593',
+    yellow: '#e9bb4f',
+    red: '#ed5b5a',
+    cyan: '#a3bfd1',
+    blue: '#7d82d9',
+    magenta: '#c89dc1',
+    orange: '#eb8b54',
+  },
   hackerman: {
     mode: 'dark',
     background: '#0b0c16',
@@ -165,12 +184,14 @@ const palettes = {
   },
 };
 const semanticText = {
+  ethereal: { danger: '#ffcead' },
   solitude: { danger: '#d9dbdc' },
   ristretto: { danger: '#181414' },
   nord: { danger: '#d8dee9' },
   'matte-black': { warning: '#ffc107', danger: '#ffc107' },
 };
 const semanticFills = {
+  ethereal: { danger: 'color(srgb 0.567059 0.231373 0.258824)' },
   nord: { danger: 'color(srgb 0.521569 0.309804 0.349804)' },
   'matte-black': {
     warning: 'color(srgb 0.66 0.105882 0.105882)',
