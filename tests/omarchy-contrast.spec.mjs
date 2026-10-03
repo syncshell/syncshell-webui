@@ -68,6 +68,25 @@ const palettes = {
     magenta: '#aeaeae',
     orange: '#d9dbdc',
   },
+  'matte-black': {
+    mode: 'dark',
+    background: '#121212',
+    foreground: '#bebebe',
+    surface: '#1e1e1e',
+    surface_dark: '#090909',
+    foreground_dark: '#555555',
+    foreground_light: '#8a8a8d',
+    accent: '#e68e0d',
+    muted: '#333333',
+    selection: '#2a2a2a',
+    green: '#ffc107',
+    yellow: '#b91c1c',
+    red: '#d35f5f',
+    cyan: '#bebebe',
+    blue: '#e68e0d',
+    magenta: '#d35f5f',
+    orange: '#c63d3d',
+  },
   nord: {
     mode: 'dark',
     background: '#2e3440',
@@ -145,10 +164,18 @@ const palettes = {
     orange: '#4a4a4a',
   },
 };
-const dangerText = {
-  solitude: '#d9dbdc',
-  ristretto: '#181414',
-  nord: '#d8dee9',
+const semanticText = {
+  solitude: { danger: '#d9dbdc' },
+  ristretto: { danger: '#181414' },
+  nord: { danger: '#d8dee9' },
+  'matte-black': { warning: '#ffc107', danger: '#ffc107' },
+};
+const semanticFills = {
+  nord: { danger: 'color(srgb 0.521569 0.309804 0.349804)' },
+  'matte-black': {
+    warning: 'color(srgb 0.66 0.105882 0.105882)',
+    danger: 'color(srgb 0.524706 0.251765 0.251765)',
+  },
 };
 const rgb = (hex) =>
   `rgb(${hex
@@ -243,9 +270,7 @@ for (const [name, palette, scheme] of Object.entries(palettes).flatMap(
     for (const tone of ['success', 'warning', 'danger']) {
       const card = page.locator(`#omarchy-contrast [data-tone=${tone}]`);
       const button = card.locator(':scope > button');
-      const foreground = rgb(
-        (tone === 'danger' && dangerText[name]) || palette.background,
-      );
+      const foreground = rgb(semanticText[name]?.[tone] ?? palette.background);
       const fills = [];
       for (const state of ['normal', 'hover', 'focus', 'active']) {
         await button.evaluate((el) => el.blur());
@@ -269,13 +294,12 @@ for (const [name, palette, scheme] of Object.entries(palettes).flatMap(
         if (state === 'normal')
           await expect(button).toHaveCSS(
             'background-color',
-            name === 'nord' && tone === 'danger'
-              ? 'color(srgb 0.521569 0.309804 0.349804)'
-              : rgb(
-                  palette[
-                    { success: 'green', warning: 'yellow', danger: 'red' }[tone]
-                  ],
-                ),
+            semanticFills[name]?.[tone] ??
+              rgb(
+                palette[
+                  { success: 'green', warning: 'yellow', danger: 'red' }[tone]
+                ],
+              ),
           );
         expect(await contrast(button)).toBeGreaterThanOrEqual(4.5);
         fills.push(
