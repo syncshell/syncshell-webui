@@ -68,6 +68,25 @@ const palettes = {
     magenta: '#aeaeae',
     orange: '#d9dbdc',
   },
+  ristretto: {
+    mode: 'dark',
+    background: '#2c2525',
+    foreground: '#e6d9db',
+    surface: '#3d2f2a',
+    surface_dark: '#181414',
+    foreground_dark: '#72696a',
+    foreground_light: '#c3b7b8',
+    accent: '#f38d70',
+    muted: '#72696a',
+    selection: '#403e41',
+    green: '#adda78',
+    yellow: '#f9cc6c',
+    red: '#fd6883',
+    cyan: '#85dacc',
+    blue: '#f38d70',
+    magenta: '#a8a9eb',
+    orange: '#fb9a77',
+  },
   white: {
     mode: 'light',
     background: '#ffffff',
@@ -88,6 +107,7 @@ const palettes = {
     orange: '#4a4a4a',
   },
 };
+const dangerText = { solitude: '#d9dbdc', ristretto: '#181414' };
 const rgb = (hex) =>
   `rgb(${hex
     .slice(1)
@@ -182,9 +202,7 @@ for (const [name, palette, scheme] of Object.entries(palettes).flatMap(
       const card = page.locator(`#omarchy-contrast [data-tone=${tone}]`);
       const button = card.locator(':scope > button');
       const foreground = rgb(
-        name === 'solitude' && tone === 'danger'
-          ? palette.yellow
-          : palette.background,
+        (tone === 'danger' && dangerText[name]) || palette.background,
       );
       const fills = [];
       for (const state of ['normal', 'hover', 'focus', 'active']) {
