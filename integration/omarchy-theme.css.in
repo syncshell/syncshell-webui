@@ -1,5 +1,6 @@
 @layer theme {
 :root {
+  color-scheme: {{mode}};
   --color-page: {{background}};
   --color-surface: {{surface}};
   --color-surface-muted: {{surface_dark}};
@@ -13,6 +14,7 @@
   --color-warning: {{yellow}};
   --color-danger: {{red}};
   --color-focus: {{cyan}};
+  --color-semantic-text: {{background}};
 }
 
 body {
@@ -137,7 +139,6 @@ li.hidden-xs:hover,
   background-color: {{accent}};
 }
 
-.btn-success,
 .progress-bar-success {
   background-color: {{green}};
 }
@@ -147,14 +148,11 @@ li.hidden-xs:hover,
   background-color: {{magenta}};
 }
 
-.btn-warning,
 .progress-bar-warning {
   background-color: {{yellow}};
 }
 
-.btn-danger,
-.progress-bar-danger,
-.alert-danger {
+.progress-bar-danger {
   background-color: {{red}};
 }
 
@@ -163,10 +161,40 @@ li.hidden-xs:hover,
   background-color: {{cyan}};
 }
 
+.btn-success,
+.alert-success,
+.panel-success > .panel-heading {
+  --semantic-fill: {{green}};
+}
+
+.btn-warning,
 .alert-warning,
 .panel-warning > .panel-heading {
-  color: {{background}};
-  background-color: {{yellow}};
+  --semantic-fill: {{yellow}};
+}
+
+.btn-danger,
+.alert-danger,
+.panel-danger > .panel-heading {
+  --semantic-fill: {{red}};
+}
+
+:is(.btn-success, .btn-warning, .btn-danger,
+    .alert-success, .alert-warning, .alert-danger,
+    .panel-success > .panel-heading, .panel-warning > .panel-heading,
+    .panel-danger > .panel-heading) {
+  color: var(--color-semantic-text);
+  background-color: var(--semantic-fill);
+  border-color: var(--semantic-fill);
+}
+
+:is(.btn-success, .btn-warning, .btn-danger):is(:hover, :focus, .focus) {
+  background-color: color-mix(in srgb, var(--semantic-fill) 90%, var(--color-page));
+}
+
+:is(.btn-success, .btn-warning, .btn-danger):is(:active, .active),
+:is(.btn-success, .btn-warning, .btn-danger):is(:active, .active):is(:hover, :focus, .focus) {
+  background-color: color-mix(in srgb, var(--semantic-fill) 80%, var(--color-page));
 }
 
 .text-success {
@@ -190,7 +218,9 @@ li.hidden-xs:hover,
   fill: {{foreground}};
 }
 
+.panel-success .identicon rect,
 .panel-warning .identicon rect,
+.panel-danger .identicon rect,
 .progress .frontal {
   fill: {{background}};
   color: {{background}};

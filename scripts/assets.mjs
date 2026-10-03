@@ -11,10 +11,12 @@ await cp(
 await cp(resolve(root, 'licenses'), resolve(output, 'licenses'), {
   recursive: true,
 });
+// Own the layer here so hosts can import either mode without cascade knowledge.
 for (const theme of ['dark', 'light']) {
-  await cp(
-    resolve(root, 'themes', `${theme}.css`),
+  const css = await readFile(resolve(root, 'themes', `${theme}.css`), 'utf8');
+  await writeFile(
     resolve(output, 'assets/css', `syncshell-${theme}.css`),
+    `@layer theme {\n${css}\n}\n`,
   );
 }
 const cssPath = resolve(output, 'assets/css/theme.css');
