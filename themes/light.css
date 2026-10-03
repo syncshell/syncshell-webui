@@ -21,6 +21,39 @@
   --color-warning: #8a6d3b;
   --color-danger: #a94442;
   --color-focus: #337ab7;
+  --color-semantic-text: #000;
+  --color-semantic-danger: #d62c1a;
+}
+
+.alert-success,
+.alert-warning,
+.alert-danger,
+.btn-success,
+.btn-warning {
+  color: var(--color-semantic-text);
+}
+
+:is(.alert-success, .alert-warning, .alert-danger) :is(a:not(.btn), .btn-link) {
+  color: inherit;
+}
+
+:is(.alert-success, .alert-warning, .alert-danger) a:not(.btn) {
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+:is(.alert-success, .alert-warning, .alert-danger)
+  :is(a:not(.btn), .btn-link):is(:focus, .focus) {
+  outline: 2px solid currentColor;
+  outline-offset: 2px;
+}
+
+.btn-danger {
+  background-color: var(--color-semantic-danger);
+}
+
+.btn-danger:is(:active, .active):is(:hover, :focus, .focus) {
+  background-color: #b62516;
 }
 
 .panel-progress {

@@ -23,6 +23,10 @@ Modified by: fti7
   --color-warning: #f1c40f;
   --color-danger: #e74c3c;
   --color-focus: #3fa9f0;
+  --color-semantic-text: #fff;
+  --color-semantic-success: #198754;
+  --color-semantic-warning: #806700;
+  --color-semantic-danger: #b62516;
 }
 
 body {
@@ -191,24 +195,61 @@ li.hidden-xs:hover {
   background-color: var(--color-accent);
 }
 
-.btn-warning {
-  background-color: #c29d0b;
+.btn-success,
+.btn-warning,
+.btn-danger,
+.alert-success,
+.alert-warning,
+.alert-danger {
+  color: var(--color-semantic-text);
+}
+
+:is(.alert-success, .alert-warning, .alert-danger) :is(a:not(.btn), .btn-link) {
+  color: inherit;
+}
+
+:is(.alert-success, .alert-warning, .alert-danger) a:not(.btn) {
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+:is(.alert-success, .alert-warning, .alert-danger)
+  :is(a:not(.btn), .btn-link):is(:focus, .focus) {
+  outline: 2px solid currentColor;
+  outline-offset: 2px;
+}
+
+.btn-success,
+.alert-success {
+  background-color: var(--color-semantic-success);
+}
+
+.btn-success:hover,
+.btn-success:focus,
+.btn-success.focus {
+  background-color: #146c43;
+}
+
+.btn-warning,
+.alert-warning {
+  background-color: var(--color-semantic-warning);
 }
 
 .btn-warning:hover,
 .btn-warning:focus,
 .btn-warning.focus {
-  background-color: var(--color-warning);
+  background-color: #6c5700;
 }
 
-.btn-danger {
-  background-color: #d62c1a;
+.btn-danger,
+.alert-danger {
+  background-color: var(--color-semantic-danger);
 }
 
 .btn-danger:hover,
 .btn-danger:focus,
 .btn-danger.focus {
-  background-color: var(--color-danger);
+  background-color: #951e12;
 }
 
 /* modal dialogs */
@@ -222,15 +263,6 @@ li.hidden-xs:hover {
 
 .alert-info {
   color: #222;
-}
-
-.alert-warning {
-  color: #222;
-}
-
-.alert-danger {
-  color: #222;
-  background-color: #d62c1a;
 }
 
 .modal-content {
