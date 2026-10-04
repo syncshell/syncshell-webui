@@ -68,6 +68,25 @@ const palettes = {
     magenta: '#d699b6',
     orange: '#e09d7f',
   },
+  gruvbox: {
+    mode: 'dark',
+    background: '#282828',
+    foreground: '#d4be98',
+    surface: '#3c3836',
+    surface_dark: '#161616',
+    foreground_dark: '#7c6f64',
+    foreground_light: '#bdae93',
+    accent: '#7daea3',
+    muted: '#665c54',
+    selection: '#504945',
+    green: '#a9b665',
+    yellow: '#d8a657',
+    red: '#ea6962',
+    cyan: '#89b482',
+    blue: '#7daea3',
+    magenta: '#d3869b',
+    orange: '#e1875c',
+  },
   hackerman: {
     mode: 'dark',
     background: '#0b0c16',
@@ -243,6 +262,7 @@ const palettes = {
 const rosePineText = 'color(srgb 0.102353 0.0964706 0.142353)';
 const semanticText = {
   ethereal: { danger: '#ffcead' },
+  gruvbox: { danger: '#d4be98' },
   solitude: { danger: '#d9dbdc' },
   ristretto: { danger: '#181414' },
   nord: { danger: '#d8dee9' },
@@ -255,6 +275,7 @@ const semanticFills = {
     danger: 'color(srgb 0.77451 0.530392 0.591176)',
   },
   ethereal: { danger: 'color(srgb 0.567059 0.231373 0.258824)' },
+  gruvbox: { danger: 'color(srgb 0.385098 0.233333 0.225098)' },
   nord: { danger: 'color(srgb 0.521569 0.309804 0.349804)' },
   'matte-black': {
     warning: 'color(srgb 0.66 0.105882 0.105882)',
