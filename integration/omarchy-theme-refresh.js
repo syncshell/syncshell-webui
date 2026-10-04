@@ -17,13 +17,28 @@
     }, 0);
   }
 
-  function semanticPair(fill, colors, pageLabels) {
+  function semanticPair(fill, colors, palette) {
+    // Everforest keeps page labels readable by lightening danger interactions.
+    var pageLabels = palette === 'everforest' && fill.name === 'danger';
     var mix = colors[pageLabels ? 1 : 0];
     var foregrounds = pageLabels ? colors.slice(0, 1) : colors;
-    // Keep native fills where readable with the selected interaction direction.
-    for (var step = 10; step >= 0; step--) {
+    var percentages = [100, 90, 80, 70, 60, 50, 40, 30, 20, 10, 0];
+    if (palette === 'rose-pine') {
+      // The approved 75/25 fills need deeper mauve, not paler native fills.
+      percentages = [75];
+      foregrounds = [
+        {
+          css: 'color-mix(in srgb, ' + colors[1].css + ' 30%, black)',
+          rgb: colors[1].rgb.map(function (value) {
+            return value * 0.3;
+          }),
+        },
+      ];
+    }
+    for (var index = 0; index < percentages.length; index++) {
+      var percentage = percentages[index];
       var backgrounds = [1, 0.9, 0.8].map(function (state) {
-        var weight = (state * step) / 10;
+        var weight = (state * percentage) / 100;
         return luminance(
           fill.rgb.map(function (value, channel) {
             return value * weight + mix.rgb[channel] * (1 - weight);
@@ -45,12 +60,12 @@
           text: text.css,
           mix: mix.css,
           fill:
-            step === 10
+            percentage === 100
               ? fill.css
               : 'color-mix(in srgb, ' +
                 fill.css +
                 ' ' +
-                step * 10 +
+                percentage +
                 '%, ' +
                 mix.css +
                 ')',
@@ -88,12 +103,7 @@
     });
     var palette = style.getPropertyValue('--omarchy-palette').trim();
     colors.slice(-3).forEach(function (fill) {
-      // Everforest's approved danger labels match the page, even when pressed.
-      var pair = semanticPair(
-        fill,
-        colors,
-        palette === 'everforest' && fill.name === 'danger',
-      );
+      var pair = semanticPair(fill, colors, palette);
       root.style.setProperty('--color-' + fill.name + '-text', pair.text);
       root.style.setProperty('--color-' + fill.name + '-fill', pair.fill);
       root.style.setProperty('--color-' + fill.name + '-mix', pair.mix);

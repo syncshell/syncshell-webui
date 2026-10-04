@@ -163,6 +163,25 @@ const palettes = {
     magenta: '#a8a9eb',
     orange: '#fb9a77',
   },
+  'rose-pine': {
+    mode: 'light',
+    background: '#faf4ed',
+    foreground: '#575279',
+    surface: '#f2e9e1',
+    surface_dark: '#e1dbd5',
+    foreground_dark: '#9893a5',
+    foreground_light: '#6e6a86',
+    accent: '#56949f',
+    muted: '#cecacd',
+    selection: '#dfdad9',
+    green: '#286983',
+    yellow: '#ea9d34',
+    red: '#b4637a',
+    cyan: '#d7827e',
+    blue: '#56949f',
+    magenta: '#907aa9',
+    orange: '#cf8057',
+  },
   'tokyo-night': {
     mode: 'dark',
     background: '#1a1b26',
@@ -221,6 +240,7 @@ const palettes = {
     orange: '#4a4a4a',
   },
 };
+const rosePineText = 'color(srgb 0.102353 0.0964706 0.142353)';
 const semanticText = {
   ethereal: { danger: '#ffcead' },
   solitude: { danger: '#d9dbdc' },
@@ -229,6 +249,11 @@ const semanticText = {
   'matte-black': { warning: '#ffc107', danger: '#ffc107' },
 };
 const semanticFills = {
+  'rose-pine': {
+    success: 'color(srgb 0.362745 0.548039 0.617647)',
+    warning: 'color(srgb 0.933333 0.70098 0.385294)',
+    danger: 'color(srgb 0.77451 0.530392 0.591176)',
+  },
   ethereal: { danger: 'color(srgb 0.567059 0.231373 0.258824)' },
   nord: { danger: 'color(srgb 0.521569 0.309804 0.349804)' },
   'matte-black': {
@@ -277,7 +302,8 @@ for (const [name, palette, scheme] of Object.entries(palettes).flatMap(
     syncthing.configure();
     let current = { ...palette, palette: name };
     let version = '1';
-    const recover = name === 'everforest' && scheme === 'dark';
+    const recover =
+      ['everforest', 'rose-pine'].includes(name) && scheme === 'dark';
     if (recover)
       current = Object.fromEntries(
         Object.entries(current).map(([key, value]) => [
@@ -330,7 +356,9 @@ for (const [name, palette, scheme] of Object.entries(palettes).flatMap(
       );
       await expect(page.locator('html')).toHaveCSS(
         '--color-danger-text',
-        palette.background,
+        name === 'rose-pine'
+          ? 'color-mix(in srgb, #575279 30%, black)'
+          : palette.background,
       );
     }
     await page.evaluate(() => {
@@ -352,7 +380,10 @@ for (const [name, palette, scheme] of Object.entries(palettes).flatMap(
     for (const tone of ['success', 'warning', 'danger']) {
       const card = page.locator(`#omarchy-contrast [data-tone=${tone}]`);
       const button = card.locator(':scope > button');
-      const foreground = rgb(semanticText[name]?.[tone] ?? palette.background);
+      const foreground =
+        name === 'rose-pine'
+          ? rosePineText
+          : rgb(semanticText[name]?.[tone] ?? palette.background);
       const fills = [];
       for (const state of ['normal', 'hover', 'focus', 'active']) {
         await button.evaluate((el) => el.blur());
@@ -442,7 +473,7 @@ for (const [name, palette, scheme] of Object.entries(palettes).flatMap(
       '--color-danger-mix',
       current.background,
     );
-    if (name === 'everforest') {
+    if (['everforest', 'rose-pine'].includes(name)) {
       current = { ...palette, palette: name };
       version = '4';
       await page.evaluate(() =>
@@ -450,11 +481,15 @@ for (const [name, palette, scheme] of Object.entries(palettes).flatMap(
       );
       await expect(page.locator('#omarchy-contrast .alert-danger')).toHaveCSS(
         'color',
-        rgb(palette.background),
+        name === 'rose-pine' ? rosePineText : rgb(palette.background),
+      );
+      await expect(page.locator('#omarchy-contrast .alert-danger')).toHaveCSS(
+        'background-color',
+        semanticFills[name]?.danger ?? rgb(palette.red),
       );
       await expect(page.locator('html')).toHaveCSS(
         '--color-danger-mix',
-        palette.foreground,
+        name === 'rose-pine' ? palette.background : palette.foreground,
       );
     }
   });
