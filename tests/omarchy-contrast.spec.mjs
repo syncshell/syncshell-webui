@@ -30,6 +30,25 @@ const refresh = await readFile(
 );
 const palettes = {
   catppuccin,
+  'catppuccin-latte': {
+    mode: 'light',
+    background: '#eff1f5',
+    foreground: '#4c4f69',
+    surface: '#dce0e8',
+    surface_dark: '#d7d8dc',
+    foreground_dark: '#9ca0b0',
+    foreground_light: '#5c5f77',
+    accent: '#1e66f5',
+    muted: '#acb0be',
+    selection: '#ccd0da',
+    green: '#40a02b',
+    yellow: '#df8e1d',
+    red: '#d20f39',
+    cyan: '#179299',
+    blue: '#1e66f5',
+    magenta: '#ea76cb',
+    orange: '#d84e2b',
+  },
   ethereal: {
     mode: 'dark',
     background: '#060b1e',
@@ -278,7 +297,10 @@ const palettes = {
     orange: '#4a4a4a',
   },
 };
-const rosePineText = 'color(srgb 0.102353 0.0964706 0.142353)';
+const derivedText = {
+  'rose-pine': 'color(srgb 0.102353 0.0964706 0.142353)',
+  'catppuccin-latte': 'color(srgb 0.0596078 0.0619608 0.0823529)',
+};
 const semanticText = {
   ethereal: { danger: '#ffcead' },
   gruvbox: { danger: '#d4be98' },
@@ -293,6 +315,11 @@ const semanticText = {
   'matte-black': { warning: '#ffc107', danger: '#ffc107' },
 };
 const semanticFills = {
+  'catppuccin-latte': {
+    success: 'color(srgb 0.542647 0.762451 0.505294)',
+    warning: 'color(srgb 0.898039 0.702451 0.431373)',
+    danger: 'color(srgb 0.883235 0.524118 0.610588)',
+  },
   'rose-pine': {
     success: 'color(srgb 0.362745 0.548039 0.617647)',
     warning: 'color(srgb 0.933333 0.70098 0.385294)',
@@ -349,7 +376,7 @@ for (const [name, palette, scheme] of Object.entries(palettes).flatMap(
     let current = { ...palette, palette: name };
     let version = '1';
     const recover =
-      ['everforest', 'rose-pine'].includes(name) && scheme === 'dark';
+      (name === 'everforest' || name in derivedText) && scheme === 'dark';
     if (recover)
       current = Object.fromEntries(
         Object.entries(current).map(([key, value]) => [
@@ -402,8 +429,8 @@ for (const [name, palette, scheme] of Object.entries(palettes).flatMap(
       );
       await expect(page.locator('html')).toHaveCSS(
         '--color-danger-text',
-        name === 'rose-pine'
-          ? 'color-mix(in srgb, #575279 30%, black)'
+        derivedText[name]
+          ? `color-mix(in srgb, ${palette.foreground} ${name === 'rose-pine' ? 30 : 20}%, black)`
           : palette.background,
       );
     }
@@ -427,9 +454,8 @@ for (const [name, palette, scheme] of Object.entries(palettes).flatMap(
       const card = page.locator(`#omarchy-contrast [data-tone=${tone}]`);
       const button = card.locator(':scope > button');
       const foreground =
-        name === 'rose-pine'
-          ? rosePineText
-          : rgb(semanticText[name]?.[tone] ?? palette.background);
+        derivedText[name] ??
+        rgb(semanticText[name]?.[tone] ?? palette.background);
       const fills = [];
       for (const state of ['normal', 'hover', 'focus', 'active']) {
         await button.evaluate((el) => el.blur());
@@ -519,7 +545,7 @@ for (const [name, palette, scheme] of Object.entries(palettes).flatMap(
       '--color-danger-mix',
       current.background,
     );
-    if (['everforest', 'rose-pine'].includes(name)) {
+    if (name === 'everforest' || name in derivedText) {
       current = { ...palette, palette: name };
       version = '4';
       await page.evaluate(() =>
@@ -527,7 +553,7 @@ for (const [name, palette, scheme] of Object.entries(palettes).flatMap(
       );
       await expect(page.locator('#omarchy-contrast .alert-danger')).toHaveCSS(
         'color',
-        name === 'rose-pine' ? rosePineText : rgb(palette.background),
+        derivedText[name] ?? rgb(palette.background),
       );
       await expect(page.locator('#omarchy-contrast .alert-danger')).toHaveCSS(
         'background-color',
@@ -535,7 +561,7 @@ for (const [name, palette, scheme] of Object.entries(palettes).flatMap(
       );
       await expect(page.locator('html')).toHaveCSS(
         '--color-danger-mix',
-        name === 'rose-pine' ? palette.background : palette.foreground,
+        name === 'everforest' ? palette.foreground : palette.background,
       );
     }
   });

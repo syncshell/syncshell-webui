@@ -23,14 +23,23 @@
     var mix = colors[pageLabels ? 1 : 0];
     var foregrounds = pageLabels ? colors.slice(0, 1) : colors;
     var percentages = [100, 90, 80, 70, 60, 50, 40, 30, 20, 10, 0];
-    if (palette === 'rose-pine') {
-      // The approved 75/25 fills need deeper mauve, not paler native fills.
-      percentages = [75];
+    var latte = palette === 'catppuccin-latte';
+    if (palette === 'rose-pine' || latte) {
+      // Approved stronger fills need deeper text, not extra page mixing.
+      percentages = [
+        latte ? { success: 57.5, warning: 62.5, danger: 47.5 }[fill.name] : 75,
+      ];
+      var textPercentage = latte ? 20 : 30;
       foregrounds = [
         {
-          css: 'color-mix(in srgb, ' + colors[1].css + ' 30%, black)',
+          css:
+            'color-mix(in srgb, ' +
+            colors[1].css +
+            ' ' +
+            textPercentage +
+            '%, black)',
           rgb: colors[1].rgb.map(function (value) {
-            return value * 0.3;
+            return value * (textPercentage / 100);
           }),
         },
       ];
