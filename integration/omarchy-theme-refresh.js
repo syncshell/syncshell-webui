@@ -17,18 +17,20 @@
     }, 0);
   }
 
-  function semanticPair(fill, colors) {
-    // Keep readable native fills; otherwise shade toward the native page.
+  function semanticPair(fill, colors, pageLabels) {
+    var mix = colors[pageLabels ? 1 : 0];
+    var foregrounds = pageLabels ? colors.slice(0, 1) : colors;
+    // Keep native fills where readable with the selected interaction direction.
     for (var step = 10; step >= 0; step--) {
       var backgrounds = [1, 0.9, 0.8].map(function (state) {
         var weight = (state * step) / 10;
         return luminance(
           fill.rgb.map(function (value, channel) {
-            return value * weight + colors[0].rgb[channel] * (1 - weight);
+            return value * weight + mix.rgb[channel] * (1 - weight);
           }),
         );
       });
-      var text = colors.find(function (color) {
+      var text = foregrounds.find(function (color) {
         var foreground = luminance(color.rgb);
         return backgrounds.every(function (background) {
           return (
@@ -41,6 +43,7 @@
       if (text)
         return {
           text: text.css,
+          mix: mix.css,
           fill:
             step === 10
               ? fill.css
@@ -49,7 +52,7 @@
                 ' ' +
                 step * 10 +
                 '%, ' +
-                colors[0].css +
+                mix.css +
                 ')',
         };
     }
@@ -83,10 +86,17 @@
           }),
       };
     });
+    var palette = style.getPropertyValue('--omarchy-palette').trim();
     colors.slice(-3).forEach(function (fill) {
-      var pair = semanticPair(fill, colors);
+      // Everforest's approved danger labels match the page, even when pressed.
+      var pair = semanticPair(
+        fill,
+        colors,
+        palette === 'everforest' && fill.name === 'danger',
+      );
       root.style.setProperty('--color-' + fill.name + '-text', pair.text);
       root.style.setProperty('--color-' + fill.name + '-fill', pair.fill);
+      root.style.setProperty('--color-' + fill.name + '-mix', pair.mix);
     });
   }
 

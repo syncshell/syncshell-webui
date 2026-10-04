@@ -49,6 +49,25 @@ const palettes = {
     magenta: '#c89dc1',
     orange: '#eb8b54',
   },
+  everforest: {
+    mode: 'dark',
+    background: '#2d353b',
+    foreground: '#d3c6aa',
+    surface: '#343f44',
+    surface_dark: '#181d20',
+    foreground_dark: '#4f585e',
+    foreground_light: '#9da9a0',
+    accent: '#7fbbb3',
+    muted: '#475258',
+    selection: '#3d484d',
+    green: '#a7c080',
+    yellow: '#dbbc7f',
+    red: '#e67e80',
+    cyan: '#83c092',
+    blue: '#7fbbb3',
+    magenta: '#d699b6',
+    orange: '#e09d7f',
+  },
   hackerman: {
     mode: 'dark',
     background: '#0b0c16',
@@ -237,8 +256,16 @@ for (const [name, palette, scheme] of Object.entries(palettes).flatMap(
     syncthing,
   }) => {
     syncthing.configure();
-    let current = palette;
+    let current = { ...palette, palette: name };
     let version = '1';
+    const recover = name === 'everforest' && scheme === 'dark';
+    if (recover)
+      current = Object.fromEntries(
+        Object.entries(current).map(([key, value]) => [
+          key,
+          value.startsWith('#') ? '#808080' : value,
+        ]),
+      );
     await page.route('**/theme-version.txt', (route) =>
       route.fulfill({ body: version }),
     );
@@ -261,6 +288,7 @@ for (const [name, palette, scheme] of Object.entries(palettes).flatMap(
     await page.goto('/');
     await page.getByRole('button', { name: /Folder under test/ }).waitFor();
     await expect(page.locator('html')).toHaveCSS('color-scheme', palette.mode);
+    const initialError = recover ? page.waitForEvent('pageerror') : null;
     await page.evaluate(
       () =>
         new Promise((resolve, reject) => {
@@ -272,6 +300,20 @@ for (const [name, palette, scheme] of Object.entries(palettes).flatMap(
           document.head.append(script);
         }),
     );
+    if (recover) {
+      expect((await initialError).message).toBe(
+        'No readable Omarchy foreground for success',
+      );
+      current = { ...palette, palette: name };
+      version = '2';
+      await page.evaluate(() =>
+        document.dispatchEvent(new Event('visibilitychange')),
+      );
+      await expect(page.locator('html')).toHaveCSS(
+        '--color-danger-text',
+        palette.background,
+      );
+    }
     await page.evaluate(() => {
       const gallery = document.createElement('section');
       gallery.id = 'omarchy-contrast';
@@ -322,6 +364,13 @@ for (const [name, palette, scheme] of Object.entries(palettes).flatMap(
                 ],
               ),
           );
+        if (name === 'everforest' && tone === 'danger' && state !== 'normal')
+          await expect(button).toHaveCSS(
+            'background-color',
+            state === 'active'
+              ? 'color(srgb 0.887059 0.550588 0.534902)'
+              : 'color(srgb 0.89451 0.522353 0.518431)',
+          );
         expect(await contrast(button)).toBeGreaterThanOrEqual(4.5);
         fills.push(
           await button.evaluate((el) => getComputedStyle(el).backgroundColor),
@@ -355,19 +404,39 @@ for (const [name, palette, scheme] of Object.entries(palettes).flatMap(
       });
       await expect(button).toHaveCSS('opacity', '0.65');
     }
-    current = palette.mode === 'light' ? palettes.solitude : palettes.white;
-    version = '2';
+    const next = palette.mode === 'light' ? 'solitude' : 'white';
+    current = { ...palettes[next], palette: next };
+    version = '3';
     await page.evaluate(() =>
       document.dispatchEvent(new Event('visibilitychange')),
     );
     await expect(page.locator('html')).toHaveCSS('color-scheme', current.mode);
     await expect(page.locator('#omarchy-contrast .alert-danger')).toHaveCSS(
       'color',
-      rgb(current === palettes.solitude ? current.yellow : current.background),
+      rgb(semanticText[next]?.danger ?? current.background),
     );
     await expect(page.locator('#omarchy-contrast .alert-danger')).toHaveCSS(
       'background-color',
       rgb(current.red),
     );
+    await expect(page.locator('html')).toHaveCSS(
+      '--color-danger-mix',
+      current.background,
+    );
+    if (name === 'everforest') {
+      current = { ...palette, palette: name };
+      version = '4';
+      await page.evaluate(() =>
+        document.dispatchEvent(new Event('visibilitychange')),
+      );
+      await expect(page.locator('#omarchy-contrast .alert-danger')).toHaveCSS(
+        'color',
+        rgb(palette.background),
+      );
+      await expect(page.locator('html')).toHaveCSS(
+        '--color-danger-mix',
+        palette.foreground,
+      );
+    }
   });
 }
