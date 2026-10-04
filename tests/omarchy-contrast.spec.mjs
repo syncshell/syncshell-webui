@@ -106,6 +106,25 @@ const palettes = {
     magenta: '#ce5d97',
     orange: '#d0772b',
   },
+  kanagawa: {
+    mode: 'dark',
+    background: '#1f1f28',
+    foreground: '#dcd7ba',
+    surface: '#223249',
+    surface_dark: '#111116',
+    foreground_dark: '#727169',
+    foreground_light: '#c8c093',
+    accent: '#dcd7ba',
+    muted: '#54546d',
+    selection: '#363646',
+    green: '#76946a',
+    yellow: '#c0a36e',
+    red: '#c34043',
+    cyan: '#6a9589',
+    blue: '#7e9cd8',
+    magenta: '#957fb8',
+    orange: '#c17158',
+  },
   gruvbox: {
     mode: 'dark',
     background: '#282828',
@@ -304,6 +323,7 @@ const derivedText = {
 const semanticText = {
   ethereal: { danger: '#ffcead' },
   gruvbox: { danger: '#d4be98' },
+  kanagawa: { success: '#dcd7ba', danger: '#dcd7ba' },
   'flexoki-light': {
     success: '#100f0f',
     warning: '#100f0f',
@@ -327,6 +347,10 @@ const semanticFills = {
   },
   ethereal: { danger: 'color(srgb 0.567059 0.231373 0.258824)' },
   gruvbox: { danger: 'color(srgb 0.385098 0.233333 0.225098)' },
+  kanagawa: {
+    success: 'color(srgb 0.292157 0.35098 0.286275)',
+    danger: 'color(srgb 0.636078 0.225098 0.241569)',
+  },
   'flexoki-light': { danger: 'color(srgb 0.837647 0.370588 0.323529)' },
   nord: { danger: 'color(srgb 0.521569 0.309804 0.349804)' },
   'matte-black': {
