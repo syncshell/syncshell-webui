@@ -167,6 +167,7 @@ li.hidden-xs:hover,
 .panel-success > .panel-heading {
   --semantic-fill: var(--color-success-fill);
   --semantic-mix: var(--color-success-mix);
+  --semantic-pressed: var(--color-success-pressed);
   --color-semantic-text: var(--color-success-text);
 }
 
@@ -175,6 +176,7 @@ li.hidden-xs:hover,
 .panel-warning > .panel-heading {
   --semantic-fill: var(--color-warning-fill);
   --semantic-mix: var(--color-warning-mix);
+  --semantic-pressed: var(--color-warning-pressed);
   --color-semantic-text: var(--color-warning-text);
 }
 
@@ -183,6 +185,7 @@ li.hidden-xs:hover,
 .panel-danger > .panel-heading {
   --semantic-fill: var(--color-danger-fill);
   --semantic-mix: var(--color-danger-mix);
+  --semantic-pressed: var(--color-danger-pressed);
   --color-semantic-text: var(--color-danger-text);
 }
 
@@ -201,7 +204,7 @@ li.hidden-xs:hover,
 
 :is(.btn-success, .btn-warning, .btn-danger):is(:active, .active),
 :is(.btn-success, .btn-warning, .btn-danger):is(:active, .active):is(:hover, :focus, .focus) {
-  background-color: color-mix(in srgb, var(--semantic-fill) 80%, var(--semantic-mix));
+  background-color: color-mix(in srgb, var(--semantic-fill) var(--semantic-pressed), var(--semantic-mix));
 }
 
 .text-success {

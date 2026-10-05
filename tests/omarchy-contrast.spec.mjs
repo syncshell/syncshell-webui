@@ -106,6 +106,25 @@ const palettes = {
     magenta: '#ce5d97',
     orange: '#d0772b',
   },
+  'retro-82': {
+    mode: 'dark',
+    background: '#05182e',
+    foreground: '#f6dcac',
+    surface: '#0a2540',
+    surface_dark: '#020c17',
+    foreground_dark: '#3f8f8a',
+    foreground_light: '#a7c9c6',
+    accent: '#faa968',
+    muted: '#2a6b78',
+    selection: '#134e5a',
+    green: '#028391',
+    yellow: '#e97b3c',
+    red: '#f85525',
+    cyan: '#8cbfb8',
+    blue: '#3f8f8a',
+    magenta: '#3f8f8a',
+    orange: '#faa968',
+  },
   lumon: {
     mode: 'dark',
     background: '#16242d',
@@ -384,6 +403,7 @@ const semanticText = {
   'last-horizon': { warning: '#fafcfb' },
   lupine: { warning: '#212121', danger: '#212121' },
   lumon: { warning: '#0b1216', danger: '#d6e2ee' },
+  'retro-82': { success: '#f6dcac', danger: '#f6dcac' },
   'flexoki-light': {
     success: '#100f0f',
     warning: '#100f0f',
@@ -395,6 +415,10 @@ const semanticText = {
   'matte-black': { warning: '#ffc107', danger: '#ffc107' },
 };
 const semanticFills = {
+  'retro-82': {
+    success: 'color(srgb 0.0113725 0.387843 0.452157)',
+    danger: 'color(srgb 0.591373 0.237647 0.159216)',
+  },
   lumon: {
     success: 'rgb(180, 228, 246)',
     danger: 'color(srgb 0.215686 0.371765 0.484706)',
@@ -468,7 +492,7 @@ for (const [name, palette, scheme] of Object.entries(palettes).flatMap(
     let current = { ...palette, palette: name };
     let version = '1';
     const roundTrip =
-      ['everforest', 'lumon'].includes(name) || name in derivedText;
+      ['everforest', 'lumon', 'retro-82'].includes(name) || name in derivedText;
     const recover = roundTrip && scheme === 'dark';
     if (recover)
       current = Object.fromEntries(
@@ -590,6 +614,11 @@ for (const [name, palette, scheme] of Object.entries(palettes).flatMap(
               ? 'color(srgb 0.887059 0.550588 0.534902)'
               : 'color(srgb 0.89451 0.522353 0.518431)',
           );
+        if (name === 'retro-82' && tone === 'warning' && state === 'active')
+          await expect(button).toHaveCSS(
+            'background-color',
+            'color(srgb 0.779608 0.424118 0.227059)',
+          );
         expect(await contrast(button)).toBeGreaterThanOrEqual(4.5);
         fills.push(
           await button.evaluate((el) => getComputedStyle(el).backgroundColor),
@@ -597,6 +626,14 @@ for (const [name, palette, scheme] of Object.entries(palettes).flatMap(
         if (state === 'active') await page.mouse.up();
       }
       expect(new Set(fills).size).toBe(3);
+      if (name === 'retro-82' && tone === 'warning') {
+        await button.evaluate((el) => el.classList.add('active'));
+        await expect(button).toHaveCSS(
+          'background-color',
+          'color(srgb 0.779608 0.424118 0.227059)',
+        );
+        await button.evaluate((el) => el.classList.remove('active'));
+      }
       for (const selector of ['.alert', '.panel-heading']) {
         const element = card.locator(selector);
         await expect(element).toHaveCSS('color', foreground);
@@ -646,13 +683,17 @@ for (const [name, palette, scheme] of Object.entries(palettes).flatMap(
       'background-color',
       rgb(current.green),
     );
+    await expect(page.locator('html')).toHaveCSS(
+      '--color-warning-pressed',
+      '80%',
+    );
     if (roundTrip) {
       current = { ...palette, palette: name };
       version = '4';
       await page.evaluate(() =>
         document.dispatchEvent(new Event('visibilitychange')),
       );
-      for (const tone of ['success', 'danger']) {
+      for (const tone of ['success', 'warning', 'danger']) {
         const alert = page.locator(`#omarchy-contrast .alert-${tone}`);
         await expect(alert).toHaveCSS(
           'color',
@@ -662,7 +703,11 @@ for (const [name, palette, scheme] of Object.entries(palettes).flatMap(
         await expect(alert).toHaveCSS(
           'background-color',
           semanticFills[name]?.[tone] ??
-            rgb(palette[tone === 'success' ? 'green' : 'red']),
+            rgb(
+              palette[
+                { success: 'green', warning: 'yellow', danger: 'red' }[tone]
+              ],
+            ),
         );
       }
       await expect(page.locator('html')).toHaveCSS(
@@ -672,6 +717,10 @@ for (const [name, palette, scheme] of Object.entries(palettes).flatMap(
       await expect(page.locator('html')).toHaveCSS(
         '--color-danger-mix',
         name === 'everforest' ? palette.foreground : palette.background,
+      );
+      await expect(page.locator('html')).toHaveCSS(
+        '--color-warning-pressed',
+        name === 'retro-82' ? '85%' : '80%',
       );
     }
   });

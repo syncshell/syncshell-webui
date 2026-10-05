@@ -22,6 +22,9 @@
     var pageLabels = palette === 'everforest' && fill.name === 'danger';
     var mix = colors[pageLabels ? 1 : 0];
     var foregrounds = pageLabels ? colors.slice(0, 1) : colors;
+    // Gentler pressed darkening preserves Retro 82's page-blue warning labels.
+    var pressed =
+      palette === 'retro-82' && fill.name === 'warning' ? 0.85 : 0.8;
     var percentages = [100, 90, 80, 70, 60, 50, 40, 30, 20, 10, 0];
     var latte = palette === 'catppuccin-latte';
     if (palette === 'rose-pine' || latte) {
@@ -46,7 +49,7 @@
     }
     for (var index = 0; index < percentages.length; index++) {
       var percentage = percentages[index];
-      var backgrounds = [1, 0.9, 0.8].map(function (state) {
+      var backgrounds = [1, 0.9, pressed].map(function (state) {
         var weight = (state * percentage) / 100;
         return luminance(
           fill.rgb.map(function (value, channel) {
@@ -68,6 +71,7 @@
         return {
           text: text.css,
           mix: mix.css,
+          pressed: pressed * 100 + '%',
           fill:
             percentage === 100
               ? fill.css
@@ -118,6 +122,7 @@
       root.style.setProperty('--color-' + fill.name + '-text', pair.text);
       root.style.setProperty('--color-' + fill.name + '-fill', pair.fill);
       root.style.setProperty('--color-' + fill.name + '-mix', pair.mix);
+      root.style.setProperty('--color-' + fill.name + '-pressed', pair.pressed);
     });
   }
 
