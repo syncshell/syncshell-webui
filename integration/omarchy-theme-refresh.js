@@ -95,8 +95,11 @@
       'warning',
       'danger',
     ];
+    var palette = style.getPropertyValue('--omarchy-palette').trim();
     var colors = names.map(function (name) {
-      var css = style.getPropertyValue('--color-' + name).trim();
+      // Lumon's pale cyan separates filled success from its deep blue danger.
+      var source = palette === 'lumon' && name === 'success' ? 'info' : name;
+      var css = style.getPropertyValue('--color-' + source).trim();
       if (!/^#[0-9a-f]{6}$/i.test(css))
         throw new Error('Invalid Omarchy color: ' + name);
       return {
@@ -110,7 +113,6 @@
           }),
       };
     });
-    var palette = style.getPropertyValue('--omarchy-palette').trim();
     colors.slice(-3).forEach(function (fill) {
       var pair = semanticPair(fill, colors, palette);
       root.style.setProperty('--color-' + fill.name + '-text', pair.text);

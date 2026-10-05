@@ -106,6 +106,25 @@ const palettes = {
     magenta: '#ce5d97',
     orange: '#d0772b',
   },
+  lumon: {
+    mode: 'dark',
+    background: '#16242d',
+    foreground: '#d6e2ee',
+    surface: '#1b2d40',
+    surface_dark: '#0b1216',
+    foreground_dark: '#4d86b0',
+    foreground_light: '#d6e2ee',
+    accent: '#8bc9eb',
+    muted: '#304860',
+    selection: '#243d56',
+    green: '#5e95bc',
+    yellow: '#6fa4c9',
+    red: '#4d86b0',
+    cyan: '#b4e4f6',
+    blue: '#6fb8e3',
+    magenta: '#8bc9eb',
+    orange: '#8bc9eb',
+  },
   lupine: {
     mode: 'light',
     background: '#fafafa',
@@ -364,6 +383,7 @@ const semanticText = {
   kanagawa: { success: '#dcd7ba', danger: '#dcd7ba' },
   'last-horizon': { warning: '#fafcfb' },
   lupine: { warning: '#212121', danger: '#212121' },
+  lumon: { warning: '#0b1216', danger: '#d6e2ee' },
   'flexoki-light': {
     success: '#100f0f',
     warning: '#100f0f',
@@ -375,6 +395,10 @@ const semanticText = {
   'matte-black': { warning: '#ffc107', danger: '#ffc107' },
 };
 const semanticFills = {
+  lumon: {
+    success: 'rgb(180, 228, 246)',
+    danger: 'color(srgb 0.215686 0.371765 0.484706)',
+  },
   'catppuccin-latte': {
     success: 'color(srgb 0.542647 0.762451 0.505294)',
     warning: 'color(srgb 0.898039 0.702451 0.431373)',
@@ -443,8 +467,9 @@ for (const [name, palette, scheme] of Object.entries(palettes).flatMap(
     syncthing.configure();
     let current = { ...palette, palette: name };
     let version = '1';
-    const recover =
-      (name === 'everforest' || name in derivedText) && scheme === 'dark';
+    const roundTrip =
+      ['everforest', 'lumon'].includes(name) || name in derivedText;
+    const recover = roundTrip && scheme === 'dark';
     if (recover)
       current = Object.fromEntries(
         Object.entries(current).map(([key, value]) => [
@@ -499,9 +524,13 @@ for (const [name, palette, scheme] of Object.entries(palettes).flatMap(
         '--color-danger-text',
         derivedText[name]
           ? `color-mix(in srgb, ${palette.foreground} ${name === 'rose-pine' ? 30 : 20}%, black)`
-          : palette.background,
+          : (semanticText[name]?.danger ?? palette.background),
       );
     }
+    await expect(page.locator('html')).toHaveCSS(
+      '--color-success',
+      palette.green,
+    );
     await page.evaluate(() => {
       const gallery = document.createElement('section');
       gallery.id = 'omarchy-contrast';
@@ -613,19 +642,32 @@ for (const [name, palette, scheme] of Object.entries(palettes).flatMap(
       '--color-danger-mix',
       current.background,
     );
-    if (name === 'everforest' || name in derivedText) {
+    await expect(page.locator('#omarchy-contrast .alert-success')).toHaveCSS(
+      'background-color',
+      rgb(current.green),
+    );
+    if (roundTrip) {
       current = { ...palette, palette: name };
       version = '4';
       await page.evaluate(() =>
         document.dispatchEvent(new Event('visibilitychange')),
       );
-      await expect(page.locator('#omarchy-contrast .alert-danger')).toHaveCSS(
-        'color',
-        derivedText[name] ?? rgb(palette.background),
-      );
-      await expect(page.locator('#omarchy-contrast .alert-danger')).toHaveCSS(
-        'background-color',
-        semanticFills[name]?.danger ?? rgb(palette.red),
+      for (const tone of ['success', 'danger']) {
+        const alert = page.locator(`#omarchy-contrast .alert-${tone}`);
+        await expect(alert).toHaveCSS(
+          'color',
+          derivedText[name] ??
+            rgb(semanticText[name]?.[tone] ?? palette.background),
+        );
+        await expect(alert).toHaveCSS(
+          'background-color',
+          semanticFills[name]?.[tone] ??
+            rgb(palette[tone === 'success' ? 'green' : 'red']),
+        );
+      }
+      await expect(page.locator('html')).toHaveCSS(
+        '--color-success',
+        palette.green,
       );
       await expect(page.locator('html')).toHaveCSS(
         '--color-danger-mix',
