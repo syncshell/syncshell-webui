@@ -106,6 +106,25 @@ const palettes = {
     magenta: '#ce5d97',
     orange: '#d0772b',
   },
+  miasma: {
+    mode: 'dark',
+    background: '#222222',
+    foreground: '#c2c2b0',
+    surface: '#2c2c2c',
+    surface_dark: '#121212',
+    foreground_dark: '#555555',
+    foreground_light: '#8a8a7e',
+    accent: '#78824b',
+    muted: '#666666',
+    selection: '#383838',
+    green: '#5f875f',
+    yellow: '#b36d43',
+    red: '#685742',
+    cyan: '#c9a554',
+    blue: '#78824b',
+    magenta: '#bb7744',
+    orange: '#8d6242',
+  },
   'retro-82': {
     mode: 'dark',
     background: '#05182e',
@@ -404,6 +423,11 @@ const semanticText = {
   lupine: { warning: '#212121', danger: '#212121' },
   lumon: { warning: '#0b1216', danger: '#d6e2ee' },
   'retro-82': { success: '#f6dcac', danger: '#f6dcac' },
+  miasma: {
+    success: '#c2c2b0',
+    warning: '#c2c2b0',
+    danger: '#c2c2b0',
+  },
   'flexoki-light': {
     success: '#100f0f',
     warning: '#100f0f',
@@ -415,6 +439,11 @@ const semanticText = {
   'matte-black': { warning: '#ffc107', danger: '#ffc107' },
 };
 const semanticFills = {
+  miasma: {
+    success: 'color(srgb 0.252941 0.331373 0.252941)',
+    warning: 'color(srgb 0.417647 0.280392 0.198039)',
+    danger: 'color(srgb 0.352941 0.299608 0.233726)',
+  },
   'retro-82': {
     success: 'color(srgb 0.0113725 0.387843 0.452157)',
     danger: 'color(srgb 0.591373 0.237647 0.159216)',
@@ -459,15 +488,16 @@ const rgb = (hex) =>
 
 async function contrast(element) {
   return element.evaluate((el) => {
-    const canvas = document.createElement('canvas');
-    canvas.width = canvas.height = 1;
-    const context = canvas.getContext('2d', { willReadFrequently: true });
     const luminance = (color) => {
-      context.fillStyle = color;
-      context.fillRect(0, 0, 1, 1);
-      return [...context.getImageData(0, 0, 1, 1).data]
+      // These samples are opaque; an 8-bit canvas loses fractional CSS colors.
+      if (!/^(rgba?\(|color\(srgb )/.test(color))
+        throw new Error(`Unsupported computed color: ${color}`);
+      const channels = color.match(/[\d.]+/g).map(Number);
+      if (channels.length > 3 && channels[3] !== 1)
+        throw new Error(`Expected an opaque color: ${color}`);
+      return channels
         .slice(0, 3)
-        .map((v) => v / 255)
+        .map((v) => (color.startsWith('color(srgb ') ? v : v / 255))
         .map((v) => (v <= 0.04045 ? v / 12.92 : ((v + 0.055) / 1.055) ** 2.4))
         .reduce((sum, v, i) => sum + v * [0.2126, 0.7152, 0.0722][i], 0);
     };
@@ -479,6 +509,21 @@ async function contrast(element) {
     return (high + 0.05) / (low + 0.05);
   });
 }
+
+test('contrast measurements preserve fractional sRGB colors', async ({
+  page,
+}) => {
+  await page.setContent(
+    '<div style="color:#c2c2b0;background:color-mix(in srgb,#5f875f 50%,#222222)">Sample</div>',
+  );
+  const sample = page.locator('div');
+  expect(await contrast(sample)).toBeCloseTo(4.510219, 4);
+  await sample.evaluate((el) => {
+    el.style.backgroundColor = 'rgb(64, 85, 64)';
+  });
+  expect(await contrast(sample)).toBeCloseTo(4.490762, 4);
+  expect(await contrast(sample)).toBeLessThan(4.5);
+});
 
 for (const [name, palette, scheme] of Object.entries(palettes).flatMap(
   ([name, palette]) =>
