@@ -106,6 +106,26 @@ const palettes = {
     magenta: '#ce5d97',
     orange: '#d0772b',
   },
+  'osaka-jade': {
+    mode: 'dark',
+    background: '#111c18',
+    foreground: '#c1c497',
+    surface: '#23372b',
+    surface_dark: '#090f0d',
+    foreground_dark: '#81b8a8',
+    foreground_light: '#d6d5bc',
+    accent: '#509475',
+    muted: '#53685b',
+    selection: '#32473b',
+    green: '#549e6a',
+    yellow: '#459451',
+    bright_yellow: '#e5c736',
+    red: '#ff5345',
+    cyan: '#2dd5b7',
+    blue: '#509475',
+    magenta: '#d2689c',
+    orange: '#a2734b',
+  },
   miasma: {
     mode: 'dark',
     background: '#222222',
@@ -423,6 +443,11 @@ const semanticText = {
   lupine: { warning: '#212121', danger: '#212121' },
   lumon: { warning: '#0b1216', danger: '#d6e2ee' },
   'retro-82': { success: '#f6dcac', danger: '#f6dcac' },
+  'osaka-jade': {
+    success: '#c1c497',
+    warning: '#c1c497',
+    danger: '#c1c497',
+  },
   miasma: {
     success: '#c2c2b0',
     warning: '#c2c2b0',
@@ -439,6 +464,11 @@ const semanticText = {
   'matte-black': { warning: '#ffc107', danger: '#ffc107' },
 };
 const semanticFills = {
+  'osaka-jade': {
+    success: 'color(srgb 0.184902 0.339216 0.238824)',
+    warning: 'color(srgb 0.316078 0.31098 0.129412)',
+    danger: 'color(srgb 0.486667 0.206863 0.173529)',
+  },
   miasma: {
     success: 'color(srgb 0.252941 0.331373 0.252941)',
     warning: 'color(srgb 0.417647 0.280392 0.198039)',
@@ -537,7 +567,8 @@ for (const [name, palette, scheme] of Object.entries(palettes).flatMap(
     let current = { ...palette, palette: name };
     let version = '1';
     const roundTrip =
-      ['everforest', 'lumon', 'retro-82'].includes(name) || name in derivedText;
+      ['everforest', 'lumon', 'retro-82', 'osaka-jade'].includes(name) ||
+      name in derivedText;
     const recover = roundTrip && scheme === 'dark';
     if (recover)
       current = Object.fromEntries(
@@ -559,6 +590,8 @@ for (const [name, palette, scheme] of Object.entries(palettes).flatMap(
         body:
           `@import "syncshell-${current.mode}.css";\n` +
           template.replace(/{{(\w+)}}/g, (_, key) => {
+            if (key === 'bright_yellow')
+              return current.bright_yellow ?? current.yellow;
             if (!(key in current))
               throw new Error(`Unresolved palette value: ${key}`);
             return current[key];
@@ -599,6 +632,10 @@ for (const [name, palette, scheme] of Object.entries(palettes).flatMap(
     await expect(page.locator('html')).toHaveCSS(
       '--color-success',
       palette.green,
+    );
+    await expect(page.locator('html')).toHaveCSS(
+      '--color-warning',
+      palette.yellow,
     );
     await page.evaluate(() => {
       const gallery = document.createElement('section');
@@ -766,6 +803,32 @@ for (const [name, palette, scheme] of Object.entries(palettes).flatMap(
       await expect(page.locator('html')).toHaveCSS(
         '--color-warning-pressed',
         name === 'retro-82' ? '85%' : '80%',
+      );
+      await expect(page.locator('html')).toHaveCSS(
+        '--color-warning',
+        palette.yellow,
+      );
+    }
+    if (name === 'osaka-jade') {
+      current = { ...current, bright_yellow: '#ffcc00' };
+      version = '5';
+      await page.evaluate(() =>
+        document.dispatchEvent(new Event('visibilitychange')),
+      );
+      await expect(page.locator('html')).toHaveCSS(
+        '--color-warning-bright',
+        '#ffcc00',
+      );
+      const warning = page.locator('#omarchy-contrast .alert-warning');
+      await expect(warning).not.toHaveCSS(
+        'background-color',
+        semanticFills[name].warning,
+      );
+      await expect(warning).toHaveCSS('color', rgb(palette.foreground));
+      expect(await contrast(warning)).toBeGreaterThanOrEqual(4.5);
+      await expect(page.locator('html')).toHaveCSS(
+        '--color-warning',
+        palette.yellow,
       );
     }
   });

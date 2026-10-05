@@ -21,11 +21,19 @@
     // Everforest keeps page labels readable by lightening danger interactions.
     var pageLabels = palette === 'everforest' && fill.name === 'danger';
     var mix = colors[pageLabels ? 1 : 0];
-    var foregrounds = pageLabels ? colors.slice(0, 1) : colors;
+    var bodyLabels = palette === 'osaka-jade';
+    var foregrounds = pageLabels
+      ? colors.slice(0, 1)
+      : bodyLabels
+        ? colors.slice(1, 2)
+        : colors;
     // Gentler pressed darkening preserves Retro 82's page-blue warning labels.
     var pressed =
       palette === 'retro-82' && fill.name === 'warning' ? 0.85 : 0.8;
-    var percentages = [100, 90, 80, 70, 60, 50, 40, 30, 20, 10, 0];
+    // Finer shading retains Osaka's approved fills with its deeper body cream.
+    var percentages = [];
+    for (var retained = 100; retained >= 0; retained -= bodyLabels ? 5 : 10)
+      percentages.push(retained);
     var latte = palette === 'catppuccin-latte';
     if (palette === 'rose-pine' || latte) {
       // Approved stronger fills need deeper text, not extra page mixing.
@@ -101,8 +109,11 @@
     ];
     var palette = style.getPropertyValue('--omarchy-palette').trim();
     var colors = names.map(function (name) {
-      // Lumon's pale cyan separates filled success from its deep blue danger.
-      var source = palette === 'lumon' && name === 'success' ? 'info' : name;
+      // Native alternate swatches separate otherwise similar filled roles.
+      var source = name;
+      if (palette === 'lumon' && name === 'success') source = 'info';
+      if (palette === 'osaka-jade' && name === 'warning')
+        source = 'warning-bright';
       var css = style.getPropertyValue('--color-' + source).trim();
       if (!/^#[0-9a-f]{6}$/i.test(css))
         throw new Error('Invalid Omarchy color: ' + name);

@@ -13,6 +13,7 @@
   --color-info: {{cyan}};
   --color-success: {{green}};
   --color-warning: {{yellow}};
+  --color-warning-bright: {{bright_yellow}};
   --color-danger: {{red}};
   --color-focus: {{cyan}};
   --color-semantic-text: {{background}};
