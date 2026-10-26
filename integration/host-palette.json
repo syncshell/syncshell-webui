@@ -1,0 +1,41 @@
+{
+  "format": 1,
+  "template": "omarchy-theme.css.in",
+  "roles": [
+    "mode",
+    "background",
+    "surface",
+    "surfaceVariant",
+    "foreground",
+    "muted",
+    "accent",
+    "success",
+    "warning",
+    "danger",
+    "border",
+    "info"
+  ],
+  "constants": {
+    "palette": "portable"
+  },
+  "tokens": {
+    "mode": "mode",
+    "background": "background",
+    "surface": "surface",
+    "surface_dark": "surfaceVariant",
+    "selection": "surfaceVariant",
+    "foreground": "foreground",
+    "foreground_light": "foreground",
+    "foreground_dark": "muted",
+    "muted": "border",
+    "accent": "accent",
+    "blue": "accent",
+    "magenta": "accent",
+    "green": "success",
+    "yellow": "warning",
+    "bright_yellow": "warning",
+    "orange": "warning",
+    "red": "danger",
+    "cyan": "info"
+  }
+}

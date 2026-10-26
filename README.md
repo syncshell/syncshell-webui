@@ -53,15 +53,20 @@ discovery and relays disabled, and stop them on exit. Set
 
 `app/` and `client/` own the application; `static/` owns its external assets;
 `themes/` owns base palettes; `integration/` owns the optional Omarchy CSS
-template and browser refresh helper. Tests assert the current API, rendering and
-formatting contracts directly.
+template, its browser refresh helper and `host-palette.json`, which maps a
+shell's semantic colors onto that template. Tests assert the current API,
+rendering and formatting contracts directly.
 
 ## Plugin integration
 
 The plugin imports the same compiled archive, pins its checksum, and supplies
-Omarchy palette values to the included template. Its Go bridge provides optional
-local file actions. Without a plugin grant, ordinary Syncthing operations remain
-available and local file actions report unavailable access.
+Omarchy palette values to the included template. Material You shells such as Dux
+Shell export semantic roles instead (background, surfaces, foreground, muted,
+border, accent, success, warning, danger, info); `host-palette.json` defines how
+those fill the template, and the contrast suite covers Dux Shell's default
+theme. The plugin's Go bridge provides optional local file actions. Without a
+plugin grant, ordinary Syncthing operations remain available and local file
+actions report unavailable access.
 
 This is a third-party Syncthing interface. Original authors and dependency
 licenses remain credited in About and in the release.

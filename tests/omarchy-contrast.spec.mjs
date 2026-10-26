@@ -431,11 +431,62 @@ const palettes = {
     orange: '#4a4a4a',
   },
 };
+
+const hostPalette = JSON.parse(
+  await readFile(
+    new URL('../integration/host-palette.json', import.meta.url),
+    'utf8',
+  ),
+);
+// Material You shells export semantic roles, not terminal colors; these are
+// Dux Shell's default purple theme with its fixed success, warning and info.
+const hostPalettes = {
+  'dux-purple-dark': {
+    mode: 'dark',
+    background: '#141218',
+    surface: '#211f24',
+    surfaceVariant: '#2b292f',
+    foreground: '#e6e0e9',
+    muted: '#cac4cf',
+    accent: '#d0bcff',
+    success: '#4caf50',
+    warning: '#ff9800',
+    danger: '#f2b8b5',
+    border: '#948f99',
+    info: '#2196f3',
+  },
+  'dux-purple-light': {
+    mode: 'light',
+    background: '#fef7ff',
+    surface: '#f2ecf4',
+    surfaceVariant: '#ece6ee',
+    foreground: '#1d1b20',
+    muted: '#49454e',
+    accent: '#6750a4',
+    success: '#4caf50',
+    warning: '#ff9800',
+    danger: '#f2b8b5',
+    border: '#7a757f',
+    info: '#2196f3',
+  },
+};
+for (const [name, roles] of Object.entries(hostPalettes))
+  palettes[name] = Object.fromEntries(
+    Object.entries(hostPalette.tokens).map(([token, role]) => [
+      token,
+      roles[role],
+    ]),
+  );
 const derivedText = {
   'rose-pine': 'color(srgb 0.102353 0.0964706 0.142353)',
   'catppuccin-latte': 'color(srgb 0.0596078 0.0619608 0.0823529)',
 };
 const semanticText = {
+  'dux-purple-light': {
+    success: '#1d1b20',
+    warning: '#1d1b20',
+    danger: '#1d1b20',
+  },
   ethereal: { danger: '#ffcead' },
   gruvbox: { danger: '#d4be98' },
   kanagawa: { success: '#dcd7ba', danger: '#dcd7ba' },
