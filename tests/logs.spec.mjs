@@ -5,7 +5,10 @@ test('logs render literal text, update logging levels and cancel polling on clos
   syncthing,
 }) => {
   syncthing.configure();
-  await page.clock.install();
+  // Paused time keeps a 2 s poll from landing between Close and the count.
+  const start = new Date('2026-09-08T12:00:00Z');
+  await page.clock.install({ time: start });
+  await page.clock.pauseAt(start);
   let levels = { api: 'INFO' },
     writes = 0,
     reads = 0;
@@ -49,9 +52,13 @@ test('logs render literal text, update logging levels and cancel polling on clos
     dialog.getByRole('combobox', { name: 'api', exact: true }),
   ).toHaveValue('WARN');
   expect(writes).toBe(1);
+  await page.clock.runFor(2200);
+  await expect.poll(() => reads).toBe(2);
   await dialog.getByRole('button', { name: /Close/ }).click();
   await expect(dialog).toHaveCount(0);
   const before = reads;
   await page.clock.runFor(2200);
+  // A late poll needs a round trip before the route counts it.
+  await page.waitForTimeout(500);
   expect(reads).toBe(before);
 });
